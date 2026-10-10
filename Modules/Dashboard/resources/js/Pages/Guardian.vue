@@ -3,6 +3,8 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import Avatar from '@/Components/ui/Avatar.vue';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import LastSessionCard from '@/Components/ui/LastSessionCard.vue';
+import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import { greeting, rupiah } from '@/lib/format';
 
@@ -16,7 +18,7 @@ const user = usePage().props.auth.user;
     <div class="mb-8">
         <p class="eyebrow">Portal orang tua</p>
         <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink">{{ greeting() }}, {{ user.name.split(' ')[0] }}</h1>
-        <p class="mt-1 text-muted">Pantau jadwal kelas dan tagihan anak Anda di sini.</p>
+        <p class="mt-1 text-muted">Pantau jadwal, kehadiran, sisa kuota, dan tagihan anak Anda di sini.</p>
     </div>
 
     <!-- Tagihan -->
@@ -46,20 +48,39 @@ const user = usePage().props.auth.user;
     </div>
 
     <!-- Anak -->
-    <div v-if="children.length" class="grid gap-6 lg:grid-cols-2">
-        <div v-for="child in children" :key="child.id" class="card p-5">
-            <div class="mb-4 flex items-center gap-3">
+    <div v-if="children.length" class="space-y-6">
+        <div v-for="child in children" :key="child.id" class="card p-5 sm:p-6">
+            <div class="mb-5 flex flex-wrap items-center gap-4">
                 <Avatar :initials="child.initials" :seed="child.id" size="lg" />
-                <div>
+                <div class="flex-1">
                     <p class="font-display text-lg font-bold text-ink">{{ child.name }}</p>
                     <p class="text-sm text-muted"><span class="font-mono">{{ child.code }}</span><template v-if="child.grade"> · Kelas {{ child.grade }}</template></p>
                 </div>
+                <div v-if="child.stats.sessions" class="text-right">
+                    <p class="font-display text-2xl font-extrabold text-ink">{{ child.stats.rate }}%</p>
+                    <p class="text-xs text-muted">kehadiran dari {{ child.stats.sessions }} sesi</p>
+                </div>
             </div>
-            <p class="eyebrow mb-2">Kelas yang diikuti</p>
-            <div v-if="child.classes.length" class="space-y-2">
-                <SessionItem v-for="c in child.classes" :key="c.id" :session="{ ...c, subject: c.schedule }" :show-teacher="false" />
+
+            <div class="grid gap-5 lg:grid-cols-3">
+                <div>
+                    <p class="eyebrow mb-2">Kuota paket</p>
+                    <div v-if="child.packages.length" class="space-y-3"><QuotaCard v-for="p in child.packages" :key="p.id" :pkg="p" /></div>
+                    <p v-else class="text-sm text-muted">Belum ada paket aktif.</p>
+                </div>
+                <div>
+                    <p class="eyebrow mb-2">Sesi berikutnya</p>
+                    <div v-if="child.next.length" class="space-y-2">
+                        <SessionItem v-for="s in child.next" :key="s.id" :session="s" show-date />
+                    </div>
+                    <p v-else class="text-sm text-muted">Belum ada sesi terjadwal.</p>
+                </div>
+                <div>
+                    <p class="eyebrow mb-2">Catatan pertemuan terakhir</p>
+                    <LastSessionCard v-if="child.lastSession" :session="child.lastSession" for-parent />
+                    <p v-else class="text-sm text-muted">Belum ada sesi yang selesai.</p>
+                </div>
             </div>
-            <p v-else class="text-sm text-muted">Belum terdaftar di kelas.</p>
         </div>
     </div>
     <div v-else class="card">

@@ -10,7 +10,11 @@ use Inertia\Response;
 use Modules\Classes\Models\ClassRoom;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
+use Modules\Finance\Models\PayrollItem;
+use Modules\Finance\Models\StudentPackage;
 use Modules\Identity\Enums\Role;
+use Modules\Sessions\Models\ClassSession;
+use Modules\Sessions\Models\SessionAttendance;
 
 /**
  * Satu URL /dashboard, tampilan berbeda per role utama user.
@@ -32,8 +36,6 @@ class DashboardController extends Controller
 
     private function admin(): Response
     {
-        $today = ClassRoom::onDay(today())->with('teacher:id,name')->withCount('students')->orderBy('start_time')->get();
-
         return Inertia::render('Dashboard::Admin', [
             'stats' => [
                 'students' => User::role(Role::Student->value)->where('status', 'active')->count(),
@@ -41,7 +43,12 @@ class DashboardController extends Controller
                 'classes' => ClassRoom::where('status', 'active')->count(),
                 'outstanding' => (int) Invoice::outstanding()->selectRaw('coalesce(sum(amount - paid_amount), 0) as total')->value('total'),
             ],
-            'today' => $today->map->toCard(),
+            'today' => $this->sessions(ClassSession::query()->whereDate('starts_at', today())),
+            'alerts' => [
+                'needs_report' => ClassSession::needsReport()->count(),
+                'flagged' => ClassSession::where('flagged', true)->where('starts_at', '>=', now()->subDays(14))->count(),
+                'low_quota' => $this->lowQuotaCount(),
+            ],
             'pendingPayments' => Payment::where('status', 'pending')->with('invoice.student:id,name')->latest()->take(5)->get()
                 ->map(fn (Payment $p) => [
                     'id' => $p->id,
@@ -58,14 +65,17 @@ class DashboardController extends Controller
     private function teacher(User $user): Response
     {
         $classes = $user->teachingClasses()->withCount('students')->orderBy('start_time')->get();
+        $mine = fn () => ClassSession::query()->where('teacher_id', $user->id);
 
         return Inertia::render('Dashboard::Teacher', [
             'stats' => [
                 'classes' => $classes->where('status', 'active')->count(),
                 'students' => $classes->where('status', 'active')->sum('students_count'),
-                'sessions_week' => $classes->where('status', 'active')->sum(fn ($c) => count($c->schedule_days)),
+                'sessions_month' => $mine()->where('status', 'completed')->whereBetween('starts_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+                'fee_pending' => (int) PayrollItem::where('teacher_id', $user->id)->whereNull('teacher_payout_id')->sum('amount'),
             ],
-            'today' => ClassRoom::onDay(today())->where('teacher_id', $user->id)->withCount('students')->orderBy('start_time')->get()->map->toCard(),
+            'today' => $this->sessions($mine()->whereDate('starts_at', today())),
+            'needsReport' => $this->sessions($mine()->needsReport()->orderBy('starts_at')->take(10)),
             'classes' => $classes->map->toCard(),
         ]);
     }
@@ -75,8 +85,14 @@ class DashboardController extends Controller
         $classes = $user->enrolledClasses()->with('teacher:id,name')->get();
 
         return Inertia::render('Dashboard::Student', [
-            'today' => ClassRoom::onDay(today())->whereHas('students', fn ($q) => $q->whereKey($user->id))->with('teacher:id,name')->orderBy('start_time')->get()->map->toCard(),
+            'upcoming' => $this->sessions(ClassSession::query()
+                ->whereIn('class_room_id', $classes->pluck('id'))
+                ->where('status', 'scheduled')->where('ends_at', '>=', now())
+                ->orderBy('starts_at')->take(4)),
+            'lastSession' => $this->lastSessionFor($user),
             'classes' => $classes->map->toCard(),
+            'packages' => $this->packagesFor($user),
+            'stats' => $this->attendanceStats($user),
             'profile' => [
                 'code' => $user->studentProfile?->student_code,
                 'grade' => $user->studentProfile?->grade,
@@ -86,7 +102,7 @@ class DashboardController extends Controller
 
     private function guardian(User $user): Response
     {
-        $children = $user->children()->with(['studentProfile', 'enrolledClasses.teacher:id,name'])->get();
+        $children = $user->children()->with(['studentProfile', 'enrolledClasses'])->get();
 
         return Inertia::render('Dashboard::Guardian', [
             'children' => $children->map(fn (User $child) => [
@@ -95,7 +111,13 @@ class DashboardController extends Controller
                 'initials' => $child->initials(),
                 'code' => $child->studentProfile?->student_code,
                 'grade' => $child->studentProfile?->grade,
-                'classes' => $child->enrolledClasses->map->toCard(),
+                'packages' => $this->packagesFor($child),
+                'stats' => $this->attendanceStats($child),
+                'next' => $this->sessions(ClassSession::query()
+                    ->whereIn('class_room_id', $child->enrolledClasses->pluck('id'))
+                    ->where('status', 'scheduled')->where('ends_at', '>=', now())
+                    ->orderBy('starts_at')->take(2)),
+                'lastSession' => $this->lastSessionFor($child),
             ]),
             'invoices' => Invoice::visibleTo($user)->outstanding()->with('student:id,name')->orderBy('due_date')->take(5)->get()
                 ->map(fn (Invoice $i) => [
@@ -108,5 +130,65 @@ class DashboardController extends Controller
                     'is_overdue' => $i->isOverdue(),
                 ]),
         ]);
+    }
+
+    private function sessions($query)
+    {
+        return $query->with(['classRoom:id,name,subject,color,zoom_url', 'teacher:id,name'])->orderBy('starts_at')->get()->map->toItem();
+    }
+
+    private function packagesFor(User $student)
+    {
+        return StudentPackage::where('student_id', $student->id)
+            ->whereIn('status', ['active', 'pending_payment', 'used_up'])
+            ->where(fn ($q) => $q->where('status', '!=', 'used_up')->orWhere('updated_at', '>=', now()->subDays(30)))
+            ->with('classRoom:id,name')
+            ->withCount('usages')
+            ->latest()
+            ->get()
+            ->map->toSummary();
+    }
+
+    private function attendanceStats(User $student): array
+    {
+        $rows = SessionAttendance::where('student_id', $student->id)
+            ->whereHas('session', fn ($q) => $q->where('status', 'completed'))
+            ->pluck('status');
+
+        return [
+            'sessions' => $rows->count(),
+            'present' => $rows->filter(fn ($s) => $s === 'present')->count(),
+            'rate' => $rows->count() ? (int) round($rows->filter(fn ($s) => $s === 'present')->count() / $rows->count() * 100) : null,
+        ];
+    }
+
+    /** Sesi terakhir yang dihadiri: materi, PR, dan catatan guru untuk orang tua. */
+    private function lastSessionFor(User $student): ?array
+    {
+        $attendance = SessionAttendance::where('student_id', $student->id)
+            ->whereHas('session', fn ($q) => $q->where('status', 'completed'))
+            ->with('session.classRoom:id,name,subject,color', 'session.teacher:id,name')
+            ->get()
+            ->sortByDesc(fn ($a) => $a->session->starts_at)
+            ->first();
+
+        if (! $attendance) {
+            return null;
+        }
+
+        return [
+            ...$attendance->session->toItem(),
+            'attendance' => SessionAttendance::STATUSES[$attendance->status],
+            'attendance_status' => $attendance->status,
+            'homework' => $attendance->session->homework,
+            'parent_note' => $attendance->session->parent_note,
+        ];
+    }
+
+    private function lowQuotaCount(): int
+    {
+        return StudentPackage::where('status', 'active')->withCount('usages')->get()
+            ->filter(fn (StudentPackage $p) => $p->sessions_total - $p->usages_count <= 2)
+            ->count();
     }
 }

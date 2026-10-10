@@ -21,6 +21,9 @@ class TeacherRequest extends PersonRequest
         return [
             ...$this->accountRules(),
             'expertise' => ['nullable', 'string', 'max:160'],
+            'rate_per_session' => ['required', 'integer', 'min:0', 'max:100000000'],
+            'bank_name' => ['nullable', 'string', 'max:60'],
+            'bank_account' => ['nullable', 'string', 'max:40'],
             'bio' => ['nullable', 'string', 'max:2000'],
             'joined_at' => ['nullable', 'date'],
         ];

@@ -68,7 +68,7 @@ test('student routes reject users with other roles', function () {
 
 test('admin can create a teacher and a guardian with children', function () {
     $this->actingAs($this->admin)->post('/people/teachers', [
-        'name' => 'Budi', 'email' => 'budi@example.test', 'status' => 'active', 'password' => 'rahasia123', 'expertise' => 'Python',
+        'name' => 'Budi', 'email' => 'budi@example.test', 'status' => 'active', 'password' => 'rahasia123', 'expertise' => 'Python', 'rate_per_session' => 100000,
     ])->assertRedirect(route('people.teachers.index'));
 
     $child = userWithRole('student');

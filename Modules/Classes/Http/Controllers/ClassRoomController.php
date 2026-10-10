@@ -83,6 +83,13 @@ class ClassRoomController extends Controller
             'availableStudents' => $user->can('classes.manage')
                 ? User::role(Role::Student->value)->where('status', 'active')->whereNotIn('id', $enrolledIds)->orderBy('name')->get(['id', 'name'])
                 : [],
+            'sessions' => $class->sessions()
+                ->with(['classRoom:id,name,subject,color,zoom_url', 'teacher:id,name'])
+                ->where('starts_at', '>=', now()->subWeeks(2))
+                ->orderBy('starts_at')
+                ->take(8)
+                ->get()
+                ->map->toItem(),
             'can' => [
                 'manage' => $user->can('update', $class),
                 'roster' => $canRoster,
@@ -140,6 +147,21 @@ class ClassRoomController extends Controller
 
         if ($class->capacity && $current + $new->count() > $class->capacity) {
             return back()->with('error', "Kapasitas kelas {$class->capacity} siswa akan terlampaui.");
+        }
+
+        // Cek bentrok jadwal siswa dengan kelas lain yang diikutinya.
+        $clashes = ClassRoom::query()
+            ->whereKeyNot($class->id)
+            ->whereIn('status', ['active', 'upcoming'])
+            ->where('start_time', '<', $class->end_time)
+            ->where('end_time', '>', $class->start_time)
+            ->with(['students' => fn ($q) => $q->whereIn('users.id', $new)])
+            ->get()
+            ->filter(fn (ClassRoom $other) => array_intersect($other->schedule_days, $class->schedule_days) !== [])
+            ->flatMap(fn (ClassRoom $other) => $other->students->map(fn ($s) => "{$s->name} ({$other->name})"));
+
+        if ($clashes->isNotEmpty()) {
+            return back()->with('error', 'Jadwal bentrok: '.$clashes->unique()->implode(', ').'.');
         }
 
         $class->students()->syncWithoutDetaching(

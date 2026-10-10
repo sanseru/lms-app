@@ -6,7 +6,7 @@ import PageHeader from '@/Components/ui/PageHeader.vue';
 import { classColors } from '@/lib/format';
 
 const props = defineProps({ days: Array, week: Object });
-const total = computed(() => props.days.reduce((n, d) => n + d.sessions.length, 0));
+const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((s) => s.status !== 'cancelled').length, 0));
 </script>
 
 <template>
@@ -43,12 +43,18 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.length, 
                 <Link
                     v-for="s in day.sessions"
                     :key="s.id"
-                    :href="route('classes.show', s.id)"
-                    :class="[classColors[s.color]?.bg, classColors[s.color]?.ring]"
-                    class="block rounded-xl p-3 ring-1 transition hover:-translate-y-0.5 ring-inset"
+                    :href="route('sessions.show', s.id)"
+                    :class="[
+                        s.status === 'cancelled' ? 'bg-chip ring-line opacity-60' : [classColors[s.class.color]?.bg, classColors[s.class.color]?.ring],
+                    ]"
+                    class="block rounded-xl p-3 ring-1 transition ring-inset hover:-translate-y-0.5"
                 >
-                    <p :class="classColors[s.color]?.text" class="font-mono text-xs font-medium">{{ s.start_time }}–{{ s.end_time }}</p>
-                    <p class="mt-0.5 text-sm leading-snug font-bold text-ink">{{ s.name }}</p>
+                    <div class="flex items-center justify-between gap-1">
+                        <p :class="classColors[s.class.color]?.text" class="font-mono text-xs font-medium">{{ s.start_time }}–{{ s.end_time }}</p>
+                        <span v-if="s.status === 'completed'" class="text-emerald-600" title="Selesai"><Icon name="check" :size="14" /></span>
+                        <span v-else-if="s.needs_report" class="size-2 rounded-full bg-amber-500" title="Absensi belum diisi" />
+                    </div>
+                    <p class="mt-0.5 text-sm leading-snug font-bold text-ink" :class="s.status === 'cancelled' && 'line-through'">{{ s.class.name }}</p>
                     <p v-if="s.teacher" class="mt-1 truncate text-xs text-muted">{{ s.teacher.name }}</p>
                 </Link>
                 <p v-if="!day.sessions.length" class="m-auto text-xs text-muted/70">Tidak ada kelas</p>

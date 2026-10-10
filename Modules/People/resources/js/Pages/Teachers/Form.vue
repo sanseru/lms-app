@@ -4,6 +4,7 @@ import Field from '@/Components/ui/Field.vue';
 import FormSection from '@/Components/ui/FormSection.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
+import { rupiah } from '@/lib/format';
 import AccountFields from '../../Components/AccountFields.vue';
 
 const props = defineProps({ teacher: Object });
@@ -17,6 +18,9 @@ const form = useForm({
     status: t.status ?? 'active',
     password: '',
     expertise: t.expertise ?? '',
+    rate_per_session: t.rate_per_session ?? 100000,
+    bank_name: t.bank_name ?? '',
+    bank_account: t.bank_account ?? '',
     bio: t.bio ?? '',
     joined_at: t.joined_at ?? new Date().toISOString().slice(0, 10),
 });
@@ -50,6 +54,19 @@ const submit = () =>
             </Field>
             <Field id="bio" label="Bio singkat" :error="form.errors.bio" class="sm:col-span-2">
                 <textarea id="bio" v-model="form.bio" rows="3" class="field" />
+            </Field>
+        </FormSection>
+
+        <FormSection title="Honor" description="Honor dihitung otomatis dari setiap sesi yang selesai diajar.">
+            <Field id="rate_per_session" label="Honor per sesi (Rp)" :error="form.errors.rate_per_session" required :hint="rupiah(form.rate_per_session)">
+                <input id="rate_per_session" v-model.number="form.rate_per_session" type="number" min="0" step="5000" class="field" />
+            </Field>
+            <div class="hidden sm:block" />
+            <Field id="bank_name" label="Bank" :error="form.errors.bank_name">
+                <input id="bank_name" v-model="form.bank_name" type="text" class="field" placeholder="mis. BCA" />
+            </Field>
+            <Field id="bank_account" label="Nomor rekening" :error="form.errors.bank_account">
+                <input id="bank_account" v-model="form.bank_account" type="text" class="field font-mono" />
             </Field>
         </FormSection>
 

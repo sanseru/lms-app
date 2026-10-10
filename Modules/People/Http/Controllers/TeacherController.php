@@ -38,6 +38,7 @@ class TeacherController extends Controller
                 'status' => $user->status,
                 'code' => $user->teacherProfile?->employee_code,
                 'expertise' => $user->teacherProfile?->expertise,
+                'rate_per_session' => $user->teacherProfile?->rate_per_session ?? 0,
                 'classes_count' => $user->teaching_classes_count,
             ]);
 
@@ -74,6 +75,9 @@ class TeacherController extends Controller
                 'status' => $teacher->status,
                 'code' => $profile?->employee_code,
                 'expertise' => $profile?->expertise,
+                'rate_per_session' => $profile?->rate_per_session ?? 0,
+                'bank_name' => $profile?->bank_name,
+                'bank_account' => $profile?->bank_account,
                 'bio' => $profile?->bio,
                 'joined_at' => $profile?->joined_at?->toDateString(),
             ],

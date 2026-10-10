@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import {
-    AlertTriangle, ArrowLeft, ArrowRight, BadgeCheck, Ban, Bell, BookOpen, CalendarDays, Check, ChevronDown,
+    AlertTriangle, ArrowLeft, ArrowRight, BadgeCheck, Ban, Bell, BookOpen, CalendarDays, Check, ClipboardCheck, Flag, HandCoins, Ticket, Printer, ChevronDown,
     ChevronLeft, ChevronRight, CircleDollarSign, Clock, Download, Eye, FileText, GraduationCap, Inbox,
     LayoutDashboard, LogOut, Mail, Menu, Pencil, Phone, Plus, Presentation, Receipt, School, Search,
     Sparkles, Trash2, Upload, User, UserPlus, Users, Video, Wallet, X,
@@ -9,7 +9,7 @@ import {
 
 const icons = {
     'alert-triangle': AlertTriangle, 'arrow-left': ArrowLeft, 'arrow-right': ArrowRight, 'badge-check': BadgeCheck,
-    ban: Ban, bell: Bell, 'book-open': BookOpen, 'calendar-days': CalendarDays, check: Check, 'chevron-down': ChevronDown,
+    ban: Ban, bell: Bell, 'book-open': BookOpen, 'calendar-days': CalendarDays, check: Check, 'clipboard-check': ClipboardCheck, flag: Flag, 'hand-coins': HandCoins, ticket: Ticket, printer: Printer, 'chevron-down': ChevronDown,
     'chevron-left': ChevronLeft, 'chevron-right': ChevronRight, money: CircleDollarSign, clock: Clock, download: Download,
     eye: Eye, 'file-text': FileText, 'graduation-cap': GraduationCap, inbox: Inbox, 'layout-dashboard': LayoutDashboard,
     'log-out': LogOut, mail: Mail, menu: Menu, pencil: Pencil, phone: Phone, plus: Plus, presentation: Presentation,

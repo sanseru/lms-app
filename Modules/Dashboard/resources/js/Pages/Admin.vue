@@ -7,7 +7,7 @@ import SessionItem from '@/Components/ui/SessionItem.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import { greeting, rupiah } from '@/lib/format';
 
-defineProps({ stats: Object, today: Array, pendingPayments: Array, recentStudents: Array });
+defineProps({ stats: Object, today: Array, alerts: Object, pendingPayments: Array, recentStudents: Array });
 const user = usePage().props.auth.user;
 const todayLabel = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
 </script>
@@ -32,6 +32,21 @@ const todayLabel = new Date().toLocaleDateString('id-ID', { weekday: 'long', day
         <StatCard label="Guru aktif" :value="stats.teachers" icon="presentation" tone="accent" />
         <StatCard label="Kelas berjalan" :value="stats.classes" icon="school" tone="sky" />
         <StatCard label="Tagihan belum lunas" :value="rupiah(stats.outstanding)" icon="wallet" tone="amber" />
+    </div>
+
+    <div v-if="alerts.needs_report || alerts.flagged || alerts.low_quota" class="mt-6 grid gap-3 sm:grid-cols-3">
+        <Link v-if="alerts.needs_report" :href="route('sessions.index', { tab: 'needs_report' })" class="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 hover:bg-amber-100/70">
+            <span class="grid size-10 place-items-center rounded-xl bg-white text-amber-600"><Icon name="clipboard-check" /></span>
+            <span><b class="font-display text-ink">{{ alerts.needs_report }} sesi</b><span class="block text-sm text-muted">belum diisi absensinya</span></span>
+        </Link>
+        <Link v-if="alerts.flagged" :href="route('sessions.index', { tab: 'flagged' })" class="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 hover:bg-rose-100/70">
+            <span class="grid size-10 place-items-center rounded-xl bg-white text-rose-600"><Icon name="flag" /></span>
+            <span><b class="font-display text-ink">{{ alerts.flagged }} sesi ditandai</b><span class="block text-sm text-muted">perlu ditindaklanjuti</span></span>
+        </Link>
+        <Link v-if="alerts.low_quota" :href="route('finance.packages.index', { status: 'low' })" class="flex items-center gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4 hover:bg-brand-100/70">
+            <span class="grid size-10 place-items-center rounded-xl bg-white text-brand-600"><Icon name="ticket" /></span>
+            <span><b class="font-display text-ink">{{ alerts.low_quota }} paket</b><span class="block text-sm text-muted">sisa kuota ≤ 2 sesi</span></span>
+        </Link>
     </div>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">

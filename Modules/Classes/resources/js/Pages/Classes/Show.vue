@@ -1,11 +1,12 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import ConfirmDialog from '@/Components/ui/ConfirmDialog.vue';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import SessionItem from '@/Components/ui/SessionItem.vue';
 import StatusBadge from '@/Components/ui/StatusBadge.vue';
 import { useConfirm } from '@/composables/useConfirm';
 import { classColors } from '@/lib/format';
@@ -13,6 +14,7 @@ import CheckList from '@/Components/ui/CheckList.vue';
 
 const props = defineProps({
     classRoom: Object,
+    sessions: Array,
     students: Array,
     availableStudents: Array,
     can: Object,
@@ -73,8 +75,24 @@ const copyZoom = async () => {
     </div>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
-        <!-- Siswa -->
-        <div class="lg:col-span-2">
+        <!-- Siswa & sesi -->
+        <div class="space-y-6 lg:col-span-2">
+            <div class="card p-5">
+                <div class="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="font-display font-bold text-ink">Sesi</h2>
+                        <p class="text-sm text-muted">Dua minggu terakhir dan yang akan datang</p>
+                    </div>
+                    <button v-if="can.manage" class="btn-ghost px-3 py-2" @click="router.post(route('classes.sessions.generate', classRoom.id), { weeks: 8 }, { preserveScroll: true })">
+                        <Icon name="calendar-days" :size="16" /> Buat sesi 8 minggu
+                    </button>
+                </div>
+                <div v-if="sessions.length" class="space-y-2">
+                    <SessionItem v-for="s in sessions" :key="s.id" :session="s" :show-teacher="false" show-date />
+                </div>
+                <p v-else class="text-sm text-muted">Belum ada sesi. Sesi dibuat otomatis dari jadwal mingguan.</p>
+            </div>
+
             <div class="card overflow-hidden">
                 <div class="flex items-center justify-between border-b border-line px-5 py-4">
                     <div>

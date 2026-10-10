@@ -1,18 +1,56 @@
 <script setup>
-// Placeholder: isi landing page dikerjakan thread landing.
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import CtaSection from '../Components/CtaSection.vue';
+import FaqSection from '../Components/FaqSection.vue';
+import FeatureSection from '../Components/FeatureSection.vue';
+import HeroSection from '../Components/HeroSection.vue';
+import LandingFooter from '../Components/LandingFooter.vue';
+import LandingHeader from '../Components/LandingHeader.vue';
+import ParentSection from '../Components/ParentSection.vue';
+import PricingSection from '../Components/PricingSection.vue';
+import ProgramSection from '../Components/ProgramSection.vue';
+import StepsSection from '../Components/StepsSection.vue';
+import TestimonialSection from '../Components/TestimonialSection.vue';
 
 defineOptions({ layout: null });
 const user = usePage().props.auth.user;
 </script>
 
 <template>
-    <Head title="Belajar coding untuk anak" />
-    <div class="grid min-h-screen place-items-center bg-paper px-4 text-center">
-        <div>
-            <img src="/images/logo-header.png" alt="Alprogmatics" class="mx-auto h-16" />
-            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-ink">Belajar coding, seru dan terarah.</h1>
-            <Link :href="user ? route('dashboard') : route('login')" class="btn-accent mt-8">{{ user ? 'Ke dashboard' : 'Masuk' }}</Link>
-        </div>
+    <Head title="Kelas Coding Online untuk Anak">
+        <meta name="description" content="Kelas coding online untuk anak 6–17 tahun via Zoom. Privat atau kelompok, tutor berpengalaman, laporan perkembangan untuk orang tua." />
+    </Head>
+    <div class="landing min-h-full bg-paper text-base text-ink">
+        <LandingHeader :user="user" />
+        <main id="top">
+            <HeroSection />
+            <FeatureSection />
+            <ProgramSection />
+            <StepsSection />
+            <ParentSection />
+            <TestimonialSection />
+            <PricingSection />
+            <FaqSection />
+            <CtaSection />
+        </main>
+        <LandingFooter />
     </div>
 </template>
+
+<style>
+html:has(.landing) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 84px;
+}
+.landing-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.landing-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px -18px rgb(29 41 52 / 0.45);
+}
+@media (prefers-reduced-motion: reduce) {
+    html:has(.landing) { scroll-behavior: auto; }
+    .landing-lift, .landing-lift:hover { transition: none; transform: none; }
+}
+</style>

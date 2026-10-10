@@ -10,6 +10,7 @@ import SearchInput from '@/Components/ui/SearchInput.vue';
 import StatusBadge from '@/Components/ui/StatusBadge.vue';
 import { useConfirm } from '@/composables/useConfirm';
 import { useFilters } from '@/composables/useFilters';
+import { rupiah } from '@/lib/format';
 
 const props = defineProps({ teachers: Object, filters: Object });
 
@@ -53,7 +54,10 @@ const confirm = useConfirm();
                 <p v-if="teacher.phone" class="flex items-center gap-2"><Icon name="phone" :size="15" /> {{ teacher.phone }}</p>
             </div>
             <div class="mt-4 flex items-center justify-between border-t border-line pt-4">
-                <p class="text-sm"><b class="font-display text-ink">{{ teacher.classes_count }}</b> <span class="text-muted">kelas</span></p>
+                <p class="text-sm">
+                    <b class="font-display text-ink">{{ teacher.classes_count }}</b> <span class="text-muted">kelas ·</span>
+                    <b class="font-display text-ink">{{ rupiah(teacher.rate_per_session) }}</b><span class="text-muted">/sesi</span>
+                </p>
                 <div class="flex gap-1">
                     <Link :href="route('people.teachers.edit', teacher.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Ubah"><Icon name="pencil" :size="16" /></Link>
                     <button

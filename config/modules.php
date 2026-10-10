@@ -6,6 +6,7 @@ use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
+use Modules\Sessions\Providers\SessionsServiceProvider;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,7 @@ return [
         DashboardServiceProvider::class,
         PeopleServiceProvider::class,
         ClassesServiceProvider::class,
+        SessionsServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

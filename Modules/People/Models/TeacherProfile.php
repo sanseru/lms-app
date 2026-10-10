@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TeacherProfile extends Model
 {
-    protected $fillable = ['user_id', 'employee_code', 'expertise', 'bio', 'joined_at'];
+    protected $fillable = ['user_id', 'employee_code', 'expertise', 'rate_per_session', 'bank_name', 'bank_account', 'bio', 'joined_at'];
 
     protected function casts(): array
     {
-        return ['joined_at' => 'date'];
+        return ['joined_at' => 'date', 'rate_per_session' => 'integer'];
     }
 
     public function user(): BelongsTo

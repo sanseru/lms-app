@@ -86,6 +86,16 @@ class Invoice extends Model
                 default => 'unpaid',
             },
         ])->save();
+
+        // Paket kuota aktif setelah tagihannya lunas.
+        if ($this->status === 'paid') {
+            $this->studentPackages()->where('status', 'pending_payment')->get()->each->activate();
+        }
+    }
+
+    public function studentPackages(): HasMany
+    {
+        return $this->hasMany(StudentPackage::class);
     }
 
     public static function nextNumber(): string

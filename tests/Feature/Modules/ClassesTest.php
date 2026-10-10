@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Modules\Classes\Models\ClassRoom;
 
 function makeClass(array $attributes = []): ClassRoom
@@ -107,6 +108,7 @@ test('only the class teacher sees the roster', function () {
 });
 
 test('weekly schedule places classes on their days', function () {
+    Carbon::setTestNow('2026-10-04 08:00:00');
     $student = userWithRole('student');
     $class = makeClass(['schedule_days' => [1, 3]]);
     $class->students()->attach($student->id);

@@ -8,22 +8,25 @@ use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Classes\Models\ClassRoom;
+use Modules\Sessions\Models\ClassSession;
 
 class ScheduleController extends Controller
 {
     public function index(Request $request): Response
     {
-        $week = $request->date('week') ?? now();
-        $start = Carbon::parse($week)->startOfWeek();
+        $start = Carbon::parse($request->date('week') ?? now())->startOfWeek();
+        $end = $start->copy()->endOfWeek();
+        $user = $request->user();
 
-        $classes = ClassRoom::query()
-            ->visibleTo($request->user())
-            ->where('status', 'active')
-            ->with('teacher:id,name')
-            ->withCount('students')
-            ->get();
+        $sessions = ClassSession::query()
+            ->visibleTo($user)
+            ->whereBetween('starts_at', [$start, $end])
+            ->with(['classRoom:id,name,subject,color,zoom_url', 'teacher:id,name'])
+            ->orderBy('starts_at')
+            ->get()
+            ->groupBy(fn (ClassSession $s) => $s->starts_at->toDateString());
 
-        $days = collect(range(0, 6))->map(function (int $offset) use ($start, $classes) {
+        $days = collect(range(0, 6))->map(function (int $offset) use ($start, $sessions) {
             $date = $start->copy()->addDays($offset);
 
             return [
@@ -31,13 +34,7 @@ class ScheduleController extends Controller
                 'day' => ClassRoom::DAYS[$date->dayOfWeekIso],
                 'label' => $date->translatedFormat('d M'),
                 'is_today' => $date->isToday(),
-                'sessions' => $classes
-                    ->filter(fn (ClassRoom $c) => in_array($date->dayOfWeekIso, $c->schedule_days)
-                        && (! $c->start_date || $c->start_date->lte($date))
-                        && (! $c->end_date || $c->end_date->gte($date)))
-                    ->sortBy('start_time')
-                    ->values()
-                    ->map(fn (ClassRoom $c) => $c->toCard()),
+                'sessions' => ($sessions[$date->toDateString()] ?? collect())->map->toItem()->values(),
             ];
         });
 
@@ -45,7 +42,7 @@ class ScheduleController extends Controller
             'days' => $days,
             'week' => [
                 'start' => $start->toDateString(),
-                'label' => $start->translatedFormat('d M').' – '.$start->copy()->endOfWeek()->translatedFormat('d M Y'),
+                'label' => $start->translatedFormat('d M').' – '.$end->translatedFormat('d M Y'),
                 'prev' => $start->copy()->subWeek()->toDateString(),
                 'next' => $start->copy()->addWeek()->toDateString(),
             ],

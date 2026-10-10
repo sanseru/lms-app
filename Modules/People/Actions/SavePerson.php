@@ -39,7 +39,7 @@ class SavePerson
         return DB::transaction(function () use ($data, $user) {
             $user = $this->saveAccount($data, Role::Teacher, $user);
 
-            $user->teacherProfile()->updateOrCreate([], Arr::only($data, ['expertise', 'bio', 'joined_at']) + [
+            $user->teacherProfile()->updateOrCreate([], Arr::only($data, ['expertise', 'rate_per_session', 'bank_name', 'bank_account', 'bio', 'joined_at']) + [
                 'employee_code' => $user->teacherProfile?->employee_code ?? TeacherProfile::nextCode(),
             ]);
 

@@ -1,0 +1,183 @@
+<?php
+
+namespace Modules\Classes\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
+use Modules\Classes\Http\Requests\ClassRoomRequest;
+use Modules\Classes\Models\ClassRoom;
+use Modules\Identity\Enums\Role;
+
+class ClassRoomController extends Controller
+{
+    public function index(Request $request): Response
+    {
+        $filters = $request->only('search', 'status', 'subject');
+        $user = $request->user();
+
+        $classes = ClassRoom::query()
+            ->visibleTo($user)
+            ->with('teacher:id,name')
+            ->withCount('students')
+            ->when($filters['search'] ?? null, fn ($q, $search) => $q->where(fn ($q) => $q
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%")))
+            ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->when($filters['subject'] ?? null, fn ($q, $subject) => $q->where('subject', $subject))
+            ->orderByRaw("case status when 'active' then 0 when 'upcoming' then 1 else 2 end")
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString()
+            ->through(fn (ClassRoom $class) => $class->toCard());
+
+        return Inertia::render('Classes::Classes/Index', [
+            'classes' => $classes,
+            'filters' => $filters,
+            'subjects' => ClassRoom::query()->visibleTo($user)->distinct()->orderBy('subject')->pluck('subject'),
+            'statuses' => ClassRoom::STATUSES,
+            'can' => ['manage' => $user->can('classes.manage')],
+        ]);
+    }
+
+    public function show(Request $request, ClassRoom $class): Response
+    {
+        Gate::authorize('view', $class);
+        $user = $request->user();
+        $class->load(['teacher.teacherProfile', 'students.studentProfile'])->loadCount('students');
+        $canRoster = $user->can('viewRoster', $class);
+
+        $enrolledIds = $class->students->pluck('id');
+
+        return Inertia::render('Classes::Classes/Show', [
+            'classRoom' => [
+                ...$class->toCard(),
+                'description' => $class->description,
+                'zoom_meeting_id' => $class->zoom_meeting_id,
+                'zoom_passcode' => $class->zoom_passcode,
+                'start_date' => $class->start_date?->translatedFormat('d M Y'),
+                'end_date' => $class->end_date?->translatedFormat('d M Y'),
+                'teacher' => $class->teacher ? [
+                    'name' => $class->teacher->name,
+                    'initials' => $class->teacher->initials(),
+                    'expertise' => $class->teacher->teacherProfile?->expertise,
+                    'phone' => $canRoster ? $class->teacher->phone : null,
+                ] : null,
+            ],
+            'students' => $canRoster
+                ? $class->students->sortBy('name')->values()->map(fn (User $s) => [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'initials' => $s->initials(),
+                    'code' => $s->studentProfile?->student_code,
+                    'grade' => $s->studentProfile?->grade,
+                    'joined_at' => $s->pivot->joined_at ? Carbon::parse($s->pivot->joined_at)->translatedFormat('d M Y') : null,
+                ])
+                : [],
+            'availableStudents' => $user->can('classes.manage')
+                ? User::role(Role::Student->value)->where('status', 'active')->whereNotIn('id', $enrolledIds)->orderBy('name')->get(['id', 'name'])
+                : [],
+            'can' => [
+                'manage' => $user->can('update', $class),
+                'roster' => $canRoster,
+            ],
+        ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('Classes::Classes/Form', $this->formProps(null));
+    }
+
+    public function store(ClassRoomRequest $request): RedirectResponse
+    {
+        $class = ClassRoom::create($request->validated() + [
+            'code' => ClassRoom::nextCode($request->input('subject')),
+        ]);
+
+        return to_route('classes.show', $class)->with('success', "Kelas {$class->name} berhasil dibuat. Tambahkan siswa ke kelas ini.");
+    }
+
+    public function edit(ClassRoom $class): Response
+    {
+        Gate::authorize('update', $class);
+
+        return Inertia::render('Classes::Classes/Form', $this->formProps($class));
+    }
+
+    public function update(ClassRoomRequest $request, ClassRoom $class): RedirectResponse
+    {
+        $class->update($request->validated());
+
+        return to_route('classes.show', $class)->with('success', 'Kelas berhasil diperbarui.');
+    }
+
+    public function destroy(ClassRoom $class): RedirectResponse
+    {
+        Gate::authorize('delete', $class);
+        $class->delete();
+
+        return to_route('classes.index')->with('success', "Kelas {$class->name} dihapus.");
+    }
+
+    public function enroll(Request $request, ClassRoom $class): RedirectResponse
+    {
+        Gate::authorize('update', $class);
+
+        $data = $request->validate([
+            'student_ids' => ['required', 'array', 'min:1'],
+            'student_ids.*' => ['integer', Rule::exists('student_profiles', 'user_id')],
+        ], [], ['student_ids' => 'siswa']);
+
+        $current = $class->students()->count();
+        $new = collect($data['student_ids'])->diff($class->students()->pluck('users.id'));
+
+        if ($class->capacity && $current + $new->count() > $class->capacity) {
+            return back()->with('error', "Kapasitas kelas {$class->capacity} siswa akan terlampaui.");
+        }
+
+        $class->students()->syncWithoutDetaching(
+            $new->mapWithKeys(fn ($id) => [$id => ['status' => 'active', 'joined_at' => now()]])->all()
+        );
+
+        return back()->with('success', "{$new->count()} siswa ditambahkan ke kelas.");
+    }
+
+    public function unenroll(ClassRoom $class, User $student): RedirectResponse
+    {
+        Gate::authorize('update', $class);
+        $class->students()->detach($student->id);
+
+        return back()->with('success', "{$student->name} dikeluarkan dari kelas.");
+    }
+
+    private function formProps(?ClassRoom $class): array
+    {
+        return [
+            'classRoom' => $class ? [
+                ...$class->only(['id', 'code', 'name', 'subject', 'level', 'description', 'teacher_id', 'zoom_url', 'zoom_meeting_id', 'zoom_passcode', 'schedule_days', 'capacity', 'status', 'color']),
+                'start_time' => substr($class->start_time, 0, 5),
+                'end_time' => substr($class->end_time, 0, 5),
+                'start_date' => $class->start_date?->toDateString(),
+                'end_date' => $class->end_date?->toDateString(),
+            ] : null,
+            'teachers' => User::role(Role::Teacher->value)->where('status', 'active')->with('teacherProfile:id,user_id,expertise')->orderBy('name')->get(['id', 'name'])
+                ->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'expertise' => $t->teacherProfile?->expertise]),
+            'options' => [
+                'days' => ClassRoom::DAYS,
+                'levels' => ClassRoom::LEVELS,
+                'statuses' => ClassRoom::STATUSES,
+                'colors' => ClassRoom::COLORS,
+                'subjects' => ClassRoom::query()->distinct()->orderBy('subject')->pluck('subject')
+                    ->merge(['Python', 'Scratch', 'Web Development', 'Roblox', 'Minecraft Education', 'Artificial Intelligence', 'Robotika'])
+                    ->unique()->values(),
+            ],
+        ];
+    }
+}

@@ -17,6 +17,7 @@ use ReflectionClass;
  *     Models, Policies, Actions
  *     Database/Migrations, Database/Factories
  *     routes/web.php          (otomatis memakai middleware web + auth)
+ *     routes/public.php       (hanya middleware web, untuk halaman publik)
  *     resources/js/Pages      (halaman Inertia: Inertia::render('<Nama>::Halaman'))
  */
 abstract class ModuleServiceProvider extends ServiceProvider
@@ -45,8 +46,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
             $this->loadMigrationsFrom($path.'/Database/Migrations');
         }
 
-        if (is_file($path.'/routes/web.php') && ! $this->app->routesAreCached()) {
-            Route::middleware(['web', 'auth'])->group($path.'/routes/web.php');
+        if (! $this->app->routesAreCached()) {
+            if (is_file($path.'/routes/public.php')) {
+                Route::middleware('web')->group($path.'/routes/public.php');
+            }
+
+            if (is_file($path.'/routes/web.php')) {
+                Route::middleware(['web', 'auth'])->group($path.'/routes/web.php');
+            }
         }
 
         $this->navigation($this->app->make(NavigationRegistry::class));

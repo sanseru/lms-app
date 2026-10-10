@@ -4,6 +4,7 @@ use Modules\Classes\Providers\ClassesServiceProvider;
 use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
+use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
 
 /*
@@ -21,6 +22,7 @@ use Modules\People\Providers\PeopleServiceProvider;
 return [
     'enabled' => [
         IdentityServiceProvider::class,
+        LandingServiceProvider::class,
         DashboardServiceProvider::class,
         PeopleServiceProvider::class,
         ClassesServiceProvider::class,

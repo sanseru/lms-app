@@ -27,8 +27,11 @@ async function resolvePage(name) {
     }
 
     const component = (await loader()).default;
-    // Semua halaman memakai AppLayout kecuali yang menentukan layout sendiri (mis. halaman Auth).
-    component.layout ??= name.startsWith('Auth/') ? undefined : AppLayout;
+    // Semua halaman memakai AppLayout, kecuali halaman Auth dan halaman yang
+    // menentukan layout sendiri (defineOptions({ layout: null }) untuk halaman publik).
+    if (component.layout === undefined && !name.startsWith('Auth/')) {
+        component.layout = AppLayout;
+    }
 
     return component;
 }

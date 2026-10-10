@@ -1,9 +1,9 @@
 <?php
 
-test('home redirects guests to the login page', function () {
-    $this->get('/')->assertRedirect(route('login'));
+test('landing page is public', function () {
+    $this->get('/')->assertOk()->assertInertia(fn ($page) => $page->component('Landing::Home'));
 });
 
-test('home redirects signed in users to the dashboard', function () {
-    $this->actingAs(userWithRole('student'))->get('/')->assertRedirect(route('dashboard'));
+test('landing page is reachable when signed in', function () {
+    $this->actingAs(userWithRole('student'))->get('/')->assertOk();
 });

@@ -1,7 +1,7 @@
 <script setup>
 import { testimonials } from '../site.js';
 
-const avatarTones = ['bg-accent-50 text-accent-600', 'bg-brand-50 text-brand-600', 'bg-success-soft text-success'];
+const avatarTones = ['bg-accent-50 text-accent-600', 'bg-brand-50 text-brand-600', 'bg-success-soft text-success-ink'];
 </script>
 
 <template>

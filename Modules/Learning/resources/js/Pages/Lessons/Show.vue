@@ -100,7 +100,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
             <!-- ========== MATERI ========== -->
             <div v-if="lesson.type === 'material' && can.learn" class="card flex flex-wrap items-center justify-between gap-3 p-5">
                 <p class="text-sm text-muted">{{ isDone ? 'Materi ini sudah kamu selesaikan.' : 'Sudah selesai membaca? Tandai agar progresmu tercatat.' }}</p>
-                <span v-if="isDone" class="inline-flex items-center gap-1.5 font-semibold text-emerald-600"><Icon name="circle-check" :size="18" /> Selesai</span>
+                <span v-if="isDone" class="inline-flex items-center gap-1.5 font-semibold text-emerald-700"><Icon name="circle-check" :size="18" /> Selesai</span>
                 <button v-else class="btn-primary" @click="complete"><Icon name="check" :size="18" /> Tandai selesai</button>
             </div>
 
@@ -111,15 +111,15 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <p v-if="lesson.assessment === 'pre'"><b>Ini misi pemanasan, bukan ujian.</b> Jawab sebisamu, tidak apa-apa kalau belum tahu. Hasilnya membantu gurumu tahu harus mulai dari mana.</p>
                     <p v-else><b>Misi akhir!</b> Tunjukkan apa yang sudah kamu pelajari. Hasilnya dibandingkan dengan misi pemanasan untuk melihat kemajuanmu.</p>
                 </div>
-                <div v-if="result && !taking" :class="result.passed ? 'from-emerald-500 to-teal-400' : 'from-amber-400 to-orange-500'" class="relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white">
+                <div v-if="result && !taking" :class="result.passed ? 'bg-emerald-700' : 'bg-amber-700'" role="status" class="relative overflow-hidden rounded-3xl p-6 text-white">
                     <div class="flex flex-wrap items-center gap-5">
                         <div class="grid size-24 place-items-center rounded-full bg-white/20 ring-4 ring-white/40">
-                            <span class="font-display text-4xl font-black">{{ result.score }}</span>
+                            <span class="font-display text-4xl font-black tabular-nums">{{ result.score }}</span>
                         </div>
                         <div class="flex-1">
                             <p class="font-display text-2xl font-extrabold">{{ result.passed ? 'Lulus! Kerja bagus 🎉' : 'Belum lulus, ayo coba lagi!' }}</p>
-                            <p class="text-white/90">{{ result.earned }} dari {{ result.total }} poin · nilai lulus {{ lesson.pass_score }}</p>
-                            <p v-if="remaining !== null" class="text-sm text-white/80">Sisa kesempatan: {{ remaining }}</p>
+                            <p class="text-white">{{ result.earned }} dari {{ result.total }} poin · nilai lulus {{ lesson.pass_score }}</p>
+                            <p v-if="remaining !== null" class="text-sm text-white">Sisa kesempatan: {{ remaining }}</p>
                         </div>
                         <button v-if="canAttempt" class="btn bg-white text-ink hover:bg-white/90" @click="retry"><Icon name="rotate-ccw" :size="16" /> {{ passedOnce ? 'Kerjakan lagi' : 'Coba lagi' }}</button>
                     </div>
@@ -135,7 +135,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                         <ul class="mt-3 space-y-2 pl-10">
                             <li v-for="(o, oi) in q.options" :key="oi" :class="optionClass(q, oi)" class="rounded-xl border px-3 py-2 text-sm text-ink">{{ o }}</li>
                         </ul>
-                        <p v-if="result.items[q.id].explanation" class="mt-3 ml-10 rounded-xl bg-sky-soft p-3 text-sm text-ink"><b class="text-sky">Pembahasan:</b> {{ result.items[q.id].explanation }}</p>
+                        <p v-if="result.items[q.id].explanation" class="mt-3 ml-10 rounded-xl bg-sky-soft p-3 text-sm text-ink"><b class="text-sky-ink">Pembahasan:</b> {{ result.items[q.id].explanation }}</p>
                     </div>
                     <p v-if="!result.reveal" class="text-center text-sm text-muted">Kunci jawaban dan pembahasan muncul setelah kamu lulus.</p>
                 </div>
@@ -211,7 +211,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <SubmissionContent :submission="submission" />
                     <p class="text-xs text-muted">Dikumpulkan {{ submission.submitted_at }}</p>
                     <div v-if="submission.status === 'graded'" class="flex items-center gap-4 rounded-2xl bg-emerald-50 p-4">
-                        <span class="font-display text-3xl font-black text-emerald-600">{{ submission.score }}<span class="text-base text-emerald-700/70">/{{ lesson.max_score }}</span></span>
+                        <span class="font-display text-3xl font-black text-emerald-700">{{ submission.score }}<span class="text-base text-emerald-700/70">/{{ lesson.max_score }}</span></span>
                         <p v-if="submission.feedback" class="flex-1 text-sm text-ink"><b>{{ submission.grader ?? 'Guru' }}:</b> {{ submission.feedback }}</p>
                     </div>
                     <button v-if="submission.status === 'submitted'" class="btn-ghost text-sm" @click="editing = true"><Icon name="pencil" :size="15" /> Perbarui pengumpulan</button>

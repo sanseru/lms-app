@@ -11,15 +11,14 @@ const shown = computed(() => (age.value === 'all' ? programs : programs.filter((
         <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <p class="eyebrow">Program &amp; level</p>
-                    <h2 id="h-program" class="mt-2 text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">Mulai sesuai usia, naik sesuai kemampuan</h2>
+                    <h2 id="h-program" class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">Mulai sesuai usia, naik sesuai kemampuan</h2>
                 </div>
                 <div class="flex flex-wrap gap-2" role="group" aria-label="Filter usia">
                     <button
                         v-for="g in ageGroups"
                         :key="g.key"
                         type="button"
-                        class="rounded-full border px-4 py-2 text-sm font-bold transition"
+                        class="min-h-11 rounded-full border px-4 py-2 text-sm font-bold transition"
                         :class="age === g.key ? 'border-brand-600 bg-brand-600 text-white' : 'border-line bg-paper hover:border-brand-300'"
                         :aria-pressed="age === g.key"
                         @click="age = g.key"

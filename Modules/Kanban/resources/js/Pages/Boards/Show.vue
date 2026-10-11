@@ -107,11 +107,11 @@ const saveResult = () => resultForm.put(route('kanban.boards.result', props.boar
         </div>
     </div>
 
-    <div v-if="board.completed" class="mb-6 flex items-center gap-4 rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-400 p-5 text-white">
-        <span class="text-4xl">🏆</span>
+    <div v-if="board.completed" role="status" class="mb-6 flex items-center gap-4 rounded-3xl bg-emerald-700 p-5 text-white">
+        <span class="text-4xl" aria-hidden="true">🏆</span>
         <div>
             <p class="font-display text-xl font-extrabold">{{ can.mine ? 'Proyekmu selesai! Keren banget!' : 'Proyek selesai!' }}</p>
-            <p class="text-sm text-white/90">Semua langkah sudah ada di kolom Selesai.</p>
+            <p class="text-sm text-emerald-50">Semua langkah sudah ada di kolom Selesai.</p>
         </div>
     </div>
 
@@ -156,7 +156,7 @@ const saveResult = () => resultForm.put(route('kanban.boards.result', props.boar
                         </div>
                         <p v-if="c.description" class="mt-1 line-clamp-2 text-xs text-muted">{{ c.description }}</p>
                         <p v-if="c.feedback && key !== 'done'" class="mt-2 flex gap-1.5 rounded-lg bg-amber-50 p-2 text-xs text-amber-900"><Icon name="message-text" :size="13" class="mt-0.5 shrink-0" /> {{ c.feedback }}</p>
-                        <p v-if="key === 'done' && c.reviewer" class="mt-1 text-[11px] font-semibold text-emerald-700">✓ dicek {{ c.reviewer }}</p>
+                        <p v-if="key === 'done' && c.reviewer" class="mt-1 text-xs font-semibold text-emerald-700">✓ dicek {{ c.reviewer }}</p>
 
                         <div v-if="can.review && key === 'review'" class="mt-3" @click.stop><ReviewActions :card="c" /></div>
 

@@ -14,7 +14,7 @@ const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pe
 <template>
     <div class="card p-4">
         <div class="flex items-center gap-3">
-            <span :class="color.grad" class="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br font-display text-sm font-black text-white">{{ course.subject.slice(0, 2) }}</span>
+            <span :class="color.grad" class="grid size-11 shrink-0 place-items-center rounded-xl font-display text-sm font-black text-white">{{ course.subject.slice(0, 2) }}</span>
             <div class="min-w-0 flex-1">
                 <Link :href="route('learning.courses.show', course.id)" class="block truncate font-semibold text-ink hover:text-brand-600">{{ course.title }}</Link>
                 <div class="mt-1.5 flex items-center gap-2">

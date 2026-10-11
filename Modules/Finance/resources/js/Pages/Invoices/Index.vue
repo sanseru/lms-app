@@ -67,7 +67,7 @@ const tabs = { '': 'Semua', unpaid: 'Belum bayar', partial: 'Sebagian', overdue:
                             </div>
                         </td>
                         <td class="px-5 py-3 text-right font-medium text-ink">{{ rupiah(inv.amount) }}</td>
-                        <td class="px-5 py-3 text-right font-display font-bold" :class="inv.remaining ? 'text-ink' : 'text-emerald-600'">{{ rupiah(inv.remaining) }}</td>
+                        <td class="px-5 py-3 text-right font-display font-bold" :class="inv.remaining ? 'text-ink' : 'text-emerald-700'">{{ rupiah(inv.remaining) }}</td>
                         <td class="px-5 py-3" :class="inv.is_overdue ? 'font-semibold text-rose-600' : 'text-muted'">{{ inv.due_date }}</td>
                         <td class="px-5 py-3">
                             <div class="flex flex-wrap gap-1">

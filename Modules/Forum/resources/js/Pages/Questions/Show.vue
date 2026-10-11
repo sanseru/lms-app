@@ -57,7 +57,7 @@ const color = computed(() => classColors[props.question.class.color] ?? classCol
         <div class="space-y-6 lg:col-span-2">
             <!-- Pertanyaan -->
             <article class="card overflow-hidden">
-                <div :class="color.grad" class="h-1.5 bg-gradient-to-r" />
+                <div :class="color.grad" class="h-1.5" />
                 <div class="p-5 sm:p-7">
                     <div class="flex flex-wrap items-center gap-2 text-xs text-muted">
                         <span class="inline-flex items-center gap-1.5 font-semibold"><span :class="color.dot" class="size-2 rounded-full" />{{ question.class.name }}</span>
@@ -87,7 +87,7 @@ const color = computed(() => classColors[props.question.class.color] ?? classCol
                     <div class="mt-6 flex flex-wrap items-center gap-2 border-t border-line pt-4">
                         <button
                             v-if="can.vote"
-                            :class="question.voted ? 'bg-accent-500 text-white hover:bg-accent-600' : 'bg-accent-50 text-accent-700 hover:bg-accent-100'"
+                            :class="question.voted ? 'bg-accent-500 text-ink hover:bg-accent-400' : 'bg-accent-50 text-accent-700 hover:bg-accent-100'"
                             class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition"
                             @click="voteQuestion"
                         >
@@ -159,8 +159,8 @@ const color = computed(() => classColors[props.question.class.color] ?? classCol
                                 >
                                     <Icon :name="a.accepted ? 'x' : 'trophy'" :size="14" /> {{ a.accepted ? 'Batalkan terbaik' : 'Pilih jawaban terbaik' }}
                                 </button>
-                                <button v-if="a.can.update && editingId !== a.id" class="rounded-full px-3 py-1.5 text-muted hover:bg-chip hover:text-ink" @click="startEdit(a)"><Icon name="pencil" :size="14" /></button>
-                                <button v-if="a.can.delete" class="rounded-full px-3 py-1.5 text-muted hover:bg-rose-50 hover:text-rose-600" @click="confirming = a.id"><Icon name="trash" :size="14" /></button>
+                                <button v-if="a.can.update && editingId !== a.id" class="rounded-full px-3 py-1.5 text-muted hover:bg-chip hover:text-ink" aria-label="Ubah jawaban" @click="startEdit(a)"><Icon name="pencil" :size="14" /></button>
+                                <button v-if="a.can.delete" class="rounded-full px-3 py-1.5 text-muted hover:bg-rose-50 hover:text-rose-600" aria-label="Hapus jawaban" @click="confirming = a.id"><Icon name="trash" :size="14" /></button>
                             </div>
                         </div>
                     </div>
@@ -191,10 +191,10 @@ const color = computed(() => classColors[props.question.class.color] ?? classCol
 
         <!-- Samping -->
         <aside class="space-y-4">
-            <div v-if="question.status === 'resolved'" class="rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-400 p-5 text-white">
-                <p class="text-3xl">🎉</p>
+            <div v-if="question.status === 'resolved'" class="rounded-3xl bg-emerald-700 p-5 text-white">
+                <Icon name="circle-check" :size="28" class="text-emerald-200" />
                 <p class="mt-2 font-display text-lg font-bold">Pertanyaan terjawab!</p>
-                <p class="text-sm text-white/90">Jawaban terbaik ditandai hijau. Masih bingung? Penanya bisa membukanya lagi.</p>
+                <p class="text-sm text-emerald-50">Jawaban terbaik ditandai hijau. Masih bingung? Penanya bisa membukanya lagi.</p>
             </div>
             <div class="card p-5">
                 <p class="eyebrow">Kelas</p>

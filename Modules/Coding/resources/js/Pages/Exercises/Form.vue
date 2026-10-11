@@ -97,7 +97,7 @@ onMounted(() => props.autoVerify && verify(props.autoPublish));
     <!-- Status uji solusi -->
     <div v-if="lesson" :class="exercise.verified && !dirty ? 'border-emerald-200 bg-emerald-50' : 'border-amber-200 bg-amber-50'" class="mb-6 rounded-2xl border p-4">
         <div class="flex flex-wrap items-center gap-3">
-            <Icon :name="exercise.verified && !dirty ? 'badge-check' : 'flask'" :class="exercise.verified && !dirty ? 'text-emerald-600' : 'text-amber-600'" />
+            <Icon :name="exercise.verified && !dirty ? 'badge-check' : 'flask'" :class="exercise.verified && !dirty ? 'text-emerald-700' : 'text-amber-600'" />
             <p class="flex-1 text-sm text-ink">
                 <template v-if="dirty">Ada perubahan yang belum disimpan. Simpan dulu, lalu solusi akan diuji otomatis.</template>
                 <template v-else-if="exercise.verified">Solusi lulus semua tes. {{ lesson.is_published ? 'Soal sudah terbit.' : 'Soal siap diterbitkan.' }}</template>

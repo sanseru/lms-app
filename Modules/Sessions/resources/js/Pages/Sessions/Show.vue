@@ -53,12 +53,12 @@ const cancel = () =>
     </Link>
 
     <!-- Kepala sesi -->
-    <div :class="color.grad" class="relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white sm:p-8">
+    <div :class="color.grad" class="relative overflow-hidden rounded-3xl p-6 text-white sm:p-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-sm font-semibold text-white/85">{{ session.date_label }} · {{ session.start_time }}–{{ session.end_time }} WIB</p>
+                <p class="text-sm font-semibold text-white">{{ session.date_label }} · {{ session.start_time }}–{{ session.end_time }} WIB</p>
                 <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ session.class?.name }}</h1>
-                <p class="mt-1 text-white/85">
+                <p class="mt-1 text-white">
                     <template v-if="session.teacher">Guru: {{ session.teacher.name }}</template>
                     <template v-if="session.topic"> · {{ session.topic }}</template>
                 </p>
@@ -164,7 +164,7 @@ const cancel = () =>
             <template v-else>
                 <div><p class="text-sm text-muted">Materi</p><p class="font-semibold text-ink">{{ session.topic }}</p></div>
                 <div v-if="session.homework" class="rounded-xl bg-amber-50 p-4"><p class="text-sm font-semibold text-amber-800">PR</p><p class="text-ink">{{ session.homework }}</p></div>
-                <div v-if="session.parent_note" class="rounded-xl bg-sky-soft p-4"><p class="text-sm font-semibold text-sky">Catatan guru</p><p class="text-ink">{{ session.parent_note }}</p></div>
+                <div v-if="session.parent_note" class="rounded-xl bg-sky-soft p-4"><p class="text-sm font-semibold text-sky-ink">Catatan guru</p><p class="text-ink">{{ session.parent_note }}</p></div>
             </template>
         </div>
         <div class="card p-5">

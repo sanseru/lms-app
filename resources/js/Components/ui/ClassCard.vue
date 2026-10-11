@@ -14,7 +14,7 @@ const color = computed(() => classColors[props.classRoom.color] ?? classColors.v
         :href="route('classes.show', classRoom.id)"
         class="card group flex flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-900/5"
     >
-        <div :class="color.grad" class="relative h-20 bg-gradient-to-br p-4 text-white">
+        <div :class="color.grad" class="relative h-20 p-4 text-white">
             <span class="font-mono text-xs font-medium opacity-90">{{ classRoom.code }}</span>
             <p class="font-display text-lg font-extrabold leading-tight">{{ classRoom.subject }}</p>
             <span class="absolute -right-4 -bottom-6 font-mono text-7xl font-black opacity-15 select-none">{ }</span>

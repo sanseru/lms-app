@@ -39,9 +39,9 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
                 :href="href(p)"
                 class="group flex flex-col overflow-hidden rounded-3xl border border-line bg-white transition hover:-translate-y-1 hover:shadow-lg"
             >
-                <div :class="color(p).grad" class="relative bg-gradient-to-br px-5 pt-5 pb-10 text-white">
+                <div :class="color(p).grad" class="relative px-5 pt-5 pb-10 text-white">
                     <span class="absolute -right-2 -bottom-4 text-7xl opacity-90 drop-shadow-sm transition group-hover:scale-110 group-hover:-rotate-6">{{ p.emoji }}</span>
-                    <p class="text-xs font-semibold text-white/85">{{ p.class.name }}</p>
+                    <p class="text-xs font-semibold text-white">{{ p.class.name }}</p>
                     <p class="mt-1 pr-16 font-display text-xl leading-tight font-extrabold">{{ p.title }}</p>
                 </div>
                 <div class="flex flex-1 flex-col gap-4 p-5">
@@ -76,7 +76,7 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
                                 <span class="font-bold text-ink">{{ p.board.progress.percent }}%</span>
                             </div>
                             <ProgressBar :value="p.board.progress.percent" :tone="p.board.completed ? 'green' : 'brand'" />
-                            <div class="mt-3 grid grid-cols-4 gap-1 text-center text-[11px] text-muted">
+                            <div class="mt-3 grid grid-cols-4 gap-1 text-center text-xs text-muted">
                                 <span v-for="(n, key) in p.board.progress.counts" :key="key" class="rounded-lg bg-chip/70 py-1">
                                     <b class="block text-sm text-ink">{{ n }}</b>{{ { todo: 'Mau', doing: 'Sedang', review: 'Dicek', done: 'Selesai' }[key] }}
                                 </span>

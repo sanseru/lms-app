@@ -45,7 +45,7 @@ const pick = (id) => router.get(route('gamification.classes'), { class: id }, { 
                         <ProgressBar :value="r.level.percent" size="sm" class="mt-1" />
                     </td>
                     <td class="px-3 py-3 text-right font-display font-bold text-ink">{{ r.level.xp }}</td>
-                    <td class="hidden px-3 py-3 text-right text-emerald-600 md:table-cell">+{{ r.xp_month }}</td>
+                    <td class="hidden px-3 py-3 text-right text-emerald-700 md:table-cell">+{{ r.xp_month }}</td>
                     <td class="hidden px-5 py-3 text-lg lg:table-cell">{{ r.badges.join(' ') || '–' }}</td>
                 </tr>
             </tbody>

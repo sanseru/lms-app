@@ -14,18 +14,9 @@ const user = usePage().props.auth.user;
 <template>
     <Head title="Beranda" />
 
-    <div class="relative mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-accent-500 via-rose-400 to-brand-600 p-6 text-white sm:p-8">
-        <span class="pointer-events-none absolute -right-4 -bottom-12 font-mono text-[10rem] leading-none font-black opacity-15 select-none">&lt;/&gt;</span>
-        <p class="text-xs font-extrabold tracking-[0.12em] text-white/80 uppercase">Ruang guru</p>
-        <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ greeting() }}, {{ user.name.split(' ')[0] }}!</h1>
-        <p class="mt-1 text-white/85">Kamu punya {{ today.length }} sesi hari ini. Semangat mengajar! 🚀</p>
-    </div>
-
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Kelas aktif" :value="stats.classes" icon="school" tone="brand" />
-        <StatCard label="Total siswa" :value="stats.students" icon="users" tone="accent" />
-        <StatCard label="Sesi selesai bulan ini" :value="stats.sessions_month" icon="clipboard-check" tone="sky" />
-        <StatCard label="Honor belum direkap" :value="rupiah(stats.fee_pending)" icon="hand-coins" tone="green" />
+    <div class="panel-brand mb-2 p-6 sm:p-8">
+        <h1 class="text-3xl font-extrabold tracking-tight">{{ greeting() }}, {{ user.name.split(' ')[0] }}!</h1>
+        <p class="mt-1 text-brand-100">{{ today.length ? `Kamu punya ${today.length} sesi hari ini. Semangat mengajar!` : 'Tidak ada sesi hari ini. Waktunya menyiapkan materi.' }}</p>
     </div>
 
     <Link v-if="stats.to_grade" :href="route('learning.grading.index')" class="mt-6 flex items-center gap-4 rounded-2xl border border-violet-200 bg-violet-50 p-5 transition hover:shadow-md">
@@ -64,6 +55,13 @@ const user = usePage().props.auth.user;
         <div class="space-y-2">
             <SessionItem v-for="s in needsReport" :key="s.id" :session="s" :show-teacher="false" show-date />
         </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatCard label="Kelas aktif" :value="stats.classes" icon="school" tone="brand" />
+        <StatCard label="Total siswa" :value="stats.students" icon="users" tone="accent" />
+        <StatCard label="Sesi selesai bulan ini" :value="stats.sessions_month" icon="clipboard-check" tone="sky" />
+        <StatCard label="Honor belum direkap" :value="rupiah(stats.fee_pending)" icon="hand-coins" tone="green" />
     </div>
 
     <div class="mt-6 card p-5">

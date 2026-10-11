@@ -25,7 +25,7 @@ const low = computed(() => props.pkg.status === 'active' && props.pkg.remaining 
             <p class="font-display text-2xl font-extrabold text-ink">{{ pkg.remaining }}<span class="text-sm font-semibold text-muted"> / {{ pkg.total }} sesi tersisa</span></p>
         </div>
         <div class="mt-2 h-2 overflow-hidden rounded-full bg-chip">
-            <div class="h-full rounded-full transition-all" :class="low ? 'bg-amber-400' : 'bg-gradient-to-r from-brand-500 to-accent-500'" :style="{ width: `${percent}%` }" />
+            <div class="h-full rounded-full transition-all" :class="low ? 'bg-amber-400' : 'bg-brand-600'" :style="{ width: `${percent}%` }" />
         </div>
         <p v-if="low" class="mt-2 text-xs font-semibold text-amber-800">Kuota hampir habis. Perpanjang paket agar belajar tidak terputus.</p>
     </div>

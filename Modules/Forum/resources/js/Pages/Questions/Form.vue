@@ -155,18 +155,17 @@ const visibilityHelp = {
         </form>
 
         <aside class="space-y-4">
-            <div class="rounded-3xl bg-gradient-to-br from-brand-600 to-accent-500 p-5 text-white">
-                <p class="text-3xl">💡</p>
-                <p class="mt-2 font-display text-lg font-bold">Tips bertanya</p>
-                <ul class="mt-2 space-y-2 text-sm text-white/90">
-                    <li>1. Tulis apa yang ingin kamu buat.</li>
-                    <li>2. Ceritakan apa yang sudah kamu coba.</li>
-                    <li>3. Tempel kode dan pesan error-nya.</li>
-                    <li>4. Kalau sudah terjawab, pilih jawaban terbaik ya!</li>
-                </ul>
+            <div class="panel-brand p-5">
+                <p class="font-display text-lg font-bold">Tips bertanya</p>
+                <ol class="mt-2 list-decimal space-y-2 pl-5 text-sm text-brand-100 marker:font-bold marker:text-accent-300">
+                    <li>Tulis apa yang ingin kamu buat.</li>
+                    <li>Ceritakan apa yang sudah kamu coba.</li>
+                    <li>Tempel kode dan pesan error-nya.</li>
+                    <li>Kalau sudah terjawab, pilih jawaban terbaik ya!</li>
+                </ol>
             </div>
             <div class="card p-5 text-sm text-muted">
-                <p class="font-semibold text-ink">Tidak ada pertanyaan yang bodoh 🙌</p>
+                <p class="font-semibold text-ink">Tidak ada pertanyaan yang bodoh</p>
                 <p class="mt-1">Teman sekelasmu mungkin juga bingung hal yang sama. Dengan bertanya, kamu membantu mereka juga.</p>
             </div>
         </aside>

@@ -37,7 +37,7 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
             <header class="flex flex-wrap items-baseline justify-between gap-x-2 border-b border-line px-4 py-3">
                 <p :class="day.is_today ? 'text-brand-600' : 'text-ink'" class="font-display font-bold">{{ day.day }}</p>
                 <p class="text-xs text-muted">{{ day.label }}</p>
-                <p v-if="day.is_today" class="w-full text-[10px] font-extrabold tracking-wider text-accent-600 uppercase">Hari ini</p>
+                <p v-if="day.is_today" class="w-full text-xs font-extrabold tracking-wider text-accent-600 uppercase">Hari ini</p>
             </header>
             <div class="flex flex-1 flex-col gap-2 p-3">
                 <Link
@@ -51,7 +51,7 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
                 >
                     <div class="flex items-center justify-between gap-1">
                         <p :class="classColors[s.class.color]?.text" class="font-mono text-xs font-medium">{{ s.start_time }}–{{ s.end_time }}</p>
-                        <span v-if="s.status === 'completed'" class="text-emerald-600" title="Selesai"><Icon name="check" :size="14" /></span>
+                        <span v-if="s.status === 'completed'" class="text-emerald-700" title="Selesai"><Icon name="check" :size="14" /></span>
                         <span v-else-if="s.needs_report" class="size-2 rounded-full bg-amber-500" title="Absensi belum diisi" />
                     </div>
                     <p class="mt-0.5 text-sm leading-snug font-bold text-ink" :class="s.status === 'cancelled' && 'line-through'">{{ s.class.name }}</p>

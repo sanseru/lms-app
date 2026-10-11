@@ -78,7 +78,7 @@ const copyAccount = async () => {
                     </div>
                     <div class="text-left sm:text-right">
                         <p class="text-sm text-muted">Sisa tagihan</p>
-                        <p class="font-display text-3xl font-extrabold tracking-tight" :class="invoice.remaining ? 'text-ink' : 'text-emerald-600'">{{ rupiah(invoice.remaining) }}</p>
+                        <p class="font-display text-3xl font-extrabold tracking-tight" :class="invoice.remaining ? 'text-ink' : 'text-emerald-700'">{{ rupiah(invoice.remaining) }}</p>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@ const copyAccount = async () => {
                         <span class="font-semibold text-ink">dari {{ rupiah(invoice.amount) }}</span>
                     </div>
                     <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-chip">
-                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-amber-300 transition-all" :style="{ width: `${progress}%` }" />
+                        <div class="h-full rounded-full bg-emerald-500 transition-[width]" :style="{ width: `${progress}%` }" />
                     </div>
                 </div>
 
@@ -164,15 +164,15 @@ const copyAccount = async () => {
                 </div>
             </div>
 
-            <div v-if="!can.manage" class="rounded-2xl bg-gradient-to-br from-brand-600 to-violet-500 p-5 text-white">
-                <p class="text-xs font-extrabold tracking-[0.12em] text-white/70 uppercase">Transfer ke</p>
-                <p class="mt-2 text-sm text-white/80">{{ bank.name }}</p>
+            <div v-if="!can.manage" class="panel-brand !rounded-2xl p-5">
+                <p class="font-display font-bold">Transfer ke</p>
+                <p class="mt-2 text-sm text-brand-100">{{ bank.name }}</p>
                 <p class="font-mono text-2xl font-medium tracking-wider">{{ bank.account_number }}</p>
                 <p class="text-sm">a.n. {{ bank.account_name }}</p>
-                <button class="mt-4 w-full rounded-xl bg-white/20 py-2 text-sm font-semibold hover:bg-white/30" @click="copyAccount">
+                <button class="mt-4 min-h-11 w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 hover:bg-brand-50" @click="copyAccount">
                     {{ copied ? 'Nomor rekening tersalin ✓' : 'Salin nomor rekening' }}
                 </button>
-                <p class="mt-3 text-xs text-white/70">Setelah transfer, kirim bukti agar admin bisa memverifikasi.</p>
+                <p class="mt-3 text-xs text-brand-100">Setelah transfer, kirim bukti agar admin bisa memverifikasi.</p>
             </div>
         </div>
     </div>

@@ -29,27 +29,58 @@
     --color-accent-100: #ffe0d4;
     --color-accent-200: #fcc9b6;
     --color-accent-300: #f9ae96;
+    --color-accent-400: #f37352;
     --color-accent-500: #f58464;
-    --color-accent-600: #e5683f;
-    --color-accent-700: #c2522d;
+    /* 600 ke atas dipakai untuk teks coral: kontras >= 4.5:1 di putih dan accent-50 */
+    --color-accent-600: #b84b27;
+    --color-accent-700: #9a3d1f;
 
     --color-sky: #55a6bc;
+    --color-sky-ink: #2f7488;
     --color-sky-soft: #eaf8fb;
     --color-success: #66b987;
+    --color-success-ink: #2f7d52;
     --color-success-soft: #e9f6ee;
     --color-ink: #1d2934;
-    --color-muted: #73808a;
+    /* Teks sekunder: >= 4.5:1 di paper, putih, dan chip */
+    --color-muted: #5f6b75;
     --color-line: #e6e9f0;
     --color-paper: #fbfcfa;
     --color-chip: #f0f3f7;
 }
 
 @layer base {
+    html {
+        scrollbar-color: var(--color-brand-200) transparent;
+    }
     body {
         @apply bg-paper text-ink;
+        caret-color: var(--color-brand-600);
     }
     h1, h2, h3, .font-display {
         font-family: var(--font-display);
+    }
+    h1, h2 {
+        text-wrap: balance;
+    }
+    ::selection {
+        background: var(--color-accent-200);
+        color: var(--color-ink);
+    }
+    /* Fokus keyboard yang selalu terlihat untuk tautan dan kontrol tanpa gaya fokus sendiri. */
+    :where(a, button, [role='button'], summary, select, input[type='checkbox'], input[type='radio']):focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+        border-radius: 0.5rem;
+    }
+    :where(td, th) {
+        font-variant-numeric: tabular-nums;
+    }
+    /* Gerak berkurang: hentikan perpindahan posisi, pertahankan perubahan warna/opasitas sebagai umpan balik. */
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .animate-bounce, .animate-ping, .animate-pulse { animation: none; }
+        [class*='hover:-translate-y'], [class*='hover:translate-y'] { translate: none !important; }
     }
 }
 
@@ -66,16 +97,22 @@
     @apply btn bg-brand-600 text-white shadow-[0_4px_0_var(--color-brand-800)] hover:bg-brand-700 active:translate-y-0.5 active:shadow-[0_2px_0_var(--color-brand-800)];
 }
 @utility btn-accent {
-    @apply btn bg-accent-500 text-white shadow-[0_4px_0_var(--color-accent-700)] hover:bg-accent-600 active:translate-y-0.5 active:shadow-[0_2px_0_var(--color-accent-700)];
+    @apply btn bg-accent-500 text-ink shadow-[0_4px_0_var(--color-accent-700)] hover:bg-accent-400 active:translate-y-0.5 active:shadow-[0_2px_0_var(--color-accent-700)];
 }
 @utility btn-ghost {
     @apply btn border border-line bg-white text-ink hover:bg-chip;
 }
 @utility btn-danger {
-    @apply btn bg-red-500 text-white hover:bg-red-600;
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+/* Panel sorotan (sapaan dashboard, level, kepala halaman kelas): satu warna dalam, bukan gradien. */
+@utility panel-brand {
+    @apply relative overflow-hidden rounded-3xl bg-brand-700 text-white;
+    background-image: radial-gradient(color-mix(in oklab, white 14%, transparent) 1.2px, transparent 1.2px);
+    background-size: 18px 18px;
 }
 @utility field {
-    @apply block w-full rounded-xl border-line bg-white text-sm text-ink placeholder:text-muted/70 focus:border-brand-400 focus:ring-brand-200;
+    @apply block w-full rounded-xl border-line bg-white text-sm text-ink placeholder:text-muted focus:border-brand-400 focus:ring-brand-200;
 }
 @utility label {
     @apply mb-1.5 block text-sm font-semibold text-ink;
@@ -95,7 +132,7 @@
 .lesson-prose ul { @apply list-disc pl-6; }
 .lesson-prose ol { @apply list-decimal pl-6; }
 .lesson-prose li + li { margin-top: 0.35em; }
-.lesson-prose blockquote { @apply rounded-r-xl border-l-4 border-accent-300 bg-accent-50 px-4 py-3; }
+.lesson-prose blockquote { @apply rounded-xl border border-accent-200 bg-accent-50 px-4 py-3; }
 .lesson-prose :not(pre) > code { @apply rounded-md bg-brand-50 px-1.5 py-0.5 font-mono text-[0.9em] text-brand-700; }
 .lesson-prose pre { @apply overflow-x-auto rounded-2xl bg-[#241a35] p-4 font-mono text-sm leading-relaxed text-[#f3eefb]; }
 .lesson-prose img { @apply rounded-2xl; }

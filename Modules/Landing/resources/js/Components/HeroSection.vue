@@ -27,7 +27,7 @@ import { trialText, waLink } from '../site.js';
                 <dl class="mt-10 grid max-w-md grid-cols-3 gap-4">
                     <div><dt class="text-sm text-muted">Durasi sesi</dt><dd class="font-display text-2xl font-extrabold">60 menit</dd></div>
                     <div><dt class="text-sm text-muted">Kelompok</dt><dd class="font-display text-2xl font-extrabold">maks. 5</dd></div>
-                    <div><dt class="text-sm text-muted">Kelas coba</dt><dd class="font-display text-2xl font-extrabold text-success">Gratis</dd></div>
+                    <div><dt class="text-sm text-muted">Kelas coba</dt><dd class="font-display text-2xl font-extrabold text-success-ink">Gratis</dd></div>
                 </dl>
             </div>
 
@@ -53,9 +53,9 @@ tebakan = <span class="text-amber-300">0</span>
 print(<span class="text-emerald-300">"Hore, kamu menang! 🎉"</span>)<span class="landing-caret"></span></code></pre>
                 </div>
                 <div class="absolute -bottom-10 -left-2 w-[15.5rem] rotate-2 lg:-right-6 lg:left-auto rounded-2xl border border-line bg-white p-4 text-ink shadow-xl sm:-left-8">
-                    <p class="text-[11px] font-bold uppercase tracking-[.12em] text-muted">Laporan sesi #8 · ke WhatsApp ortu</p>
+                    <p class="text-xs font-semibold text-muted">Laporan sesi #8 · ke WhatsApp ortu</p>
                     <p class="mt-1.5 font-display font-bold leading-snug">Raka menyelesaikan game pertamanya</p>
-                    <div class="mt-3 flex items-center justify-between text-sm"><span class="text-muted">Kehadiran</span><span class="font-bold text-success">Hadir ✓</span></div>
+                    <div class="mt-3 flex items-center justify-between text-sm"><span class="text-muted">Kehadiran</span><span class="font-bold text-success-ink">Hadir</span></div>
                     <div class="mt-1.5 flex items-center justify-between text-sm"><span class="text-muted">Pemahaman loop</span><span class="font-bold">4/5</span></div>
                     <div class="mt-2 h-2 overflow-hidden rounded-full bg-brand-50"><div class="h-full w-4/5 rounded-full bg-brand-600"></div></div>
                 </div>

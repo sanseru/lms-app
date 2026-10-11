@@ -249,11 +249,11 @@ const user = usePage().props.auth.user;
 
         <!-- Editor & hasil -->
         <div class="space-y-4 xl:col-span-3">
-            <div v-if="scoreBanner && can.learn" :class="scoreBanner.status === 'passed' ? 'from-emerald-500 to-teal-400' : 'from-amber-400 to-orange-500'" class="flex items-center gap-4 rounded-3xl bg-gradient-to-br p-5 text-white">
-                <span class="grid size-16 place-items-center rounded-full bg-white/20 font-display text-2xl font-black ring-4 ring-white/40">{{ scoreBanner.score }}</span>
+            <div v-if="scoreBanner && can.learn" :class="scoreBanner.status === 'passed' ? 'bg-emerald-700' : 'bg-amber-700'" role="status" class="flex items-center gap-4 rounded-3xl p-5 text-white">
+                <span class="grid size-16 place-items-center rounded-full bg-white/20 font-display text-2xl font-black ring-4 ring-white/40 tabular-nums">{{ scoreBanner.score }}</span>
                 <div>
                     <p class="font-display text-xl font-extrabold">{{ scoreBanner.status === 'passed' ? 'Semua tes lulus! 🎉' : scoreBanner.status === 'error' ? 'Ada error, ayo perbaiki' : 'Hampir! Coba lagi' }}</p>
-                    <p class="text-sm text-white/90">{{ scoreBanner.passed_tests }} dari {{ scoreBanner.total_tests }} tes lulus · dinilai {{ scoreBanner.at }}</p>
+                    <p class="text-sm text-white">{{ scoreBanner.passed_tests }} dari {{ scoreBanner.total_tests }} tes lulus · dinilai {{ scoreBanner.at }}</p>
                 </div>
             </div>
 

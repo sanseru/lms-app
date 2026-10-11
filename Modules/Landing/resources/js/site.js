@@ -36,12 +36,12 @@ export const ageGroups = [
 ];
 
 export const programs = [
-    { mark: '▶', bg: 'bg-amber-100 text-amber-800', ages: ['6-9'], range: '6–9 tahun', title: 'Scratch Junior & Scratch', body: 'Coding dengan balok warna. Anak membuat cerita animasi dan game sederhana sambil belajar urutan, perulangan, dan logika.', meta: '3 level · 16 sesi per level' },
-    { mark: '⛏', bg: 'bg-emerald-100 text-emerald-800', ages: ['6-9', '10-12'], range: '8–12 tahun', title: 'Game Maker', body: 'Merancang level, karakter, dan aturan permainan. Cocok untuk anak yang suka Minecraft dan Roblox.', meta: '2 level · 16 sesi per level' },
+    { mark: 'Sc', bg: 'bg-amber-100 text-amber-800', ages: ['6-9'], range: '6–9 tahun', title: 'Scratch Junior & Scratch', body: 'Coding dengan balok warna. Anak membuat cerita animasi dan game sederhana sambil belajar urutan, perulangan, dan logika.', meta: '3 level · 16 sesi per level' },
+    { mark: 'GM', bg: 'bg-emerald-100 text-emerald-800', ages: ['6-9', '10-12'], range: '8–12 tahun', title: 'Game Maker', body: 'Merancang level, karakter, dan aturan permainan. Cocok untuk anak yang suka Minecraft dan Roblox.', meta: '2 level · 16 sesi per level' },
     { mark: 'Py', bg: 'bg-orange-100 text-orange-800', ages: ['10-12', '13-17'], range: '10–17 tahun', title: 'Python Pro', body: 'Bahasa pemrograman sungguhan. Dari variabel dan perulangan sampai membuat game teks, kuis, dan otomasi kecil.', meta: '4 level · 32 pelajaran per level' },
     { mark: '{ }', bg: 'bg-cyan-100 text-cyan-800', ages: ['10-12', '13-17'], range: '11–17 tahun', title: 'Web Developer', body: 'HTML, CSS, dan JavaScript. Anak membangun website portofolio dan halaman interaktif miliknya sendiri.', meta: '3 level · 16 sesi per level' },
     { mark: 'AI', bg: 'bg-violet-100 text-violet-800', ages: ['13-17'], range: '13–17 tahun', title: 'AI & Data Explorer', body: 'Mengenal kecerdasan buatan dengan cara yang aman: mengolah data, membuat grafik, dan melatih model sederhana.', meta: '2 level · 16 sesi per level' },
-    { mark: '📱', bg: 'bg-green-100 text-green-800', ages: ['13-17'], range: '13–17 tahun', title: 'Android & IoT', body: 'Membuat aplikasi ponsel dan proyek perangkat pintar, dari lampu otomatis sampai sensor suhu.', meta: '2 level · 16 sesi per level' },
+    { mark: 'An', bg: 'bg-green-100 text-green-800', ages: ['13-17'], range: '13–17 tahun', title: 'Android & IoT', body: 'Membuat aplikasi ponsel dan proyek perangkat pintar, dari lampu otomatis sampai sensor suhu.', meta: '2 level · 16 sesi per level' },
 ];
 
 export const steps = [

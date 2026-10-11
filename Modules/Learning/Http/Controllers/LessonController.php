@@ -13,6 +13,7 @@ use Modules\Learning\Http\Requests\LessonRequest;
 use Modules\Learning\Models\Course;
 use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
+use Modules\Learning\Models\LessonReport;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
 use Modules\Learning\Support\LessonTypes;
@@ -76,6 +77,10 @@ class LessonController extends Controller
             'prev' => $index > 0 ? $siblings[$index - 1]->only('id', 'title') : null,
             'next' => $index !== false && $index < $siblings->count() - 1 ? $siblings[$index + 1]->only('id', 'title') : null,
             'can' => ['manage' => $manage, 'learn' => $learn],
+            'reports' => [
+                'open' => $manage ? LessonReport::where('lesson_id', $lesson->id)->where('status', 'open')->count() : 0,
+                'mine' => $learn && LessonReport::where('lesson_id', $lesson->id)->where('user_id', $user->id)->where('status', 'open')->exists(),
+            ],
         ];
 
         if ($learn) {

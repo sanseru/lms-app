@@ -15,7 +15,7 @@ use Throwable;
  */
 class Grader
 {
-    public function __construct(private CodeRunner $runner, private OutputComparator $compare) {}
+    public function __construct(private CodeRunner $runner, private OutputComparator $compare, private CodeRules $rules) {}
 
     /**
      * @param  array<int|string, array{output?: string|null, error?: string|null}>  $reported  output dari browser
@@ -30,6 +30,10 @@ class Grader
             'html' => $this->html($exercise, $code, $styles),
             default => $this->executed($exercise, $code, $reported),
         };
+
+        if ($rules = $exercise->activeRules()) {
+            $items = [...$items, ...$this->rules->check($rules, $exercise->language, $code)];
+        }
 
         $total = array_sum(array_column($items, 'weight')) ?: 1;
         $earned = array_sum(array_map(fn ($i) => $i['passed'] ? $i['weight'] : 0, $items));

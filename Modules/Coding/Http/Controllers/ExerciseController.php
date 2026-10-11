@@ -44,8 +44,8 @@ class ExerciseController extends Controller
             ...$this->options(),
             'course' => $lesson->course->only('id', 'title'),
             'lesson' => $lesson->only('id', 'title', 'body', 'duration_minutes', 'is_published'),
-            'exercise' => $exercise->only('id', 'language', 'mode', 'starter_code', 'solution_code', 'function_name', 'hints', 'time_limit_ms', 'show_solution_after', 'case_sensitive', 'concept', 'level')
-                + ['verified' => $exercise->isVerified()],
+            'exercise' => $exercise->only('id', 'language', 'mode', 'starter_code', 'solution_code', 'function_name', 'hints', 'time_limit_ms', 'show_solution_after', 'case_sensitive', 'concept', 'level', 'version')
+                + ['verified' => $exercise->isVerified(), 'rules' => $exercise->rules ?? [], 'graded_on_version' => CodeSubmission::where('lesson_id', $lesson->id)->where('exercise_version', $exercise->version)->count()],
             'tests' => $exercise->tests->map->toEditor(),
             'autoVerify' => $request->boolean('verify'),
             'autoPublish' => $request->boolean('publish'),
@@ -113,6 +113,7 @@ class ExerciseController extends Controller
             'code' => $data['code'],
             'hints_used' => $data['hints_used'] ?? 0,
             'tests_hash' => $exercise->contentHash(),
+            'exercise_version' => $exercise->version,
         ]);
 
         if ($result['status'] === 'passed') {
@@ -129,6 +130,10 @@ class ExerciseController extends Controller
     private function saveExercise(Lesson $lesson, ExerciseRequest $request): void
     {
         $data = $request->validated();
+        $before = CodeExercise::where('lesson_id', $lesson->id)->first();
+        $oldHash = $before?->contentHash();
+        $oldSnapshot = $before?->snapshot();
+
         $exercise = CodeExercise::updateOrCreate(['lesson_id' => $lesson->id], [
             'language' => $data['language'],
             'mode' => $data['mode'],
@@ -139,6 +144,7 @@ class ExerciseController extends Controller
             'time_limit_ms' => $data['time_limit_ms'],
             'show_solution_after' => $data['show_solution_after'] ?? null,
             'case_sensitive' => $request->boolean('case_sensitive'),
+            'rules' => collect($data['rules'] ?? [])->map(fn ($r) => ['type' => $r['type'], 'value' => trim($r['value']), 'message' => $r['message'] ?? null])->values()->all() ?: null,
             'concept' => filled($data['concept'] ?? null) ? mb_strtolower(trim($data['concept'])) : null,
             'level' => $data['level'] ?? null,
         ]);
@@ -159,6 +165,34 @@ class ExerciseController extends Controller
             $keep[] = $existing ? tap($existing)->update($attributes)->id : $exercise->tests()->create($attributes)->id;
         }
         $exercise->tests()->whereNotIn('id', $keep)->delete();
+
+        $this->recordVersion($exercise->refresh(), $oldHash, $oldSnapshot, $request->user()->id);
+    }
+
+    /**
+     * Versi soal: bila isi yang dinilai berubah setelah ada siswa yang mengumpulkan,
+     * buat versi baru. Nilai lama tetap tercatat pada versi lama.
+     */
+    private function recordVersion(CodeExercise $exercise, ?string $oldHash, ?array $oldSnapshot, int $userId): void
+    {
+        if ($oldHash === null) {
+            $exercise->versions()->create(['version' => 1, 'snapshot' => $exercise->snapshot(), 'created_by' => $userId]);
+
+            return;
+        }
+
+        if ($oldHash === $exercise->contentHash()) {
+            return;
+        }
+
+        $used = CodeSubmission::where('lesson_id', $exercise->lesson_id)->where('exercise_version', $exercise->version)->exists();
+        if ($used) {
+            // Soal lama (dibuat sebelum ada riwayat versi) disimpan dulu salinannya.
+            $exercise->versions()->firstOrCreate(['version' => $exercise->version], ['snapshot' => $oldSnapshot, 'created_by' => $userId]);
+            $exercise->increment('version');
+        }
+
+        $exercise->versions()->updateOrCreate(['version' => $exercise->version], ['snapshot' => $exercise->snapshot(), 'created_by' => $userId]);
     }
 
     /** Soal yang belum lulus "Uji solusi" disimpan sebagai draf, lalu tutor diarahkan untuk mengujinya. */

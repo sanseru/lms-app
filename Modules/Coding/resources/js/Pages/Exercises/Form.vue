@@ -38,6 +38,7 @@ const form = useForm({
     case_sensitive: e.case_sensitive ?? false,
     concept: e.concept ?? '',
     level: e.level ?? 1,
+    rules: (e.rules ?? []).map((r) => ({ ...r, message: r.message ?? '' })),
     tests: props.tests.length ? props.tests.map((t) => ({ ...t, property: t.property ?? '', expected: t.expected ?? '', input: t.input ?? '', fail_message: t.fail_message ?? '' })) : [blankTest('io'), { ...blankTest('io'), is_hidden: true }],
 });
 
@@ -199,6 +200,28 @@ onMounted(() => props.autoVerify && verify(props.autoPublish));
                 <p v-if="form.mode !== 'html'" class="mt-2 text-xs text-muted">Tes tersembunyi tidak pernah dikirim jawabannya ke browser siswa. Pakai untuk kasus tepi agar siswa tidak sekadar menyesuaikan dengan contoh.</p>
             </div>
 
+            <!-- Aturan kode -->
+            <div v-if="form.mode === 'io' || form.mode === 'function'" class="card p-5">
+                <h2 class="mb-1 font-display text-lg font-bold text-ink">Code rules</h2>
+                <p class="mb-3 text-sm text-muted">Checked on the server when the student submits. Comments and text inside quotes are ignored.</p>
+                <div class="space-y-3">
+                    <div v-for="(r, i) in form.rules" :key="i" class="grid gap-2 rounded-xl bg-chip/50 p-3 sm:grid-cols-[11rem_9rem_1fr_auto]">
+                        <select v-model="r.type" class="field" :aria-label="`Rule ${i + 1} type`">
+                            <option value="require">Must use</option>
+                            <option value="forbid">Must not use</option>
+                            <option value="max_lines">At most N lines</option>
+                        </select>
+                        <div>
+                            <input v-model="r.value" type="text" class="field font-mono" :placeholder="r.type === 'max_lines' ? '6' : r.type === 'require' ? 'for' : 'sum'" :aria-label="`Rule ${i + 1} value`" />
+                            <p v-if="err(`rules.${i}.value`)" class="mt-1 text-xs text-rose-600">{{ err(`rules.${i}.value`) }}</p>
+                        </div>
+                        <input v-model="r.message" type="text" class="field" placeholder="Message when it fails (optional)" :aria-label="`Rule ${i + 1} message`" />
+                        <button type="button" class="rounded-lg p-2 text-muted hover:text-rose-600" aria-label="Remove rule" @click="form.rules.splice(i, 1)"><Icon name="x" :size="15" /></button>
+                    </div>
+                </div>
+                <button v-if="form.rules.length < 10" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="form.rules.push({ type: 'require', value: '', message: '' })">+ Add rule</button>
+            </div>
+
             <!-- Petunjuk -->
             <div class="card p-5">
                 <h2 class="mb-1 font-display text-lg font-bold text-ink">Petunjuk bertingkat</h2>
@@ -217,6 +240,10 @@ onMounted(() => props.autoVerify && verify(props.autoPublish));
         <div>
             <div class="card space-y-4 p-5 xl:sticky xl:top-24">
                 <h2 class="font-display font-bold text-ink">Pengaturan</h2>
+                <p v-if="exercise" class="rounded-xl bg-chip/60 p-3 text-xs text-muted">
+                    <span class="font-semibold text-ink">Version {{ exercise.version }}</span>
+                    <template v-if="exercise.graded_on_version"> · {{ exercise.graded_on_version }} submissions. Changing the solution, tests or rules creates version {{ exercise.version + 1 }}; earlier scores stay on version {{ exercise.version }}.</template>
+                </p>
                 <div class="grid grid-cols-2 gap-3">
                     <Field id="concept" label="Konsep" :error="err('concept')"><input id="concept" v-model="form.concept" type="text" class="field" placeholder="perulangan" /></Field>
                     <Field id="level" label="Level (1–5)" :error="err('level')"><input id="level" v-model.number="form.level" type="number" min="1" max="5" class="field" /></Field>

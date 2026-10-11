@@ -5,6 +5,7 @@ import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
+import LessonReport from '@/Components/ui/LessonReport.vue';
 import CodeEditor from '../../Components/CodeEditor.vue';
 import ParsonsBoard from '../../Components/ParsonsBoard.vue';
 import TestResultList from '../../Components/TestResultList.vue';
@@ -12,7 +13,7 @@ import { buildSrcdoc, checkHtml } from '../../lib/htmlCheck';
 import { localResults, preparePython, runFree, runTests } from '../../lib/runner';
 
 const props = defineProps({
-    course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object,
+    course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object, reports: Object,
     exercise: Object, tests: Array, solution: String, lastResult: Object, history: Array, passed: Boolean, runtime: Object, classroom: Array,
 });
 
@@ -206,6 +207,13 @@ const user = usePage().props.auth.user;
                 </ul>
                 <p v-if="hiddenCount && !can.manage" class="mt-3 flex items-center gap-1.5 text-xs text-muted"><Icon name="lock" :size="13" /> Ada {{ hiddenCount }} tes tersembunyi yang dinilai saat kamu mengumpulkan.</p>
             </div>
+            <div v-if="ex.rules?.length" class="card p-5">
+                <h2 class="mb-3 font-display font-bold text-ink">Code rules</h2>
+                <ul class="space-y-1.5 text-sm text-ink">
+                    <li v-for="(r, i) in ex.rules" :key="i" class="flex items-start gap-2"><Icon name="list-checks" :size="15" class="mt-0.5 text-brand-500" /> {{ r.label }}</li>
+                </ul>
+                <p class="mt-2 text-xs text-muted">Checked when you submit.</p>
+            </div>
             <div v-if="ex.mode === 'html'" class="card p-5">
                 <h2 class="mb-3 font-display font-bold text-ink">Yang dicek</h2>
                 <ul class="space-y-1.5 text-sm text-ink">
@@ -239,7 +247,7 @@ const user = usePage().props.auth.user;
                 <h2 class="mb-3 font-display font-bold text-ink">Riwayatmu</h2>
                 <ul class="space-y-1.5 text-sm">
                     <li v-for="h in history" :key="h.id" class="flex items-center justify-between gap-2">
-                        <span class="text-muted">{{ h.at }}</span>
+                        <span class="text-muted">{{ h.at }}<span v-if="h.version !== ex.version" class="ml-1 rounded bg-chip px-1.5 py-0.5 text-[11px] font-semibold" :title="`Graded on version ${h.version}. The exercise has changed since; this score is kept.`">v{{ h.version }}</span></span>
                         <span class="text-xs text-muted">{{ h.passed_tests }}/{{ h.total_tests }} tes</span>
                         <Badge :tone="h.status === 'passed' ? 'green' : h.status === 'error' ? 'red' : 'amber'">{{ h.score }}</Badge>
                     </li>
@@ -342,6 +350,7 @@ const user = usePage().props.auth.user;
         <p v-if="!classroom.length" class="card px-5 py-8 text-center text-sm text-muted">Belum ada siswa yang mengumpulkan.</p>
     </div>
 
+    <LessonReport :lesson-id="lesson.id" :can="can" :reports="reports" class="mt-6" />
     <LessonQuestions :lesson-id="lesson.id" class="mt-8" />
 
     <nav class="mt-8 flex items-center justify-between gap-3 border-t border-line pt-5">

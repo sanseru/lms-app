@@ -5,6 +5,7 @@ namespace Modules\Coding\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
+use Modules\Coding\Grading\CodeRules;
 use Modules\Coding\Models\CodeExercise;
 
 class ExerciseRequest extends FormRequest
@@ -42,6 +43,11 @@ class ExerciseRequest extends FormRequest
             'concept' => ['nullable', 'string', 'max:40'],
             'level' => ['nullable', 'integer', 'min:1', 'max:5'],
 
+            'rules' => ['nullable', 'array', 'max:10'],
+            'rules.*.type' => ['required', Rule::in(array_keys(CodeRules::TYPES))],
+            'rules.*.value' => ['required', 'string', 'max:60'],
+            'rules.*.message' => ['nullable', 'string', 'max:255'],
+
             'tests' => [$mode === 'parsons' ? 'nullable' : 'required', 'array', 'max:30'],
             'tests.*.id' => ['nullable', 'integer'],
             'tests.*.kind' => ['required', Rule::in($testKinds)],
@@ -59,6 +65,12 @@ class ExerciseRequest extends FormRequest
         return [function (Validator $validator) {
             if ($this->input('mode') === 'parsons' && count(array_filter(preg_split('/\R/', (string) $this->input('solution_code')), fn ($l) => trim($l) !== '')) < 2) {
                 $validator->errors()->add('solution_code', 'Soal susun baris butuh minimal 2 baris kode.');
+            }
+
+            foreach ($this->input('rules', []) ?? [] as $i => $rule) {
+                if (($rule['type'] ?? null) === 'max_lines' && (! ctype_digit((string) ($rule['value'] ?? '')) || (int) $rule['value'] < 1)) {
+                    $validator->errors()->add("rules.$i.value", 'Enter a whole number of lines, e.g. 6.');
+                }
             }
 
             foreach ($this->input('tests', []) ?? [] as $i => $test) {
@@ -90,7 +102,7 @@ class ExerciseRequest extends FormRequest
         return [
             'title' => 'judul', 'body' => 'cerita soal', 'language' => 'bahasa', 'mode' => 'jenis penilaian',
             'solution_code' => 'solusi', 'function_name' => 'nama fungsi', 'time_limit_ms' => 'batas waktu',
-            'tests' => 'tes', 'tests.*.input' => 'input', 'tests.*.expected' => 'hasil yang diharapkan', 'tests.*.weight' => 'bobot',
+            'tests' => 'tes', 'rules.*.value' => 'nilai aturan', 'tests.*.input' => 'input', 'tests.*.expected' => 'hasil yang diharapkan', 'tests.*.weight' => 'bobot',
         ];
     }
 }

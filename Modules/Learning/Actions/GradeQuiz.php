@@ -10,8 +10,11 @@ use Modules\Learning\Models\QuizAttempt;
 /** Auto-grades quiz answers and records the attempt. */
 class GradeQuiz
 {
-    /** @param  array<int|string, array<int>|int|null>  $answers  question_id => option index */
-    public function handle(Lesson $lesson, User $student, array $answers): QuizAttempt
+    /**
+     * @param  array<int|string, mixed>  $answers  question_id => option index, or text for short-answer questions
+     * @param  bool  $late  submitted after the time limit: the score is still recorded, but it does not pass
+     */
+    public function handle(Lesson $lesson, User $student, array $answers, ?int $duration = null, bool $late = false): QuizAttempt
     {
         $questions = $lesson->questions()->get();
         $total = (int) $questions->sum('points');
@@ -22,7 +25,7 @@ class GradeQuiz
             $given = $answers[$question->id] ?? null;
             $correct = $question->isCorrect($given);
             $earned += $correct ? $question->points : 0;
-            $result[$question->id] = ['given' => array_values(array_map('intval', (array) $given)), 'correct' => $correct];
+            $result[$question->id] = ['given' => $question->normalizeGiven($given), 'correct' => $correct];
         }
 
         $score = $total > 0 ? (int) round($earned / $total * 100) : 0;
@@ -33,7 +36,9 @@ class GradeQuiz
             'score' => $score,
             'earned_points' => $earned,
             'total_points' => $total,
-            'passed' => $score >= $lesson->passScore(),
+            'passed' => ! $late && $score >= $lesson->passScore(),
+            'duration_seconds' => $duration,
+            'late' => $late,
         ]);
 
         if ($attempt->passed) {

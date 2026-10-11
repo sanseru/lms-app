@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuizAttempt extends Model
 {
-    protected $fillable = ['lesson_id', 'student_id', 'answers', 'score', 'earned_points', 'total_points', 'passed'];
+    protected $fillable = ['lesson_id', 'student_id', 'answers', 'score', 'earned_points', 'total_points', 'passed', 'duration_seconds', 'late'];
 
     protected function casts(): array
     {
-        return ['answers' => 'array', 'passed' => 'boolean', 'score' => 'integer'];
+        return ['answers' => 'array', 'passed' => 'boolean', 'late' => 'boolean', 'score' => 'integer', 'duration_seconds' => 'integer'];
     }
 
     public function lesson(): BelongsTo

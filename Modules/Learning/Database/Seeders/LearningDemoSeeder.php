@@ -25,7 +25,9 @@ class LearningDemoSeeder
                     ['The data type of the value 3.14 is…', 'single', [['int', false], ['float', true], ['str', false], ['bool', false]], 'Numbers with a decimal point are floats.'],
                     ['Which of these are valid variable names in Python?', 'multiple', [['player_score', true], ['2score', false], ['myName', true], ['final score', false]], 'A variable name cannot start with a number or contain spaces.'],
                     ['What does `print(3 + 4 * 2)` show?', 'single', [['14', false], ['11', true], ['10', false]], 'Multiplication comes first: 4 × 2 = 8, then 3 + 8 = 11.'],
-                ]],
+                    ['In Python, `Name` and `name` are the same variable.', 'true_false', [['True', false], ['False', true]], 'Python treats capital and small letters differently, so they are two different variables.'],
+                    ['The command that asks the user to type something is… (just write the command name)', 'short', [['input', true], ['input()', true]], 'input() waits for the user to type something and press Enter.'],
+                ], 10],
                 ['material', 'If and else', 20, "## Programs that can choose\n\n```python\nscore = 80\nif score >= 75:\n    print(\"You passed!\")\nelse:\n    print(\"Let's study some more\")\n```\n\nWatch the **indentation** (the spaces at the start of a line). Python uses it to know which lines belong inside the `if`."],
                 ['assignment', 'Project: Number guessing game', 45, "Build a game where you guess a number from 1 to 10.\n\n1. The computer picks a random number with `random.randint(1, 10)`\n2. The player keeps guessing until they get it right\n3. Give a hint: *too high* or *too low*\n\nSubmit your Replit link or upload your `.py` file."],
             ]);
@@ -112,6 +114,7 @@ class LearningDemoSeeder
             $lesson = $course->lessons()->create([
                 'position' => $i + 1, 'type' => $l[0], 'title' => $l[1], 'duration_minutes' => $l[2], 'body' => $l[3], 'video_url' => $l[4] ?? null,
                 'pass_score' => $l[0] === 'quiz' ? 70 : null, 'max_score' => $l[0] === 'assignment' ? 100 : null,
+                'time_limit_minutes' => $l[6] ?? null,
             ]);
 
             foreach ($l[5] ?? [] as $q => [$prompt, $type, $options, $explanation]) {
@@ -151,7 +154,11 @@ class LearningDemoSeeder
     {
         // First attempt gets one question wrong; the second (for some students) gets everything right.
         $answers = fn (bool $perfect) => $lesson->questions->mapWithKeys(fn ($q, $i) => [
-            $q->id => $perfect || $i > 0 ? ($q->type === 'multiple' ? $q->correctIndexes() : $q->correctIndexes()[0]) : ($q->type === 'multiple' ? [0] : count($q->options) - 1),
+            $q->id => $perfect || $i > 0
+                ? match ($q->type) {
+                    'multiple' => $q->correctIndexes(), 'short' => $q->answerKey()[0], default => $q->correctIndexes()[0]
+                }
+                : ($q->type === 'multiple' ? [0] : count($q->options) - 1),
         ])->all();
 
         $grade->handle($lesson, $student, $answers(false));

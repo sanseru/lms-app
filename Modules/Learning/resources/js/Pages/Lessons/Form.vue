@@ -22,6 +22,7 @@ const form = useForm({
     is_published: l.is_published ?? true,
     pass_score: l.pass_score ?? 70,
     max_attempts: l.max_attempts ?? '',
+    time_limit_minutes: l.time_limit_minutes ?? '',
     max_score: l.max_score ?? 100,
     assessment: l.assessment ?? '',
     questions: l.questions?.length ? JSON.parse(JSON.stringify(l.questions)) : [blankQuestion()],
@@ -31,13 +32,25 @@ const isQuiz = computed(() => form.type === 'quiz');
 const bodyLabel = computed(() => ({ material: 'Lesson content', quiz: 'Quiz instructions', assignment: 'Assignment instructions' })[form.type]);
 
 const toggleCorrect = (q, i) => {
-    if (q.type === 'single') q.options.forEach((o, j) => (o.correct = i === j));
+    if (q.type === 'single' || q.type === 'true_false') q.options.forEach((o, j) => (o.correct = i === j));
     else q.options[i].correct = !q.options[i].correct;
 };
+const isChoice = (type) => type === 'single' || type === 'multiple';
 const setType = (q, type) => {
+    const from = q.type;
+    if (from === type) return;
+    // Keep the multiple-choice options aside so they are not lost while the teacher tries another type.
+    if (isChoice(from)) q._choices = q.options;
     q.type = type;
-    if (type === 'single' && q.options.filter((o) => o.correct).length > 1) {
-        const first = q.options.findIndex((o) => o.correct);
+    if (type === 'true_false') {
+        q.options = [{ text: 'True', correct: true }, { text: 'False', correct: false }];
+    } else if (type === 'short') {
+        q.options = [{ text: '', correct: true }];
+    } else if (!isChoice(from)) {
+        q.options = q._choices ?? blankQuestion().options;
+    }
+    if (type === 'single' && q.options.filter((o) => o.correct).length !== 1) {
+        const first = Math.max(0, q.options.findIndex((o) => o.correct));
         q.options.forEach((o, j) => (o.correct = j === first));
     }
 };
@@ -52,8 +65,9 @@ const submit = () => {
         ...data,
         duration_minutes: data.duration_minutes || null,
         max_attempts: data.max_attempts || null,
+        time_limit_minutes: data.time_limit_minutes || null,
         assessment: data.assessment || null,
-        questions: data.type === 'quiz' ? data.questions : [],
+        questions: data.type === 'quiz' ? data.questions.map(({ _choices, ...q }) => q) : [],
     }));
     props.lesson ? form.put(route('learning.lessons.update', props.lesson.id)) : form.post(route('learning.lessons.store', props.course.id));
 };
@@ -116,9 +130,9 @@ const err = (key) => form.errors[key];
                 </div>
 
                 <div v-for="(q, qi) in form.questions" :key="qi" class="card p-5">
-                    <div class="mb-3 flex items-center gap-2">
+                    <div class="mb-3 flex flex-wrap items-center gap-2">
                         <span class="grid size-7 place-items-center rounded-lg bg-amber-100 text-xs font-bold text-amber-700">{{ qi + 1 }}</span>
-                        <div class="flex gap-1">
+                        <div class="flex flex-wrap gap-1">
                             <button v-for="(label, key) in questionTypes" :key="key" type="button" :class="q.type === key ? 'bg-ink text-white' : 'bg-chip text-muted hover:text-ink'" class="rounded-lg px-2.5 py-1 text-xs font-semibold" @click="setType(q, key)">{{ label }}</button>
                         </div>
                         <label class="ml-auto flex items-center gap-1.5 text-xs text-muted">Points <input v-model.number="q.points" type="number" min="1" max="20" class="field w-16 px-2 py-1 text-xs" /></label>
@@ -130,6 +144,36 @@ const err = (key) => form.errors[key];
                     <textarea v-model="q.prompt" rows="2" class="field" placeholder="Write the question…" :aria-label="`Question ${qi + 1}`" />
                     <p v-if="err(`questions.${qi}.prompt`)" class="mt-1 text-sm text-rose-600">{{ err(`questions.${qi}.prompt`) }}</p>
 
+                    <template v-if="q.type === 'short'">
+                        <p class="mt-4 mb-2 text-xs font-semibold text-muted">Accepted answers. Capital letters, extra spaces and a final full stop are ignored, and numbers match by value (2.5 = 2,50).</p>
+                        <ul class="space-y-2">
+                            <li v-for="(o, oi) in q.options" :key="oi" class="flex items-center gap-2">
+                                <span class="grid size-6 shrink-0 place-items-center rounded-md bg-emerald-500 text-white"><Icon name="check" :size="13" /></span>
+                                <input v-model="o.text" type="text" class="field py-2" :placeholder="oi === 0 ? 'e.g. print' : 'Another accepted answer'" :aria-label="`Accepted answer ${oi + 1}`" />
+                                <button type="button" class="rounded-lg p-1.5 text-muted hover:text-rose-600 disabled:opacity-30" :disabled="q.options.length <= 1" aria-label="Remove answer" @click="q.options.splice(oi, 1)"><Icon name="x" :size="14" /></button>
+                            </li>
+                        </ul>
+                        <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: true })">+ Add accepted answer</button>
+                    </template>
+                    <template v-else-if="q.type === 'true_false'">
+                        <p class="mt-4 mb-2 text-xs font-semibold text-muted">Click the circle next to the right answer. You can rename the labels, e.g. Yes / No.</p>
+                        <ul class="grid gap-2 sm:grid-cols-2">
+                            <li v-for="(o, oi) in q.options" :key="oi" class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    :class="o.correct ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-line text-transparent hover:border-emerald-300'"
+                                    class="grid size-6 shrink-0 place-items-center rounded-full border-2 transition"
+                                    :aria-label="`Mark ${o.text || 'option ' + (oi + 1)} as correct`"
+                                    :aria-pressed="o.correct"
+                                    @click="toggleCorrect(q, oi)"
+                                >
+                                    <Icon name="check" :size="13" />
+                                </button>
+                                <input v-model="o.text" type="text" class="field py-2" :aria-label="oi === 0 ? 'Label for true' : 'Label for false'" />
+                            </li>
+                        </ul>
+                    </template>
+                    <template v-else>
                     <p class="mt-4 mb-2 text-xs font-semibold text-muted">Answer options. Click the circle to mark the correct answer.</p>
                     <ul class="space-y-2">
                         <li v-for="(o, oi) in q.options" :key="oi" class="flex items-center gap-2">
@@ -149,7 +193,7 @@ const err = (key) => form.errors[key];
                     </ul>
                     <p v-if="err(`questions.${qi}.options`)" class="mt-1 text-sm text-rose-600">{{ err(`questions.${qi}.options`) }}</p>
                     <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: false })">+ Add option</button>
-
+                    </template>
                     <div class="mt-4 grid gap-2 sm:grid-cols-3">
                         <input v-model="q.explanation" type="text" class="field text-sm sm:col-span-2" placeholder="Explanation (optional, shown after the student passes)" />
                         <input v-model="q.concept" type="text" class="field text-sm" placeholder="Concept, e.g. loops" :aria-label="`Concept for question ${qi + 1}`" />
@@ -175,6 +219,9 @@ const err = (key) => form.errors[key];
                     </Field>
                     <Field id="max_attempts" label="Attempt limit" :error="err('max_attempts')" hint="Leave empty to allow unlimited attempts.">
                         <input id="max_attempts" v-model="form.max_attempts" type="number" min="1" class="field" />
+                    </Field>
+                    <Field id="time_limit" label="Time limit (minutes)" :error="err('time_limit_minutes')" hint="Leave empty for no timer. Answers are sent automatically when time runs out.">
+                        <input id="time_limit" v-model="form.time_limit_minutes" type="number" min="1" max="180" class="field" />
                     </Field>
                     <Field id="assessment" label="Make it a mission" :error="err('assessment')" hint="The Warm-up Mission (start of the course) and the Final Mission are compared for the per-concept growth report. Use different questions covering the same concepts.">
                         <select id="assessment" v-model="form.assessment" class="field">

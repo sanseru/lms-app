@@ -29,6 +29,7 @@ class LessonRequest extends FormRequest
             'assessment' => ['nullable', Rule::in(array_keys(Lesson::ASSESSMENTS))],
             'pass_score' => ['nullable', 'integer', 'min:0', 'max:100'],
             'max_attempts' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'time_limit_minutes' => ['nullable', 'integer', 'min:1', 'max:180'],
             'max_score' => ['nullable', 'integer', 'min:1', 'max:1000'],
 
             'questions' => [$quiz ? 'required' : 'nullable', 'array', 'max:50'],
@@ -38,7 +39,7 @@ class LessonRequest extends FormRequest
             'questions.*.points' => ['required', 'integer', 'min:1', 'max:20'],
             'questions.*.explanation' => ['nullable', 'string', 'max:2000'],
             'questions.*.concept' => ['nullable', 'string', 'max:40'],
-            'questions.*.options' => ['required', 'array', 'min:2', 'max:6'],
+            'questions.*.options' => ['required', 'array', 'min:1', 'max:6'],
             'questions.*.options.*.text' => ['required', 'string', 'max:500'],
             'questions.*.options.*.correct' => ['boolean'],
         ];
@@ -48,11 +49,21 @@ class LessonRequest extends FormRequest
     {
         return [function (Validator $validator) {
             foreach ($this->input('questions', []) ?? [] as $i => $q) {
-                $correct = collect($q['options'] ?? [])->filter(fn ($o) => ! empty($o['correct']))->count();
+                $type = $q['type'] ?? 'single';
+                $options = $q['options'] ?? [];
+                $correct = collect($options)->filter(fn ($o) => ! empty($o['correct']))->count();
 
-                if ($correct === 0) {
+                if ($type === 'short') {
+                    continue; // every option is an accepted answer; rules() already requires at least one
+                }
+
+                if ($type === 'true_false' && count($options) !== 2) {
+                    $validator->errors()->add("questions.$i.options", 'A true/false question needs exactly two options.');
+                } elseif (count($options) < 2) {
+                    $validator->errors()->add("questions.$i.options", 'Add at least two options.');
+                } elseif ($correct === 0) {
                     $validator->errors()->add("questions.$i.options", 'Mark at least one correct answer.');
-                } elseif (($q['type'] ?? 'single') === 'single' && $correct > 1) {
+                } elseif (in_array($type, ['single', 'true_false'], true) && $correct > 1) {
                     $validator->errors()->add("questions.$i.options", 'A one-answer question can only have one correct answer.');
                 }
             }
@@ -63,7 +74,7 @@ class LessonRequest extends FormRequest
     {
         return [
             'title' => 'title', 'type' => 'type', 'body' => 'content', 'video_url' => 'video link',
-            'duration_minutes' => 'duration', 'pass_score' => 'pass score', 'max_attempts' => 'attempt limit',
+            'duration_minutes' => 'duration', 'pass_score' => 'pass score', 'max_attempts' => 'attempt limit', 'time_limit_minutes' => 'time limit',
             'max_score' => 'maximum score', 'questions' => 'questions', 'questions.*.prompt' => 'question',
             'questions.*.options' => 'answer options', 'questions.*.options.*.text' => 'option text', 'questions.*.points' => 'points',
         ];

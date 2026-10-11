@@ -5,33 +5,7 @@ use Illuminate\Support\Facades\Storage;
 use Modules\Classes\Models\ClassRoom;
 use Modules\Learning\Models\AssignmentSubmission;
 use Modules\Learning\Models\Course;
-use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
-
-/** Kelas + kursus terbit + siswa terdaftar. */
-function learningSetup(array $course = []): array
-{
-    $teacher = userWithRole('teacher');
-    $student = userWithRole('student');
-    $course = Course::create($course + ['title' => 'Python Start', 'subject' => 'Python', 'level' => 'beginner', 'color' => 'violet', 'status' => 'published']);
-    $class = ClassRoom::create([
-        'code' => 'PYT-'.fake()->unique()->numberBetween(100, 999), 'name' => 'Python 1', 'subject' => 'Python', 'level' => 'beginner',
-        'teacher_id' => $teacher->id, 'schedule_days' => [2], 'start_time' => '16:00', 'end_time' => '17:00', 'status' => 'active', 'color' => 'violet',
-    ]);
-    $class->forceFill(['course_id' => $course->id])->saveQuietly();
-    $class->students()->attach($student->id);
-
-    return [$teacher, $student, $course, $class];
-}
-
-function makeQuiz(Course $course, array $attributes = []): Lesson
-{
-    $quiz = $course->lessons()->create($attributes + ['title' => 'Quiz 1', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70]);
-    $quiz->questions()->create(['position' => 1, 'prompt' => '1 + 1?', 'type' => 'single', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false]]]);
-    $quiz->questions()->create(['position' => 2, 'prompt' => 'Even numbers?', 'type' => 'multiple', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false], ['text' => '4', 'correct' => true]]]);
-
-    return $quiz->fresh('questions');
-}
 
 test('teacher can create a course and a quiz with questions', function () {
     $teacher = userWithRole('teacher');

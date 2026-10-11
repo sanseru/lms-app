@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Learning\Models\AssignmentSubmission;
+use Modules\Learning\Models\LessonReport;
 
 /** Queue of assignments waiting for the teacher to grade. */
 class GradingController extends Controller
@@ -31,6 +32,7 @@ class GradingController extends Controller
             'submissions' => $submissions,
             'tab' => $tab,
             'counts' => (clone $base)->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
+            'openReports' => LessonReport::where('status', 'open')->count(),
         ]);
     }
 }

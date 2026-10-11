@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Learning\Http\Controllers\CourseController;
 use Modules\Learning\Http\Controllers\GradingController;
 use Modules\Learning\Http\Controllers\LessonController;
+use Modules\Learning\Http\Controllers\LessonReportController;
 use Modules\Learning\Http\Controllers\ProgressController;
 use Modules\Learning\Http\Controllers\QuizController;
 use Modules\Learning\Http\Controllers\SubmissionController;
@@ -26,11 +27,14 @@ Route::name('learning.')->group(function () {
         Route::post('lessons/{lesson}/move', [LessonController::class, 'move'])->name('lessons.move');
 
         Route::get('grading', [GradingController::class, 'index'])->name('grading.index');
+        Route::get('lesson-reports', [LessonReportController::class, 'index'])->name('reports.index');
+        Route::post('lesson-reports/{report}/close', [LessonReportController::class, 'resolve'])->name('reports.resolve');
     });
 
     Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
     Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('lessons/{lesson}', [LessonController::class, 'show'])->name('lessons.show');
+    Route::post('lessons/{lesson}/report', [LessonReportController::class, 'store'])->middleware('throttle:10,1')->name('reports.store');
     Route::post('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
     Route::post('lessons/{lesson}/quiz', [QuizController::class, 'store'])->name('quiz.store');
     Route::post('lessons/{lesson}/submission', [SubmissionController::class, 'store'])->name('submissions.store');

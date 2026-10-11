@@ -60,9 +60,9 @@ test('navigation only contains menus allowed for the role', function () {
         ->flatMap(fn ($group) => collect($group['items'])->pluck('label'))
         ->all();
 
-    expect($labels(userWithRole('admin')))->toContain('Students', 'Teachers', 'Parents', 'Classes', 'Invoices');
-    expect($labels(userWithRole('student')))->toBe(['Home', 'Classes', 'Schedule', 'Course', 'Community', 'Laboratory', 'My projects', 'Q&A', 'My achievements', 'My certificates']);
-    expect($labels(userWithRole('guardian')))->toContain("Child's invoices")->not->toContain('Students');
+    expect($labels(userWithRole('admin')))->toContain('Siswa', 'Guru', 'Orang Tua', 'Kelas', 'Tagihan', 'Laporan Bulanan', 'Jejak Audit');
+    expect($labels(userWithRole('student')))->toBe(['Beranda', 'Kelas', 'Jadwal', 'Materi Saya', 'Proyekku', 'Tanya Jawab', 'Prestasiku', 'Sertifikatku', 'Laporan Bulananku']);
+    expect($labels(userWithRole('guardian')))->toContain('Tagihan Anak', 'Laporan Bulanan')->not->toContain('Siswa', 'Jejak Audit');
 });
 
 test('non admins cannot open management pages', function (string $role) {

@@ -166,7 +166,8 @@ class LearningDemoSeeder
         $lesson->submissions()->create([
             'student_id' => $student->id,
             'body' => 'All done! I added a score and a sound when you win.',
-            'link_url' => 'https://replit.com/@'.$student->username.'/project-'.$lesson->id,
+            // Demo data without outside links: a fake link would point to a page that doesn't exist.
+            'link_url' => null,
             'status' => $graded ? 'graded' : 'submitted',
             'score' => $graded ? 80 + ($student->id % 4) * 5 : null,
             'feedback' => $graded ? 'Awesome! Try adding a limit on the number of guesses to make it more challenging.' : null,

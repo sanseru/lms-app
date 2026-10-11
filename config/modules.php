@@ -12,9 +12,11 @@ use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Kanban\Providers\KanbanServiceProvider;
 use Modules\Lab\Providers\LabServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
+use Modules\Leads\Providers\LeadsServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
 use Modules\Notifications\Providers\NotificationsServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
+use Modules\Reports\Providers\ReportsServiceProvider;
 use Modules\Sessions\Providers\SessionsServiceProvider;
 
 /*
@@ -46,6 +48,8 @@ return [
         CertificatesServiceProvider::class,
         FinanceServiceProvider::class,
         NotificationsServiceProvider::class,
+        ReportsServiceProvider::class,
+        LeadsServiceProvider::class,
         AuditServiceProvider::class,
     ],
 ];

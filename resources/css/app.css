@@ -105,6 +105,9 @@
 @utility btn-danger {
     @apply btn bg-red-600 text-white hover:bg-red-700;
 }
+@utility report-h {
+    @apply mb-3 font-display text-base font-bold text-brand-700;
+}
 /* Highlight panel (dashboard greeting, level, class page header): one deep colour, not a gradient. */
 @utility panel-brand {
     @apply relative overflow-hidden rounded-3xl bg-brand-700 text-white;
@@ -147,4 +150,12 @@
     html, body { background: #fff !important; }
     .print-area { position: fixed; inset: 0; width: 100vw; max-width: none !important; margin: 0 !important; }
     .print-area .certificate { box-shadow: none; }
+
+    /* Laporan bulanan: dokumen A4 tegak, bisa beberapa halaman. */
+    @page report { size: A4 portrait; margin: 12mm; }
+    .no-print { display: none !important; }
+    .report-doc { page: report; border: 0 !important; padding: 0 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .report-doc, .report-doc * { visibility: visible; }
+    .report-row { break-inside: avoid; }
+    .report-doc .report-h { break-after: avoid; }
 }

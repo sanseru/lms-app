@@ -19,7 +19,7 @@ const open = ref(false);
                 <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost hidden text-[15px] sm:inline-flex">
                     <LandingIcon name="login" :size="18" />{{ user ? 'Dashboard' : 'Sign in' }}
                 </Link>
-                <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-accent hidden text-[15px] sm:inline-flex">Try for free</a>
+                <Link :href="route('leads.apply')" class="btn-accent hidden text-[15px] sm:inline-flex">Try for free</Link>
                 <button type="button" class="grid h-11 w-11 place-items-center rounded-xl border border-line bg-white md:hidden" :aria-expanded="open" aria-controls="landing-mobile-nav" :aria-label="open ? 'Close menu' : 'Open menu'" @click="open = !open">
                     <LandingIcon :name="open ? 'close' : 'menu'" :size="22" />
                 </button>
@@ -30,7 +30,8 @@ const open = ref(false);
             <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost mt-2 py-3 text-base">
                 <LandingIcon name="login" :size="18" />{{ user ? 'Go to dashboard' : 'Sign in (students, parents, teachers)' }}
             </Link>
-            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-accent py-3 text-base">Try a free class on WhatsApp</a>
+            <Link :href="route('leads.apply')" class="btn-accent py-3 text-base">Sign up for a free trial class</Link>
+            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-ghost py-3 text-base">Ask on WhatsApp</a>
         </nav>
     </header>
 </template>

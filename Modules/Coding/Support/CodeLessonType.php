@@ -3,6 +3,7 @@
 namespace Modules\Coding\Support;
 
 use App\Models\User;
+use Modules\Coding\Grading\CodeRules;
 use Modules\Coding\Models\CodeExercise;
 use Modules\Coding\Models\CodeSubmission;
 use Modules\Learning\Contracts\LessonTypeHandler;
@@ -61,6 +62,8 @@ class CodeLessonType implements LessonTypeHandler
                 'hints' => $exercise->hints ?? [],
                 'time_limit_ms' => $exercise->time_limit_ms,
                 'case_sensitive' => $exercise->case_sensitive,
+                'rules' => collect($exercise->activeRules())->map(fn ($r) => ['label' => CodeRules::label($r)])->all(),
+                'version' => $exercise->version,
                 'concept' => $exercise->concept,
                 'level' => $exercise->level,
                 'verified' => $exercise->isVerified(),

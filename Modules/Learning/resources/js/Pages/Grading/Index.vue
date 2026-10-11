@@ -11,7 +11,7 @@ import { classColors } from '@/lib/format';
 import GradeForm from '../../Components/GradeForm.vue';
 import SubmissionContent from '../../Components/SubmissionContent.vue';
 
-defineProps({ submissions: Object, tab: String, counts: Object });
+defineProps({ submissions: Object, tab: String, counts: Object, openReports: Number });
 
 const tabs = { submitted: 'To grade', revision: 'Awaiting revision', graded: 'Graded' };
 const tone = { submitted: 'amber', revision: 'red', graded: 'green' };
@@ -21,7 +21,11 @@ const open = ref(null);
 <template>
     <Head title="Grading" />
 
-    <PageHeader eyebrow="Learning" title="Grading" description="Assignments from students in your classes. Give a grade or ask for a revision with feedback." />
+    <PageHeader eyebrow="Learning" title="Grading" description="Assignments from students in your classes. Give a grade or ask for a revision with feedback.">
+        <template #actions>
+            <Link :href="route('learning.reports.index')" class="btn-ghost"><Icon name="flag" :size="16" /> Reported problems<span v-if="openReports" class="rounded-full bg-amber-100 px-2 text-xs text-amber-900">{{ openReports }}</span></Link>
+        </template>
+    </PageHeader>
 
     <div class="mb-5 flex flex-wrap gap-2">
         <Link

@@ -6,12 +6,13 @@ import Badge from '@/Components/ui/Badge.vue';
 import Field from '@/Components/ui/Field.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
+import LessonReport from '@/Components/ui/LessonReport.vue';
 import GradeForm from '../../Components/GradeForm.vue';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 import SubmissionContent from '../../Components/SubmissionContent.vue';
 
 const props = defineProps({
-    course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object,
+    course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object, reports: Object,
     questions: Array, attempts: Array, remaining: Number, result: Object, answerKey: Object, attemptSummary: Array,
     submission: Object, submissions: Array,
 });
@@ -265,6 +266,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                 <p v-else class="px-5 py-8 text-center text-sm text-muted">No submissions from your students yet.</p>
             </div>
 
+            <LessonReport :lesson-id="lesson.id" :can="can" :reports="reports" />
             <LessonQuestions :lesson-id="lesson.id" />
 
             <!-- Navigation -->

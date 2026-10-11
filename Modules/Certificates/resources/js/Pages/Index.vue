@@ -83,12 +83,12 @@ const submitManual = () => form
             :href="route('certificates.show', c.id)"
             class="group overflow-hidden rounded-3xl border border-line bg-white transition hover:-translate-y-1 hover:shadow-lg"
         >
-            <div :class="(classColors[c.color] ?? classColors.violet).grad" class="relative grid aspect-[297/150] place-items-center bg-gradient-to-br p-5 text-center text-white">
+            <div :class="(classColors[c.color] ?? classColors.violet).grad" class="relative grid aspect-[297/150] place-items-center p-5 text-center text-white">
                 <span class="absolute top-3 right-4 text-2xl">🏅</span>
                 <div>
-                    <p class="text-[10px] font-bold tracking-[0.3em] text-white/80 uppercase">Sertifikat</p>
+                    <p class="text-xs font-bold tracking-[0.2em] text-white uppercase">Sertifikat</p>
                     <p class="mt-1 font-display text-lg leading-tight font-extrabold">{{ c.title }}</p>
-                    <p class="mt-1 text-sm text-white/90">{{ c.student.name }}</p>
+                    <p class="mt-1 text-sm text-white">{{ c.student.name }}</p>
                 </div>
                 <span v-if="c.revoked" class="absolute inset-0 grid place-items-center bg-white/70 font-display text-xl font-black text-rose-600">DICABUT</span>
             </div>

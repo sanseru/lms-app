@@ -63,7 +63,7 @@ const medal = ['🥇', '🥈', '🥉'];
                 <ul class="divide-y divide-line">
                     <li v-for="(e, i) in summary.recent" :key="i" class="flex items-center gap-3 px-5 py-2.5 text-sm">
                         <span class="min-w-0 flex-1"><span class="block truncate text-ink">{{ e.label }}</span><span class="text-xs text-muted">{{ e.at }}</span></span>
-                        <span class="w-12 text-right font-bold text-emerald-600">+{{ e.points }}</span>
+                        <span class="w-12 text-right font-bold text-emerald-700">+{{ e.points }}</span>
                     </li>
                     <li v-if="!summary.recent.length" class="px-5 py-6 text-center text-sm text-muted">Belum ada XP.</li>
                 </ul>

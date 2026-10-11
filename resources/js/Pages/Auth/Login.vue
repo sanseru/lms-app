@@ -27,8 +27,7 @@ const submit = () => {
     <GuestLayout>
         <Head title="Masuk" />
 
-        <p class="eyebrow">Selamat datang kembali</p>
-        <h1 class="mt-2 text-2xl font-extrabold tracking-tight text-ink">Masuk ke ruang belajarmu.</h1>
+        <h1 class="text-2xl font-extrabold tracking-tight text-ink">Masuk ke ruang belajarmu.</h1>
         <p class="mt-1 text-sm text-muted">Gunakan username atau email yang diberikan admin.</p>
 
         <div v-if="status" class="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ status }}</div>

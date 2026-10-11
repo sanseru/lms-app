@@ -76,7 +76,7 @@ const pay = () => payForm.post(route('finance.payroll.paid', props.payout.id), {
 
         <dl class="mt-6 ml-auto max-w-xs space-y-1.5 border-t border-line pt-4 text-sm">
             <div class="flex justify-between"><dt class="text-muted">Subtotal ({{ payout.sessions_count }} sesi)</dt><dd class="text-ink">{{ rupiah(payout.subtotal) }}</dd></div>
-            <div v-if="payout.bonus" class="flex justify-between"><dt class="text-muted">Bonus</dt><dd class="text-emerald-600">+ {{ rupiah(payout.bonus) }}</dd></div>
+            <div v-if="payout.bonus" class="flex justify-between"><dt class="text-muted">Bonus</dt><dd class="text-emerald-700">+ {{ rupiah(payout.bonus) }}</dd></div>
             <div v-if="payout.deduction" class="flex justify-between"><dt class="text-muted">Potongan</dt><dd class="text-rose-600">− {{ rupiah(payout.deduction) }}</dd></div>
             <div class="flex justify-between border-t border-line pt-2"><dt class="font-bold text-ink">Total</dt><dd class="font-display text-lg font-extrabold text-ink">{{ rupiah(payout.total) }}</dd></div>
         </dl>

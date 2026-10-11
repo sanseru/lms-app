@@ -53,7 +53,7 @@ const copyZoom = async () => {
     </Link>
 
     <!-- Hero -->
-    <div :class="color.grad" class="relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white sm:p-8">
+    <div :class="color.grad" class="relative overflow-hidden rounded-3xl p-6 text-white sm:p-8">
         <span class="pointer-events-none absolute -right-6 -bottom-14 font-mono text-[11rem] leading-none font-black opacity-15 select-none">{ }</span>
         <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -63,7 +63,7 @@ const copyZoom = async () => {
                     <span class="rounded-full bg-white px-1 py-0.5"><StatusBadge :status="classRoom.status" :label="classRoom.status_label" /></span>
                 </div>
                 <h1 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{{ classRoom.name }}</h1>
-                <p class="mt-2 flex items-center gap-2 text-white/90"><Icon name="clock" :size="16" /> {{ classRoom.schedule }} WIB</p>
+                <p class="mt-2 flex items-center gap-2 text-white"><Icon name="clock" :size="16" /> {{ classRoom.schedule }} WIB</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <a v-if="classRoom.zoom_url" :href="classRoom.zoom_url" target="_blank" rel="noopener" class="btn bg-white text-ink shadow-[0_4px_0_rgba(0,0,0,0.15)] hover:bg-white/90">

@@ -9,6 +9,7 @@ import SessionItem from '@/Components/ui/SessionItem.vue';
 import LearningCard from '@/Components/ui/LearningCard.vue';
 import ProgressBar from '@/Components/ui/ProgressBar.vue';
 import LevelCard from '@/Components/ui/LevelCard.vue';
+import Icon from '@/Components/ui/Icon.vue';
 
 defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array, achievements: Object });
 const user = usePage().props.auth.user;
@@ -18,29 +19,28 @@ const user = usePage().props.auth.user;
 <template>
     <Head title="Beranda" />
 
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-violet-500 to-accent-500 p-6 text-white sm:p-8">
-        <span class="pointer-events-none absolute -top-6 -right-6 text-[9rem] opacity-20 select-none">🚀</span>
+    <div class="panel-brand p-6 sm:p-8">
         <div class="relative flex items-center gap-4">
-            <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-white !text-brand-700 ring-4 ring-white/30" />
+            <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-accent-500 !text-ink ring-4 ring-brand-600" />
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Hai, {{ user.name.split(' ')[0] }}! 👋</h1>
-                <p class="text-white/85">Siap ngoding hari ini?</p>
+                <h1 class="text-3xl font-extrabold tracking-tight">Hai, {{ user.name.split(' ')[0] }}!</h1>
+                <p class="text-brand-100">Siap ngoding hari ini?</p>
             </div>
         </div>
         <div class="relative mt-6 flex flex-wrap gap-3">
-            <span class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">🎒 {{ classes.length }} kelas</span>
-            <span class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">✅ {{ stats.present }} sesi dihadiri</span>
-            <span v-if="stats.rate !== null" class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">🔥 Kehadiran {{ stats.rate }}%</span>
-            <span v-if="profile.code" class="rounded-full bg-white/20 px-3 py-1 font-mono text-sm backdrop-blur-sm">{{ profile.code }}</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="school" :size="16" class="text-accent-300" /> {{ classes.length }} kelas</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="circle-check" :size="16" class="text-accent-300" /> {{ stats.present }} sesi dihadiri</span>
+            <span v-if="stats.rate !== null" class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="target" :size="16" class="text-accent-300" /> Kehadiran {{ stats.rate }}%</span>
+            <span v-if="profile.code" class="rounded-full bg-brand-800 px-3 py-1 font-mono text-sm ring-1 ring-white/10">{{ profile.code }}</span>
         </div>
     </div>
 
     <div v-if="achievements" class="mt-6 grid gap-4 lg:grid-cols-3">
         <Link :href="route('gamification.me')" class="lg:col-span-2"><LevelCard :level="achievements.level" compact class="h-full transition hover:shadow-lg" /></Link>
         <Link :href="route('gamification.me')" class="card flex flex-col justify-center p-5 transition hover:shadow-md">
-            <p class="eyebrow">Lencana {{ achievements.badges_earned }}/{{ achievements.badges_total }}</p>
-            <p v-if="achievements.badges.length" class="mt-2 flex flex-wrap gap-1 text-3xl"><span v-for="b in achievements.badges" :key="b.name" :title="b.name">{{ b.emoji }}</span></p>
-            <p v-else class="mt-2 text-sm text-muted">Selesaikan pelajaran pertamamu untuk dapat lencana 👣</p>
+            <p class="font-display font-bold text-ink">Lencana <span class="tabular-nums text-muted">{{ achievements.badges_earned }}/{{ achievements.badges_total }}</span></p>
+            <p v-if="achievements.badges.length" class="mt-2 flex flex-wrap gap-1 text-3xl"><span v-for="b in achievements.badges" :key="b.name" :title="b.name" role="img" :aria-label="b.name">{{ b.emoji }}</span></p>
+            <p v-else class="mt-2 text-sm text-muted">Selesaikan pelajaran pertamamu untuk dapat lencana pertama.</p>
         </Link>
     </div>
 
@@ -81,7 +81,7 @@ const user = usePage().props.auth.user;
                 <SessionItem v-for="s in upcoming" :key="s.id" :session="s" show-date />
             </div>
             <div v-else class="flex items-center gap-4 rounded-xl bg-sky-soft p-4">
-                <span class="text-3xl">🌤️</span>
+                <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-sky-ink"><Icon name="calendar-days" /></span>
                 <p class="text-sm text-ink">Belum ada sesi terjadwal. Istirahat dulu atau ulangi materi kemarin, ya!</p>
             </div>
         </div>

@@ -10,7 +10,7 @@ import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 defineProps({ student: Object, courses: Array, siblings: Array });
 
 const gainLabel = (g) => (g === null ? null : g >= 0.7 ? 'Tinggi' : g >= 0.3 ? 'Sedang' : 'Rendah');
-const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80 ? 'text-emerald-600' : v >= 60 ? 'text-amber-600' : 'text-rose-600');
+const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80 ? 'text-emerald-700' : v >= 60 ? 'text-amber-600' : 'text-rose-600');
 </script>
 
 <template>
@@ -39,7 +39,7 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
     <div v-if="courses.length" class="space-y-6">
         <section v-for="c in courses" :key="c.id" class="card overflow-hidden">
             <div class="flex flex-wrap items-center gap-5 border-b border-line p-5">
-                <span :class="(classColors[c.color] ?? classColors.violet).grad" class="grid size-12 place-items-center rounded-2xl bg-gradient-to-br font-display font-black text-white">{{ c.subject.slice(0, 2) }}</span>
+                <span :class="(classColors[c.color] ?? classColors.violet).grad" class="grid size-12 place-items-center rounded-2xl font-display font-black text-white">{{ c.subject.slice(0, 2) }}</span>
                 <div class="min-w-48 flex-1">
                     <h2 class="font-display text-lg font-bold text-ink">{{ c.title }}</h2>
                     <div class="mt-2 flex items-center gap-3">
@@ -53,7 +53,7 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
                     <div><dt class="text-xs text-muted">Rata-rata tugas</dt><dd :class="scoreTone(c.assignment_avg)" class="font-display text-2xl font-extrabold">{{ c.assignment_avg ?? '–' }}</dd></div>
                 </dl>
             </div>
-            <div v-if="c.missions" class="border-b border-line bg-gradient-to-br from-brand-50 to-accent-50/60 p-5">
+            <div v-if="c.missions" class="border-b border-line bg-brand-50 p-5">
                 <div class="flex flex-wrap items-center gap-x-8 gap-y-3">
                     <p class="flex items-center gap-2 font-display font-bold text-ink"><Icon name="rocket" :size="18" class="text-accent-600" /> Kenaikan kemampuan</p>
                     <div class="text-center"><p class="text-xs text-muted">Misi Pemanasan</p><p class="font-display text-xl font-extrabold text-ink">{{ c.missions.pre ?? '–' }}</p></div>
@@ -70,7 +70,7 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
                         <p class="text-sm font-semibold text-ink capitalize">{{ k.concept }}</p>
                         <div class="mt-1.5 space-y-1 text-xs text-muted">
                             <div class="flex items-center gap-2"><span class="w-10">Awal</span><div class="h-1.5 flex-1 rounded-full bg-chip"><div class="h-full rounded-full bg-slate-400" :style="{ width: `${k.pre ?? 0}%` }" /></div><span class="w-9 text-right">{{ k.pre ?? '–' }}%</span></div>
-                            <div class="flex items-center gap-2"><span class="w-10">Akhir</span><div class="h-1.5 flex-1 rounded-full bg-chip"><div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500" :style="{ width: `${k.post ?? 0}%` }" /></div><span class="w-9 text-right">{{ k.post ?? '–' }}%</span></div>
+                            <div class="flex items-center gap-2"><span class="w-10">Akhir</span><div class="h-1.5 flex-1 rounded-full bg-chip"><div class="h-full rounded-full bg-brand-600" :style="{ width: `${k.post ?? 0}%` }" /></div><span class="w-9 text-right">{{ k.post ?? '–' }}%</span></div>
                         </div>
                     </li>
                 </ul>
@@ -92,7 +92,7 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
                         <span v-if="l.submission_score !== null" :class="scoreTone((l.submission_score / l.max_score) * 100)" class="font-bold">{{ l.submission_score }}/{{ l.max_score }}</span>
                         <span v-else :class="l.submission_status === 'revision' ? 'text-accent-600' : 'text-muted'">{{ l.submission_label ?? 'Belum dikumpulkan' }}</span>
                     </span>
-                    <span v-else class="text-sm" :class="l.done ? 'font-semibold text-emerald-600' : 'text-muted'">{{ l.done ? 'Selesai' : 'Belum' }}</span>
+                    <span v-else class="text-sm" :class="l.done ? 'font-semibold text-emerald-700' : 'text-muted'">{{ l.done ? 'Selesai' : 'Belum' }}</span>
                 </li>
             </ol>
         </section>

@@ -7,3 +7,4 @@
 - Controller tipis, validasi di Form Request, logika simpan yang dipakai ulang di `Actions/`.
 - Frontend: Vue 3 `<script setup>`, Tailwind 4. Pakai komponen `resources/js/Components/ui` dan utilitas `btn-*`, `card`, `field`, `label`, `eyebrow` dari `resources/css/app.css`.
 - Setiap fitur wajib punya test Pest di `tests/Feature/Modules`. Jalankan `php artisan test` dan `vendor/bin/pint` sebelum commit.
+- Desain: konteks produk ada di `PRODUCT.md`, audit terakhir di `docs/design/`. Skill `/impeccable` terpasang di `.claude/skills/impeccable` (jalankan `audit`, `polish`, dll.). Jangan pakai gradien ungu, teks putih di atas coral, atau emoji sebagai ikon UI; pakai `panel-brand` untuk panel sorotan.

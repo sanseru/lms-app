@@ -24,7 +24,7 @@ defineProps({ question: { type: Object, required: true }, compact: { type: Boole
         >
             <Icon v-if="question.status === 'resolved'" name="circle-check" :size="18" />
             <span class="font-display text-xl leading-tight font-black">{{ question.answers_count }}</span>
-            <span class="text-[11px] font-semibold">jawaban</span>
+            <span class="text-xs font-semibold">jawaban</span>
         </div>
 
         <div class="min-w-0 flex-1">

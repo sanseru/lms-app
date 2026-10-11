@@ -19,7 +19,7 @@ const print = () => window.print();
 
     <div class="print-area mx-auto max-w-4xl">
         <article class="relative overflow-hidden rounded-3xl border border-line bg-white p-8 shadow-sm sm:p-10">
-            <div class="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-brand-600 via-violet-500 to-accent-500" />
+            <div class="absolute inset-x-0 top-0 h-2 bg-brand-600" />
 
             <header class="flex flex-col gap-4 border-b border-dashed border-line pb-6 sm:flex-row sm:items-start sm:justify-between">
                 <div class="flex items-center gap-4">

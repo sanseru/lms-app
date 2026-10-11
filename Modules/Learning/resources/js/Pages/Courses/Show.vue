@@ -34,14 +34,14 @@ const counts = computed(() => ({
         <Icon name="arrow-left" :size="16" /> {{ can.manage ? 'Semua kursus' : 'Materi saya' }}
     </Link>
 
-    <div :class="color.grad" class="relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white sm:p-8">
+    <div :class="color.grad" class="relative overflow-hidden rounded-3xl p-6 text-white sm:p-8">
         <span class="pointer-events-none absolute -right-4 -bottom-10 font-display text-[9rem] leading-none font-black tracking-tighter text-white/15 select-none">{{ course.subject.slice(0, 2) }}</span>
         <div class="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div class="max-w-2xl">
-                <p class="text-sm font-semibold text-white/85">{{ course.subject }} · {{ course.level_label }}</p>
+                <p class="text-sm font-semibold text-white">{{ course.subject }} · {{ course.level_label }}</p>
                 <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ course.title }}</h1>
-                <p v-if="course.description" class="mt-2 text-white/90">{{ course.description }}</p>
-                <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-white/90">
+                <p v-if="course.description" class="mt-2 text-white">{{ course.description }}</p>
+                <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-white">
                     <span>{{ counts.material }} materi</span><span>{{ counts.quiz }} kuis</span><span>{{ counts.assignment }} tugas</span><span v-if="counts.code">{{ counts.code }} soal coding</span>
                 </p>
             </div>
@@ -55,7 +55,7 @@ const counts = computed(() => ({
             <div v-else-if="progress" class="w-full max-w-xs rounded-2xl bg-white/15 p-4 backdrop-blur">
                 <div class="flex items-baseline justify-between"><span class="text-sm font-semibold">Progres kamu</span><span class="font-display text-2xl font-extrabold">{{ progress.percent }}%</span></div>
                 <div class="mt-2 h-2 overflow-hidden rounded-full bg-white/30"><div class="h-full rounded-full bg-white" :style="{ width: `${progress.percent}%` }" /></div>
-                <p class="mt-2 text-xs text-white/90">{{ progress.completed }} dari {{ progress.total }} selesai<template v-if="progress.quiz_avg !== null"> · rata-rata kuis {{ progress.quiz_avg }}</template></p>
+                <p class="mt-2 text-xs text-white">{{ progress.completed }} dari {{ progress.total }} selesai<template v-if="progress.quiz_avg !== null"> · rata-rata kuis {{ progress.quiz_avg }}</template></p>
             </div>
         </div>
     </div>
@@ -140,7 +140,7 @@ const counts = computed(() => ({
                         <option value="" disabled>Pilih kelas…</option>
                         <option v-for="c in availableClasses" :key="c.id" :value="c.id">{{ c.name }}{{ c.course_id ? ' (ganti kursus)' : '' }}</option>
                     </select>
-                    <button class="btn-primary px-3 py-2 text-sm" :disabled="attach.processing || !attach.class_room_id"><Icon name="plus" :size="16" /></button>
+                    <button class="btn-primary px-3 py-2 text-sm" aria-label="Pasang ke kelas" :disabled="attach.processing || !attach.class_room_id"><Icon name="plus" :size="16" /></button>
                 </form>
             </div>
 

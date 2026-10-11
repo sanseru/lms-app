@@ -22,7 +22,7 @@ const max = computed(() => Math.max(1, ...props.months.flatMap((m) => [m.billed,
         </template>
     </PageHeader>
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard label="Diterima bulan ini" :value="rupiah(stats.received_month)" icon="wallet" tone="green" />
         <StatCard label="Belum terbayar" :value="rupiah(stats.outstanding)" icon="money" tone="amber" />
         <StatCard label="Tagihan terlambat" :value="stats.overdue_count" icon="alert-triangle" tone="red" />
@@ -45,7 +45,7 @@ const max = computed(() => Math.max(1, ...props.months.flatMap((m) => [m.billed,
                         <div class="w-1/2 max-w-6 rounded-t-md bg-brand-600 transition-all" :style="{ height: `${(m.received / max) * 100}%` }" :title="`Diterima ${rupiah(m.received)}`" />
                     </div>
                     <p class="text-xs font-semibold text-muted">{{ m.label }}</p>
-                    <p class="hidden text-[11px] text-muted sm:block">{{ compactRupiah(m.received) }}</p>
+                    <p class="hidden text-xs text-muted sm:block">{{ compactRupiah(m.received) }}</p>
                 </div>
             </div>
         </div>

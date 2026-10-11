@@ -27,7 +27,7 @@ const todayLabel = new Date().toLocaleDateString('id-ID', { weekday: 'long', day
         </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard label="Siswa aktif" :value="stats.students" icon="graduation-cap" tone="brand" />
         <StatCard label="Guru aktif" :value="stats.teachers" icon="presentation" tone="accent" />
         <StatCard label="Kelas berjalan" :value="stats.classes" icon="school" tone="sky" />

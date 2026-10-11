@@ -44,7 +44,7 @@ const relationLabel = { ayah: 'Ayah', ibu: 'Ibu', wali: 'Wali' };
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-1.5 sm:w-72">
-                    <span v-for="child in guardian.children" :key="child.id" class="rounded-full bg-sky-soft px-2.5 py-1 text-xs font-semibold text-sky">🎒 {{ child.name }}</span>
+                    <span v-for="child in guardian.children" :key="child.id" class="rounded-full bg-sky-soft px-2.5 py-1 text-xs font-semibold text-sky-ink">{{ child.name }}</span>
                     <span v-if="!guardian.children.length" class="text-xs font-semibold text-amber-700">Belum ada anak terhubung</span>
                 </div>
                 <div class="flex gap-1">

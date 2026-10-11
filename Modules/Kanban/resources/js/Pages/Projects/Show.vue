@@ -21,11 +21,11 @@ const columnDot = { todo: 'bg-slate-300', doing: 'bg-sky-400', review: 'bg-amber
 
     <Link :href="route('kanban.projects.index')" class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><Icon name="arrow-left" :size="15" /> Semua proyek</Link>
 
-    <div :class="color.grad" class="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white sm:p-8">
+    <div :class="color.grad" class="relative mb-6 overflow-hidden rounded-3xl p-6 text-white sm:p-8">
         <span class="pointer-events-none absolute -right-3 -bottom-8 text-[9rem] leading-none opacity-90 select-none">{{ project.emoji }}</span>
-        <p class="text-sm font-semibold text-white/85">{{ project.class.name }}<template v-if="project.due_date"> · tenggat {{ project.due_date }}</template></p>
+        <p class="text-sm font-semibold text-white">{{ project.class.name }}<template v-if="project.due_date"> · tenggat {{ project.due_date }}</template></p>
         <h1 class="mt-1 max-w-2xl pr-24 text-3xl font-extrabold tracking-tight">{{ project.title }}</h1>
-        <p v-if="project.description" class="mt-2 max-w-2xl pr-24 text-white/90 whitespace-pre-line">{{ project.description }}</p>
+        <p v-if="project.description" class="mt-2 max-w-2xl pr-24 text-white whitespace-pre-line">{{ project.description }}</p>
         <div class="relative mt-5 flex flex-wrap gap-2">
             <Link :href="route('kanban.projects.edit', project.id)" class="btn bg-white/90 text-ink hover:bg-white"><Icon name="pencil" :size="16" /> Ubah</Link>
             <button class="btn bg-white/20 text-white hover:bg-white/30" @click="confirming = true"><Icon name="trash" :size="16" /> Hapus</button>

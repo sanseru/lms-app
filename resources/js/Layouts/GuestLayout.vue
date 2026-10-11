@@ -1,25 +1,27 @@
+<script setup>
+import Icon from '@/Components/ui/Icon.vue';
+</script>
+
 <template>
-    <div class="relative flex min-h-screen overflow-hidden bg-gradient-to-br from-[#FAF8F5] via-white to-brand-50">
+    <div class="relative flex min-h-screen overflow-hidden bg-paper">
         <!-- Panel ilustrasi -->
-        <div class="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-brand-700 via-violet-600 to-accent-500 p-12 text-white lg:flex">
+        <div class="relative hidden w-1/2 flex-col justify-between panel-brand !rounded-none p-12 lg:flex">
             <img src="/images/logo-header.png" alt="Alprogmatics" class="h-14 w-fit rounded-xl bg-white/95 px-3 py-1.5" />
 
             <div class="relative z-10 max-w-md">
-                <p class="eyebrow !text-white/80">Coding untuk anak dan remaja</p>
-                <h2 class="mt-3 text-4xl leading-tight font-extrabold tracking-tight">Belajar, berkarya, dan tumbuh bersama.</h2>
-                <p class="mt-4 text-white/80">Satu tempat untuk kelas online, jadwal Zoom, progres belajar, dan pembayaran kursus.</p>
+                <h2 class=" text-4xl leading-tight font-extrabold tracking-tight">Belajar, berkarya, dan tumbuh bersama.</h2>
+                <p class="mt-4 text-brand-100">Satu tempat untuk kelas online, jadwal Zoom, progres belajar, dan pembayaran kursus.</p>
 
                 <div class="mt-8 grid grid-cols-3 gap-3">
-                    <div v-for="item in [['🐍', 'Python'], ['🧩', 'Scratch'], ['🤖', 'AI & Robotik']]" :key="item[1]" class="rounded-2xl bg-white/15 p-4 backdrop-blur-sm">
-                        <p class="text-2xl">{{ item[0] }}</p>
+                    <div v-for="item in [['code', 'Python'], ['rocket', 'Scratch'], ['sparkles', 'AI & Robotik']]" :key="item[1]" class="rounded-2xl bg-brand-800 p-4 ring-1 ring-white/10">
+                        <Icon :name="item[0]" :size="22" class="text-accent-300" />
                         <p class="mt-2 text-sm font-semibold">{{ item[1] }}</p>
                     </div>
                 </div>
             </div>
 
-            <p class="relative z-10 text-sm text-white/70">© {{ new Date().getFullYear() }} Alprogmatics · Learn. Create. Grow.</p>
+            <p class="relative z-10 text-sm text-brand-200">© {{ new Date().getFullYear() }} Alprogmatics · Learn. Create. Grow.</p>
 
-            <span class="pointer-events-none absolute -right-10 -bottom-16 font-mono text-[18rem] leading-none font-black text-white/10 select-none">{ }</span>
         </div>
 
         <!-- Form -->

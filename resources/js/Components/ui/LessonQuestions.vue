@@ -23,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="data && (data.can_ask || data.count)" class="overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50 to-accent-50">
+    <div v-if="data && (data.can_ask || data.count)" class="overflow-hidden rounded-2xl border border-brand-100 bg-brand-50">
         <div class="flex flex-wrap items-center gap-4 p-5">
             <span class="grid size-12 place-items-center rounded-2xl bg-white text-brand-600 shadow-sm"><Icon name="message-question" :size="22" /></span>
             <div class="min-w-0 flex-1">

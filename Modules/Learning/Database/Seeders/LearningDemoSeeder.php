@@ -27,7 +27,7 @@ class LearningDemoSeeder
                     ['Hasil dari `print(3 + 4 * 2)` adalah…', 'single', [['14', false], ['11', true], ['10', false]], 'Perkalian dikerjakan lebih dulu: 4 × 2 = 8, lalu 3 + 8 = 11.'],
                 ]],
                 ['material', 'Percabangan if dan else', 20, "## Program yang bisa memilih\n\n```python\nnilai = 80\nif nilai >= 75:\n    print(\"Lulus!\")\nelse:\n    print(\"Ayo belajar lagi\")\n```\n\nPerhatikan **indentasi** (spasi di depan baris). Python memakainya untuk tahu baris mana yang masuk ke dalam `if`."],
-                ['assignment', 'Proyek: Game tebak angka', 45, "Buat game tebak angka 1 sampai 10.\n\n1. Komputer memilih angka acak dengan `random.randint(1, 10)`\n2. Pemain menebak sampai benar\n3. Beri petunjuk *terlalu besar* atau *terlalu kecil*\n\nKumpulkan link Replit atau unggah berkas `.py` kamu."],
+                ['assignment', 'Proyek: Game tebak angka', 45, "Buat game tebak angka 1 sampai 10.\n\n1. Komputer memilih angka acak dengan `random.randint(1, 10)`\n2. Pemain menebak sampai benar\n3. Beri petunjuk *terlalu besar* atau *terlalu kecil*\n\nUnggah berkas `.py` kamu, atau tempel link karyamu kalau disimpan online."],
             ]);
 
         $scratch = $this->course($author, 'Scratch: Bikin Game Pertamamu', 'Scratch', 'beginner', 'amber',
@@ -166,7 +166,8 @@ class LearningDemoSeeder
         $lesson->submissions()->create([
             'student_id' => $student->id,
             'body' => 'Sudah selesai! Aku menambahkan skor dan suara saat menang.',
-            'link_url' => 'https://replit.com/@'.$student->username.'/proyek-'.$lesson->id,
+            // Data demo tanpa tautan luar: link palsu akan mengarah ke halaman yang tidak ada.
+            'link_url' => null,
             'status' => $graded ? 'graded' : 'submitted',
             'score' => $graded ? 80 + ($student->id % 4) * 5 : null,
             'feedback' => $graded ? 'Keren! Coba tambahkan batas jumlah tebakan supaya lebih menantang.' : null,

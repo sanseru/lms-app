@@ -15,6 +15,7 @@ use Modules\Finance\Models\StudentPackage;
 use Modules\Finance\Models\TeacherPayout;
 use Modules\Forum\Database\Seeders\ForumDemoSeeder;
 use Modules\Kanban\Database\Seeders\KanbanDemoSeeder;
+use Modules\Leads\Database\Seeders\LeadsDemoSeeder;
 use Modules\Learning\Database\Seeders\LearningDemoSeeder;
 use Modules\People\Actions\SavePerson;
 use Modules\Sessions\Actions\CompleteSession;
@@ -121,6 +122,7 @@ class DemoSeeder extends Seeder
         (new ForumDemoSeeder)->run();
         (new KanbanDemoSeeder)->run();
         (new CertificatesDemoSeeder)->run();
+        (new LeadsDemoSeeder)->run();
         Artisan::call('xp:sync');
     }
 

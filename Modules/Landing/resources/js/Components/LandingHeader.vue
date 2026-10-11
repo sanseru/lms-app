@@ -19,7 +19,7 @@ const open = ref(false);
                 <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost hidden text-[15px] sm:inline-flex">
                     <LandingIcon name="login" :size="18" />{{ user ? 'Dashboard' : 'Masuk' }}
                 </Link>
-                <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-accent hidden text-[15px] sm:inline-flex">Coba Gratis</a>
+                <Link :href="route('leads.apply')" class="btn-accent hidden text-[15px] sm:inline-flex">Coba Gratis</Link>
                 <button type="button" class="grid h-11 w-11 place-items-center rounded-xl border border-line bg-white md:hidden" :aria-expanded="open" aria-controls="landing-mobile-nav" :aria-label="open ? 'Tutup menu' : 'Buka menu'" @click="open = !open">
                     <LandingIcon :name="open ? 'close' : 'menu'" :size="22" />
                 </button>
@@ -30,7 +30,8 @@ const open = ref(false);
             <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost mt-2 py-3 text-base">
                 <LandingIcon name="login" :size="18" />{{ user ? 'Ke dashboard' : 'Masuk (siswa, orang tua, tutor)' }}
             </Link>
-            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-accent py-3 text-base">Coba Kelas Gratis via WhatsApp</a>
+            <Link :href="route('leads.apply')" class="btn-accent py-3 text-base">Daftar Kelas Coba Gratis</Link>
+            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-ghost py-3 text-base">Tanya via WhatsApp</a>
         </nav>
     </header>
 </template>

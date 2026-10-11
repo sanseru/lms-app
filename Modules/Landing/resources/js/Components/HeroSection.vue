@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import LandingIcon from './LandingIcon.vue';
 import { trialText, waLink } from '../site.js';
 </script>
@@ -19,10 +20,10 @@ import { trialText, waLink } from '../site.js';
                     Kelas coding privat dan kelompok kecil bersama tutor yang sabar. Dari Scratch sampai Python, anak belajar logika, kreativitas, dan percaya diri. Orang tua menerima laporan setiap selesai sesi.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-accent rounded-2xl px-6 py-4 text-lg">
-                        <LandingIcon name="whatsapp" :size="22" /> Coba Kelas Gratis
+                    <Link :href="route('leads.apply')" class="btn-accent rounded-2xl px-6 py-4 text-lg">Coba Kelas Gratis</Link>
+                    <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-ghost rounded-2xl border-2 px-6 py-4 text-lg">
+                        <LandingIcon name="whatsapp" :size="22" /> Tanya via WhatsApp
                     </a>
-                    <a href="#program" class="btn-ghost rounded-2xl border-2 px-6 py-4 text-lg">Lihat Program</a>
                 </div>
                 <dl class="mt-10 grid max-w-md grid-cols-3 gap-4">
                     <div><dt class="text-sm text-muted">Durasi sesi</dt><dd class="font-display text-2xl font-extrabold">60 menit</dd></div>

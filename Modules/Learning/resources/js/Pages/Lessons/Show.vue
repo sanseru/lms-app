@@ -20,10 +20,10 @@ const props = defineProps({
 const isDone = computed(() => props.done?.includes(props.lesson.id));
 const complete = () => router.post(route('learning.lessons.complete', props.lesson.id), {}, { preserveScroll: true });
 
-// ---- Kuis ----
+// ---- Quiz ----
 const passedOnce = computed(() => props.attempts?.some((a) => a.passed));
 const canAttempt = computed(() => props.can.learn && (props.remaining === null || props.remaining > 0));
-// Kuis berwaktu yang sedang berjalan langsung dibuka lagi, walau sudah ada hasil sebelumnya.
+// A timed quiz that is still running reopens straight away, even if there is an earlier result.
 const timerRunning = computed(() => props.timer?.remaining !== null && props.timer?.remaining !== undefined);
 const needsStart = computed(() => !!props.timer && !timerRunning.value);
 const taking = ref(props.can.learn && (!props.result || timerRunning.value));
@@ -34,7 +34,7 @@ resetAnswers();
 const isAnswered = (q) => (q.type === 'multiple' ? answers[q.id]?.length > 0 : q.type === 'short' ? String(answers[q.id] ?? '').trim() !== '' : answers[q.id] !== null);
 const answeredCount = computed(() => props.questions?.filter(isAnswered).length ?? 0);
 
-// Draf jawaban kuis berwaktu disimpan di browser supaya tidak hilang saat halaman dimuat ulang.
+// Draft answers for a timed quiz are kept in the browser so they survive a page reload.
 const draftKey = `quiz-draft-${props.lesson.id}`;
 const saveDraft = () => { try { localStorage.setItem(draftKey, JSON.stringify(answers)); } catch {} };
 const clearDraft = () => { try { localStorage.removeItem(draftKey); } catch {} };
@@ -86,7 +86,7 @@ const startQuiz = () => {
     router.post(route('learning.quiz.start', props.lesson.id), {}, { preserveScroll: true, onStart: () => (starting.value = true), onFinish: () => (starting.value = false) });
 };
 const duration = (s) => (s === null || s === undefined ? null : `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`);
-const hint = (q) => ({ multiple: 'Pilih semua jawaban yang benar', single: 'Pilih satu jawaban', true_false: 'Choose true or false', short: 'Type your answer' })[q.type];
+const hint = (q) => ({ multiple: 'Choose all correct answers', single: 'Choose one answer', true_false: 'Choose true or false', short: 'Type your answer' })[q.type];
 const retry = () => { resetAnswers(); taking.value = true; };
 const optionClass = (q, i) => {
     const item = props.result?.items?.[q.id];
@@ -100,7 +100,7 @@ const optionClass = (q, i) => {
     return 'border-line';
 };
 
-// ---- Tugas ----
+// ---- Assignment ----
 const subForm = useForm({ body: props.submission?.body ?? '', link_url: props.submission?.link_url ?? '', file: null });
 const editing = ref(!props.submission || props.submission.status === 'revision');
 const submitWork = () => subForm.post(route('learning.submissions.store', props.lesson.id), { forceFormData: true, preserveScroll: true, onSuccess: () => (editing.value = false) });
@@ -112,7 +112,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
     <Head :title="lesson.title" />
 
     <div class="grid gap-6 lg:grid-cols-4">
-        <!-- Daftar isi -->
+        <!-- Outline -->
         <aside class="order-2 lg:order-1">
             <div class="card overflow-hidden lg:sticky lg:top-24">
                 <Link :href="route('learning.courses.show', course.id)" class="flex items-center gap-2 border-b border-line px-4 py-3 text-sm font-bold text-ink hover:text-brand-600">
@@ -134,37 +134,37 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
         </aside>
 
         <div class="order-1 space-y-6 lg:order-2 lg:col-span-3">
-            <!-- Kepala -->
+            <!-- Header -->
             <div class="flex flex-wrap items-start gap-4">
                 <LessonTypeIcon :type="lesson.type" :done="isDone" />
                 <div class="min-w-0 flex-1">
-                    <p class="eyebrow">{{ lesson.assessment_label ?? lesson.type_label }}<template v-if="lesson.duration_minutes"> · {{ lesson.duration_minutes }} menit</template></p>
+                    <p class="eyebrow">{{ lesson.assessment_label ?? lesson.type_label }}<template v-if="lesson.duration_minutes"> · {{ lesson.duration_minutes }} min</template></p>
                     <h1 class="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{{ lesson.title }}</h1>
                 </div>
-                <Badge v-if="can.manage && !lesson.is_published" tone="gray">Draf</Badge>
-                <Link v-if="can.manage" :href="route('learning.lessons.edit', lesson.id)" class="btn-ghost"><Icon name="pencil" :size="16" /> Ubah</Link>
+                <Badge v-if="can.manage && !lesson.is_published" tone="gray">Draft</Badge>
+                <Link v-if="can.manage" :href="route('learning.lessons.edit', lesson.id)" class="btn-ghost"><Icon name="pencil" :size="16" /> Edit</Link>
             </div>
 
             <div v-if="lesson.video_embed" class="aspect-video overflow-hidden rounded-3xl bg-ink shadow-lg">
-                <iframe :src="lesson.video_embed" class="size-full" title="Video materi" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy" />
+                <iframe :src="lesson.video_embed" class="size-full" title="Lesson video" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy" />
             </div>
-            <a v-else-if="lesson.video_url" :href="lesson.video_url" target="_blank" rel="noopener" class="card flex items-center gap-3 p-4 font-semibold text-brand-600"><Icon name="play" :size="18" /> Tonton video materi</a>
+            <a v-else-if="lesson.video_url" :href="lesson.video_url" target="_blank" rel="noopener" class="card flex items-center gap-3 p-4 font-semibold text-brand-600"><Icon name="play" :size="18" /> Watch the lesson video</a>
 
             <article v-if="lesson.body_html" class="card lesson-prose p-6 sm:p-8" v-html="lesson.body_html" />
 
-            <!-- ========== MATERI ========== -->
+            <!-- ========== LESSON ========== -->
             <div v-if="lesson.type === 'material' && can.learn" class="card flex flex-wrap items-center justify-between gap-3 p-5">
-                <p class="text-sm text-muted">{{ isDone ? 'Materi ini sudah kamu selesaikan.' : 'Sudah selesai membaca? Tandai agar progresmu tercatat.' }}</p>
-                <span v-if="isDone" class="inline-flex items-center gap-1.5 font-semibold text-emerald-700"><Icon name="circle-check" :size="18" /> Selesai</span>
-                <button v-else class="btn-primary" @click="complete"><Icon name="check" :size="18" /> Tandai selesai</button>
+                <p class="text-sm text-muted">{{ isDone ? 'You have finished this lesson.' : 'Done reading? Mark it so your progress is saved.' }}</p>
+                <span v-if="isDone" class="inline-flex items-center gap-1.5 font-semibold text-emerald-700"><Icon name="circle-check" :size="18" /> Done</span>
+                <button v-else class="btn-primary" @click="complete"><Icon name="check" :size="18" /> Mark as done</button>
             </div>
 
-            <!-- ========== KUIS (siswa) ========== -->
+            <!-- ========== QUIZ (student) ========== -->
             <template v-if="lesson.type === 'quiz' && can.learn">
                 <div v-if="lesson.assessment && !result" class="flex items-start gap-3 rounded-2xl bg-brand-50 p-4 text-sm text-ink">
                     <Icon name="rocket" :size="20" class="mt-0.5 shrink-0 text-brand-600" />
-                    <p v-if="lesson.assessment === 'pre'"><b>Ini misi pemanasan, bukan ujian.</b> Jawab sebisamu, tidak apa-apa kalau belum tahu. Hasilnya membantu gurumu tahu harus mulai dari mana.</p>
-                    <p v-else><b>Misi akhir!</b> Tunjukkan apa yang sudah kamu pelajari. Hasilnya dibandingkan dengan misi pemanasan untuk melihat kemajuanmu.</p>
+                    <p v-if="lesson.assessment === 'pre'"><b>This is a warm-up mission, not a test.</b> Answer as best you can. It is fine if you do not know yet. Your answers help your teacher know where to start.</p>
+                    <p v-else><b>Final mission!</b> Show what you have learned. Your result is compared with the warm-up mission to see how far you have come.</p>
                 </div>
                 <div v-if="result && !taking" :class="result.passed ? 'bg-emerald-700' : 'bg-amber-700'" role="status" class="relative overflow-hidden rounded-3xl p-6 text-white">
                     <div class="flex flex-wrap items-center gap-5">
@@ -172,17 +172,17 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                             <span class="font-display text-4xl font-black tabular-nums">{{ result.score }}</span>
                         </div>
                         <div class="flex-1">
-                            <p class="font-display text-2xl font-extrabold">{{ result.passed ? 'Lulus! Kerja bagus 🎉' : 'Belum lulus, ayo coba lagi!' }}</p>
-                            <p class="text-white">{{ result.earned }} dari {{ result.total }} poin · nilai lulus {{ lesson.pass_score }}</p>
-                            <p v-if="remaining !== null" class="text-sm text-white">Sisa kesempatan: {{ remaining }}</p>
+                            <p class="font-display text-2xl font-extrabold">{{ result.passed ? 'You passed! Great work' : 'Not passed yet. Let\'s try again!' }}</p>
+                            <p class="text-white">{{ result.earned }} of {{ result.total }} points · pass score {{ lesson.pass_score }}</p>
+                            <p v-if="remaining !== null" class="text-sm text-white">Attempts left: {{ remaining }}</p>
                             <p v-if="result.duration !== null" class="text-sm text-white">Finished in {{ duration(result.duration) }}</p>
                             <p v-if="result.late" class="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-2 py-1 text-sm font-semibold text-white"><Icon name="clock" :size="14" /> Sent after the time limit, so this try does not count as a pass.</p>
                         </div>
-                        <button v-if="canAttempt" class="btn bg-white text-ink hover:bg-white/90" @click="retry"><Icon name="rotate-ccw" :size="16" /> {{ passedOnce ? 'Kerjakan lagi' : 'Coba lagi' }}</button>
+                        <button v-if="canAttempt" class="btn bg-white text-ink hover:bg-white/90" @click="retry"><Icon name="rotate-ccw" :size="16" /> {{ passedOnce ? 'Take it again' : 'Try again' }}</button>
                     </div>
                 </div>
 
-                <!-- Pembahasan hasil terakhir -->
+                <!-- Review of the latest result -->
                 <div v-if="result && !taking" class="space-y-4">
                     <div v-for="(q, qi) in questions" :key="q.id" class="card p-5">
                         <div class="flex items-start gap-3">
@@ -198,12 +198,12 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                         <ul v-else class="mt-3 space-y-2 pl-10">
                             <li v-for="(o, oi) in q.options" :key="oi" :class="optionClass(q, oi)" class="rounded-xl border px-3 py-2 text-sm text-ink">{{ o }}</li>
                         </ul>
-                        <p v-if="result.items[q.id].explanation" class="mt-3 ml-10 rounded-xl bg-sky-soft p-3 text-sm text-ink"><b class="text-sky-ink">Pembahasan:</b> {{ result.items[q.id].explanation }}</p>
+                        <p v-if="result.items[q.id].explanation" class="mt-3 ml-10 rounded-xl bg-sky-soft p-3 text-sm text-ink"><b class="text-sky-ink">Explanation:</b> {{ result.items[q.id].explanation }}</p>
                     </div>
-                    <p v-if="!result.reveal" class="text-center text-sm text-muted">Kunci jawaban dan pembahasan muncul setelah kamu lulus.</p>
+                    <p v-if="!result.reveal" class="text-center text-sm text-muted">The answer key and explanations appear after you pass.</p>
                 </div>
 
-                <!-- Kuis berwaktu: mulai dulu -->
+                <!-- Timed quiz: start first -->
                 <div v-if="taking && canAttempt && needsStart" class="card flex flex-wrap items-center gap-5 p-6">
                     <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-amber-100 text-amber-800"><Icon name="clock" :size="28" /></span>
                     <div class="min-w-48 flex-1">
@@ -211,16 +211,16 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                         <p class="mt-1 text-sm text-muted">{{ questions.length }} questions. The clock starts when you press Start and keeps running if you leave the page. Your answers are sent automatically when time runs out.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button v-if="result" type="button" class="btn-ghost" @click="taking = false">Batal</button>
+                        <button v-if="result" type="button" class="btn-ghost" @click="taking = false">Cancel</button>
                         <button type="button" class="btn-accent" :disabled="starting" @click="startQuiz"><Icon name="play" :size="18" /> Start quiz</button>
                     </div>
                 </div>
 
-                <!-- Mengerjakan -->
+                <!-- Taking the quiz -->
                 <form v-if="taking && canAttempt && !needsStart" class="space-y-4" @submit.prevent="submitQuiz">
                     <div v-for="(q, qi) in questions" :key="q.id" class="card p-5">
                         <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }}</p>
-                        <p class="mt-0.5 text-xs text-muted">{{ hint(q) }} · {{ q.points }} poin</p>
+                        <p class="mt-0.5 text-xs text-muted">{{ hint(q) }} · {{ q.points }} {{ q.points === 1 ? 'point' : 'points' }}</p>
                         <div v-if="q.type === 'true_false'" class="mt-3 grid grid-cols-2 gap-3">
                             <label
                                 v-for="(o, oi) in q.options"
@@ -256,39 +256,39 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                         <div class="flex flex-wrap items-center justify-between gap-3 p-4">
                             <div class="flex items-center gap-3">
                                 <span v-if="timer" :class="clockTone" class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-display text-lg font-bold tabular-nums" role="timer" :aria-label="`Time left ${clock}`"><Icon name="clock" :size="16" /> {{ clock }}</span>
-                                <p class="text-sm text-muted">Terjawab <b class="text-ink">{{ answeredCount }}/{{ questions.length }}</b><template v-if="remaining !== null"> · sisa kesempatan {{ remaining }}</template></p>
+                                <p class="text-sm text-muted">Answered <b class="text-ink">{{ answeredCount }}/{{ questions.length }}</b><template v-if="remaining !== null"> · attempts left {{ remaining }}</template></p>
                             </div>
                             <div class="flex gap-2">
-                                <button v-if="result && !timer" type="button" class="btn-ghost" @click="taking = false">Batal</button>
-                                <button type="submit" class="btn-accent" :disabled="quizForm.processing || answeredCount === 0"><Icon name="check" :size="18" /> Kumpulkan jawaban</button>
+                                <button v-if="result && !timer" type="button" class="btn-ghost" @click="taking = false">Cancel</button>
+                                <button type="submit" class="btn-accent" :disabled="quizForm.processing || answeredCount === 0"><Icon name="check" :size="18" /> Submit answers</button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <p v-if="!canAttempt && !result" class="card p-5 text-sm text-muted">Kesempatan mengerjakan kuis ini sudah habis.</p>
+                <p v-if="!canAttempt && !result" class="card p-5 text-sm text-muted">You have no attempts left for this quiz.</p>
             </template>
 
-            <!-- ========== KUIS (guru/admin) ========== -->
+            <!-- ========== QUIZ (teacher/admin) ========== -->
             <template v-if="lesson.type === 'quiz' && can.manage">
                 <div class="card overflow-hidden">
                     <div class="border-b border-line px-5 py-4">
-                        <h2 class="font-display font-bold text-ink">Hasil siswa</h2>
-                        <p class="text-sm text-muted">Nilai lulus {{ lesson.pass_score }}<template v-if="lesson.max_attempts"> · maks. {{ lesson.max_attempts }} percobaan</template><template v-if="lesson.time_limit_minutes"> · {{ lesson.time_limit_minutes }}-minute timer</template></p>
+                        <h2 class="font-display font-bold text-ink">Student results</h2>
+                        <p class="text-sm text-muted">Pass score {{ lesson.pass_score }}<template v-if="lesson.max_attempts"> · max. {{ lesson.max_attempts }} {{ lesson.max_attempts === 1 ? 'attempt' : 'attempts' }}</template><template v-if="lesson.time_limit_minutes"> · {{ lesson.time_limit_minutes }}-minute timer</template></p>
                     </div>
                     <ul v-if="attemptSummary.length" class="divide-y divide-line">
                         <li v-for="row in attemptSummary" :key="row.student.id" class="flex items-center gap-3 px-5 py-3">
                             <Avatar :initials="row.student.initials" :seed="row.student.id" size="sm" />
                             <span class="flex-1 font-semibold text-ink">{{ row.student.name }}</span>
-                            <span class="text-xs text-muted">{{ row.tries }}× mencoba</span>
+                            <span class="text-xs text-muted">{{ row.tries }} {{ row.tries === 1 ? 'try' : 'tries' }}</span>
                             <Badge :tone="row.passed ? 'green' : 'amber'">{{ row.best }}</Badge>
                         </li>
                     </ul>
-                    <p v-else class="px-5 py-8 text-center text-sm text-muted">Belum ada siswa yang mengerjakan.</p>
+                    <p v-else class="px-5 py-8 text-center text-sm text-muted">No students have taken it yet.</p>
                 </div>
                 <div class="space-y-3">
-                    <h2 class="font-display font-bold text-ink">Soal dan kunci jawaban</h2>
+                    <h2 class="font-display font-bold text-ink">Questions and answer key</h2>
                     <div v-for="(q, qi) in questions" :key="q.id" class="card p-5">
-                        <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }} <span class="text-xs font-normal text-muted">({{ q.points }} poin)</span></p>
+                        <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }} <span class="text-xs font-normal text-muted">({{ q.points }} {{ q.points === 1 ? 'point' : 'points' }})</span></p>
                         <p v-if="q.type === 'short'" class="mt-2 flex flex-wrap items-center gap-1.5 text-sm text-muted">
                             Accepted answers:
                             <span v-for="(a, ai) in answerKey[q.id].answer" :key="ai" class="rounded-lg bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800">{{ a }}</span>
@@ -298,54 +298,54 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                                 <Icon v-if="answerKey[q.id].answer.includes(oi)" name="check" :size="14" /> {{ o }}
                             </li>
                         </ul>
-                        <p v-if="answerKey[q.id].explanation" class="mt-2 text-sm text-muted">Pembahasan: {{ answerKey[q.id].explanation }}</p>
+                        <p v-if="answerKey[q.id].explanation" class="mt-2 text-sm text-muted">Explanation: {{ answerKey[q.id].explanation }}</p>
                     </div>
                 </div>
             </template>
 
-            <!-- ========== TUGAS (siswa) ========== -->
+            <!-- ========== ASSIGNMENT (student) ========== -->
             <template v-if="lesson.type === 'assignment' && can.learn">
                 <div v-if="submission && !editing" class="card space-y-4 p-5">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h2 class="font-display font-bold text-ink">Pengumpulanmu</h2>
+                        <h2 class="font-display font-bold text-ink">Your submission</h2>
                         <Badge :tone="subTone[submission.status]">{{ submission.status_label }}</Badge>
                     </div>
                     <SubmissionContent :submission="submission" />
-                    <p class="text-xs text-muted">Dikumpulkan {{ submission.submitted_at }}</p>
+                    <p class="text-xs text-muted">Submitted {{ submission.submitted_at }}</p>
                     <div v-if="submission.status === 'graded'" class="flex items-center gap-4 rounded-2xl bg-emerald-50 p-4">
                         <span class="font-display text-3xl font-black text-emerald-700">{{ submission.score }}<span class="text-base text-emerald-700/70">/{{ lesson.max_score }}</span></span>
-                        <p v-if="submission.feedback" class="flex-1 text-sm text-ink"><b>{{ submission.grader ?? 'Guru' }}:</b> {{ submission.feedback }}</p>
+                        <p v-if="submission.feedback" class="flex-1 text-sm text-ink"><b>{{ submission.grader ?? 'Teacher' }}:</b> {{ submission.feedback }}</p>
                     </div>
-                    <button v-if="submission.status === 'submitted'" class="btn-ghost text-sm" @click="editing = true"><Icon name="pencil" :size="15" /> Perbarui pengumpulan</button>
+                    <button v-if="submission.status === 'submitted'" class="btn-ghost text-sm" @click="editing = true"><Icon name="pencil" :size="15" /> Update submission</button>
                 </div>
 
                 <div v-if="submission?.status === 'revision'" class="rounded-2xl border border-accent-200 bg-accent-50 p-4 text-sm text-ink">
-                    <b class="text-accent-700">Perlu revisi:</b> {{ submission.feedback }}
+                    <b class="text-accent-700">Needs revision:</b> {{ submission.feedback }}
                 </div>
 
                 <form v-if="editing" class="card space-y-4 p-5" @submit.prevent="submitWork">
-                    <h2 class="font-display font-bold text-ink">{{ submission ? 'Kumpulkan ulang' : 'Kumpulkan tugas' }}</h2>
-                    <Field id="body" label="Jawaban / catatan" :error="subForm.errors.body">
-                        <textarea id="body" v-model="subForm.body" rows="5" class="field" placeholder="Ceritakan apa yang kamu buat, atau tempel kodenya di sini." />
+                    <h2 class="font-display font-bold text-ink">{{ submission ? 'Resubmit' : 'Submit assignment' }}</h2>
+                    <Field id="body" label="Answer / notes" :error="subForm.errors.body">
+                        <textarea id="body" v-model="subForm.body" rows="5" class="field" placeholder="Tell us what you made, or paste your code here." />
                     </Field>
-                    <Field id="link_url" label="Tautan proyek" :error="subForm.errors.link_url" hint="mis. link Scratch, Replit, Google Drive.">
+                    <Field id="link_url" label="Project link" :error="subForm.errors.link_url" hint="e.g. a Scratch, Replit or Google Drive link.">
                         <input id="link_url" v-model="subForm.link_url" type="url" class="field" placeholder="https://" />
                     </Field>
-                    <Field id="file" label="Unggah berkas" :error="subForm.errors.file" :hint="submission?.file_name ? `Berkas saat ini: ${submission.file_name}` : 'Gambar, PDF, ZIP, .sb3, .py, .html. Maks. 10 MB.'">
+                    <Field id="file" label="Upload a file" :error="subForm.errors.file" :hint="submission?.file_name ? `Current file: ${submission.file_name}` : 'Image, PDF, ZIP, .sb3, .py, .html. Max. 10 MB.'">
                         <input id="file" type="file" class="field file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700" @input="subForm.file = $event.target.files[0]" />
                     </Field>
                     <div class="flex justify-end gap-2">
-                        <button v-if="submission && submission.status !== 'revision'" type="button" class="btn-ghost" @click="editing = false">Batal</button>
-                        <button type="submit" class="btn-accent" :disabled="subForm.processing"><Icon name="upload" :size="18" /> Kumpulkan</button>
+                        <button v-if="submission && submission.status !== 'revision'" type="button" class="btn-ghost" @click="editing = false">Cancel</button>
+                        <button type="submit" class="btn-accent" :disabled="subForm.processing"><Icon name="upload" :size="18" /> Submit</button>
                     </div>
                 </form>
             </template>
 
-            <!-- ========== TUGAS (guru/admin) ========== -->
+            <!-- ========== ASSIGNMENT (teacher/admin) ========== -->
             <div v-if="lesson.type === 'assignment' && can.manage" class="card overflow-hidden">
                 <div class="border-b border-line px-5 py-4">
-                    <h2 class="font-display font-bold text-ink">Pengumpulan siswa</h2>
-                    <p class="text-sm text-muted">Nilai maksimal {{ lesson.max_score }}</p>
+                    <h2 class="font-display font-bold text-ink">Student submissions</h2>
+                    <p class="text-sm text-muted">Maximum score {{ lesson.max_score }}</p>
                 </div>
                 <ul v-if="submissions.length" class="divide-y divide-line">
                     <li v-for="s in submissions" :key="s.id" class="space-y-3 px-5 py-4">
@@ -357,28 +357,28 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                             </div>
                             <span v-if="s.score !== null" class="font-display font-bold text-ink">{{ s.score }}/{{ lesson.max_score }}</span>
                             <Badge :tone="subTone[s.status]">{{ s.status_label }}</Badge>
-                            <button class="btn-ghost px-3 py-1.5 text-xs" @click="grading = grading === s.id ? null : s.id">{{ s.status === 'submitted' ? 'Nilai' : 'Ubah nilai' }}</button>
+                            <button class="btn-ghost px-3 py-1.5 text-xs" @click="grading = grading === s.id ? null : s.id">{{ s.status === 'submitted' ? 'Grade' : 'Edit grade' }}</button>
                         </div>
                         <SubmissionContent :submission="s" class="pl-11" />
-                        <p v-if="s.feedback && grading !== s.id" class="pl-11 text-sm text-muted">Umpan balik: {{ s.feedback }}</p>
+                        <p v-if="s.feedback && grading !== s.id" class="pl-11 text-sm text-muted">Feedback: {{ s.feedback }}</p>
                         <GradeForm v-if="grading === s.id" :submission="s" :max-score="lesson.max_score" @done="grading = null" />
                     </li>
                 </ul>
-                <p v-else class="px-5 py-8 text-center text-sm text-muted">Belum ada pengumpulan dari siswa kelasmu.</p>
+                <p v-else class="px-5 py-8 text-center text-sm text-muted">No submissions from your students yet.</p>
             </div>
 
             <LessonReport :lesson-id="lesson.id" :can="can" :reports="reports" />
             <LessonQuestions :lesson-id="lesson.id" />
 
-            <!-- Navigasi -->
+            <!-- Navigation -->
             <nav class="flex items-center justify-between gap-3 border-t border-line pt-5">
                 <Link v-if="prev" :href="route('learning.lessons.show', prev.id)" class="group flex min-w-0 items-center gap-2 text-sm">
                     <Icon name="arrow-left" :size="16" class="text-muted group-hover:text-brand-600" />
-                    <span class="min-w-0"><span class="block text-xs text-muted">Sebelumnya</span><span class="block truncate font-semibold text-ink group-hover:text-brand-600">{{ prev.title }}</span></span>
+                    <span class="min-w-0"><span class="block text-xs text-muted">Previous</span><span class="block truncate font-semibold text-ink group-hover:text-brand-600">{{ prev.title }}</span></span>
                 </Link>
                 <span v-else />
                 <Link v-if="next" :href="route('learning.lessons.show', next.id)" class="group flex min-w-0 items-center gap-2 text-right text-sm">
-                    <span class="min-w-0"><span class="block text-xs text-muted">Berikutnya</span><span class="block truncate font-semibold text-ink group-hover:text-brand-600">{{ next.title }}</span></span>
+                    <span class="min-w-0"><span class="block text-xs text-muted">Next</span><span class="block truncate font-semibold text-ink group-hover:text-brand-600">{{ next.title }}</span></span>
                     <Icon name="arrow-right" :size="16" class="text-muted group-hover:text-brand-600" />
                 </Link>
             </nav>

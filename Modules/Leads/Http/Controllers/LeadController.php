@@ -60,9 +60,9 @@ class LeadController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $lead = Lead::create($this->validateLead($request) + ['status' => 'new']);
-        $lead->notes()->create(['user_id' => $request->user()->id, 'type' => 'status', 'body' => 'Dicatat manual oleh admin.']);
+        $lead->notes()->create(['user_id' => $request->user()->id, 'type' => 'status', 'body' => 'Added manually by an admin.']);
 
-        return redirect()->route('leads.show', $lead)->with('success', 'Calon siswa ditambahkan.');
+        return redirect()->route('leads.show', $lead)->with('success', 'Lead added.');
     }
 
     public function show(Lead $lead, ConvertLead $convert): Response
@@ -103,24 +103,24 @@ class LeadController extends Controller
     {
         $lead->update($this->validateLead($request));
 
-        return back()->with('success', 'Data calon siswa diperbarui.');
+        return back()->with('success', 'Lead details updated.');
     }
 
     public function note(Request $request, Lead $lead): RedirectResponse
     {
-        $data = $request->validate(['body' => ['required', 'string', 'max:2000']], [], ['body' => 'catatan']);
+        $data = $request->validate(['body' => ['required', 'string', 'max:2000']], [], ['body' => 'note']);
         $lead->notes()->create(['user_id' => $request->user()->id, 'type' => 'note', 'body' => $data['body']]);
 
-        return back()->with('success', 'Catatan ditambahkan.');
+        return back()->with('success', 'Note added.');
     }
 
     public function contacted(Request $request, Lead $lead): RedirectResponse
     {
         abort_unless($lead->status === 'new', 422);
         $lead->update(['status' => 'contacted', 'contacted_at' => now()]);
-        $this->log($request, $lead, 'Sudah dihubungi.');
+        $this->log($request, $lead, 'Contacted.');
 
-        return back()->with('success', 'Ditandai sudah dihubungi.');
+        return back()->with('success', 'Marked as contacted.');
     }
 
     public function schedule(Request $request, Lead $lead): RedirectResponse
@@ -131,47 +131,47 @@ class LeadController extends Controller
             'trial_at' => ['required', 'date', 'after:now'],
             'trial_teacher_id' => ['required', 'integer', function ($attribute, $value, $fail) {
                 if (! User::find($value)?->hasRole(Role::Teacher->value)) {
-                    $fail('Pilih guru yang terdaftar.');
+                    $fail('Choose a registered teacher.');
                 }
             }],
             'trial_zoom_url' => ['nullable', 'url', 'max:255'],
-        ], [], ['trial_at' => 'waktu trial', 'trial_teacher_id' => 'guru', 'trial_zoom_url' => 'tautan Zoom']);
+        ], [], ['trial_at' => 'trial time', 'trial_teacher_id' => 'teacher', 'trial_zoom_url' => 'Zoom link']);
 
         $rescheduled = $lead->status === 'trial_scheduled';
         $lead->update($data + ['status' => 'trial_scheduled', 'contacted_at' => $lead->contacted_at ?? now()]);
         $lead->load('trialTeacher');
         $when = $lead->trial_at->translatedFormat('l, d M Y H:i');
-        $this->log($request, $lead, ($rescheduled ? 'Trial dipindah ke ' : 'Trial dijadwalkan ')."{$when} bersama {$lead->trialTeacher->name}.");
+        $this->log($request, $lead, ($rescheduled ? 'Trial moved to ' : 'Trial scheduled for ')."{$when} with {$lead->trialTeacher->name}.");
 
         Notify::send(
             $lead->trialTeacher,
-            "Kelas trial: {$lead->child_name}",
-            "{$when}".($lead->interest ? " · {$lead->interest}" : '').'. Catat hasilnya setelah trial selesai.',
+            "Trial class: {$lead->child_name}",
+            "{$when}".($lead->interest ? " · {$lead->interest}" : '').'. Record the result after the trial.',
             route('leads.trials'),
             'calendar-days',
             "lead-trial:{$lead->id}:{$lead->trial_at->timestamp}",
         );
 
-        return back()->with('success', 'Trial dijadwalkan dan guru diberi tahu.');
+        return back()->with('success', 'Trial scheduled and the teacher has been notified.');
     }
 
     public function lose(Request $request, Lead $lead): RedirectResponse
     {
         abort_unless($lead->isOpen(), 422);
-        $data = $request->validate(['lost_reason' => ['required', 'string', 'max:255']], [], ['lost_reason' => 'alasan']);
+        $data = $request->validate(['lost_reason' => ['required', 'string', 'max:255']], [], ['lost_reason' => 'reason']);
         $lead->update(['status' => 'lost', 'lost_reason' => $data['lost_reason'], 'closed_at' => now()]);
-        $this->log($request, $lead, "Tidak lanjut: {$data['lost_reason']}");
+        $this->log($request, $lead, "Not continuing: {$data['lost_reason']}");
 
-        return back()->with('success', 'Ditandai tidak lanjut.');
+        return back()->with('success', 'Marked as not continuing.');
     }
 
     public function reopen(Request $request, Lead $lead): RedirectResponse
     {
         abort_unless($lead->status === 'lost', 422);
         $lead->update(['status' => $lead->trial_result ? 'trial_done' : ($lead->contacted_at ? 'contacted' : 'new'), 'lost_reason' => null, 'closed_at' => null]);
-        $this->log($request, $lead, 'Dibuka kembali.');
+        $this->log($request, $lead, 'Reopened.');
 
-        return back()->with('success', 'Calon siswa dibuka kembali.');
+        return back()->with('success', 'Lead reopened.');
     }
 
     public function convert(Request $request, Lead $lead, ConvertLead $convert): RedirectResponse
@@ -185,7 +185,7 @@ class LeadController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'relationship' => ['required', Rule::in(['ayah', 'ibu', 'wali'])],
             'class_room_id' => ['nullable', 'exists:class_rooms,id'],
-        ], [], ['student_username' => 'username anak', 'guardian_username' => 'username orang tua', 'password' => 'kata sandi', 'class_room_id' => 'kelas']);
+        ], [], ['student_username' => 'child username', 'guardian_username' => 'parent username', 'password' => 'password', 'class_room_id' => 'class']);
 
         $student = $convert->handle($lead, [
             ...$data,
@@ -193,7 +193,7 @@ class LeadController extends Controller
             'guardian_username' => isset($data['guardian_username']) ? strtolower($data['guardian_username']) : null,
         ], $request->user());
 
-        return redirect()->route('leads.show', $lead)->with('success', "{$student->name} sekarang terdaftar sebagai siswa. Kirim username dan kata sandi ke orang tua.");
+        return redirect()->route('leads.show', $lead)->with('success', "{$student->name} is now enrolled as a student. Send the username and password to the parent.");
     }
 
     private function log(Request $request, Lead $lead, string $body): void
@@ -214,14 +214,14 @@ class LeadController extends Controller
             'preferred_time' => ['nullable', 'string', 'max:150'],
             'source' => ['nullable', Rule::in(array_keys(Lead::SOURCES))],
             'message' => ['nullable', 'string', 'max:1000'],
-        ], ['phone.regex' => 'Nomor WhatsApp hanya boleh berisi angka, spasi, atau tanda +.'], [
-            'parent_name' => 'nama orang tua', 'phone' => 'nomor WhatsApp', 'child_name' => 'nama anak', 'child_age' => 'usia anak',
+        ], ['phone.regex' => 'The WhatsApp number may only contain digits, spaces or a + sign.'], [
+            'parent_name' => 'parent name', 'phone' => 'WhatsApp number', 'child_name' => 'child name', 'child_age' => 'child age',
         ]);
     }
 
     private function suggestUsername(string $name): string
     {
-        $base = strtolower(preg_replace('/[^a-z0-9]/i', '', explode(' ', trim($name))[0] ?? '')) ?: 'siswa';
+        $base = strtolower(preg_replace('/[^a-z0-9]/i', '', explode(' ', trim($name))[0] ?? '')) ?: 'student';
         $candidate = $base;
         for ($i = 2; User::where('username', $candidate)->exists(); $i++) {
             $candidate = $base.$i;

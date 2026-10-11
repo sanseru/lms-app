@@ -23,7 +23,7 @@ class IssueCertificate
                 'course_id' => $course?->id,
                 'class_room_id' => $class?->id,
                 'title' => $data['title'] ?? $course?->title ?? $class?->name,
-                'achievement' => $data['achievement'] ?? 'telah menyelesaikan seluruh materi dan proyek kursus',
+                'achievement' => $data['achievement'] ?? 'for completing all the lessons and projects in the course',
                 'issued_at' => $data['issued_at'] ?? today(),
                 'issued_by' => $issuer->id,
                 'signer_name' => $class?->teacher?->name ?? $issuer->name,

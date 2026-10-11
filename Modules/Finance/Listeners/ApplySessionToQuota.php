@@ -6,9 +6,9 @@ use Modules\Finance\Models\StudentPackage;
 use Modules\Sessions\Events\SessionCompleted;
 
 /**
- * Hubungkan absensi yang memotong kuota ke paket aktif siswa (paket kelas ini dulu,
- * lalu paket umum, yang paling lama dibeli lebih dulu). Absensi yang tidak lagi
- * memotong kuota dilepas dari paketnya. Idempoten.
+ * Link quota-consuming attendance to the student's active package (this class's package first,
+ * then general packages, oldest purchase first). Attendance that no longer consumes
+ * quota is detached from its package. Idempotent.
  */
 class ApplySessionToQuota
 {

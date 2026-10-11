@@ -12,7 +12,7 @@ use Modules\Audit\Support\AuditTrail;
 
 class AuditController extends Controller
 {
-    /** Kolom yang nilainya rupiah, agar halaman bisa memformatnya. */
+    /** Columns holding rupiah amounts, so the page can format them. */
     private const MONEY = ['amount', 'price', 'total', 'bonus', 'deduction', 'rate_per_session'];
 
     public function index(Request $request, AuditTrail $trail): Response

@@ -10,7 +10,7 @@ import QuestionCard from '../../Components/QuestionCard.vue';
 
 const props = defineProps({ questions: Object, filters: Object, lesson: Object, counts: Object, classes: Array, canAsk: Boolean, isStaff: Boolean });
 
-const tabs = { all: 'Semua', unanswered: 'Belum dijawab', answered: 'Ada jawaban', resolved: 'Terjawab', mine: 'Pertanyaanku' };
+const tabs = { all: 'All', unanswered: 'Unanswered', answered: 'Has answers', resolved: 'Resolved', mine: 'My questions' };
 const search = ref(props.filters.q ?? '');
 const classId = ref(props.filters.class ?? '');
 
@@ -24,23 +24,23 @@ watch(classId, () => go());
 </script>
 
 <template>
-    <Head title="Tanya Jawab" />
+    <Head title="Q&A" />
 
     <PageHeader
-        eyebrow="Belajar"
-        title="Tanya jawab"
-        :description="isStaff ? 'Pertanyaan siswa di kelasmu. Jawab yang belum dijawab dulu, lalu sematkan yang sering ditanyakan.' : 'Bingung? Tanyakan di sini. Guru dan teman sekelas siap membantu.'"
+        eyebrow="Learning"
+        title="Q&A"
+        :description="isStaff ? 'Questions from students in your classes. Answer the unanswered ones first, then pin the ones that come up often.' : 'Stuck? Ask here. Your teacher and classmates are ready to help.'"
     >
         <template #actions>
-            <Link v-if="canAsk" :href="route('forum.questions.create', { lesson: lesson?.id })" class="btn-primary"><Icon name="plus" :size="18" /> Tanya sesuatu</Link>
+            <Link v-if="canAsk" :href="route('forum.questions.create', { lesson: lesson?.id })" class="btn-primary"><Icon name="plus" :size="18" /> Ask a question</Link>
         </template>
     </PageHeader>
 
     <div v-if="lesson" class="mb-4 flex items-center gap-2 rounded-2xl bg-brand-50 px-4 py-3 text-sm text-ink">
         <Icon name="book-open" :size="16" class="text-brand-600" />
-        <span class="flex-1">Pertanyaan tentang <b>{{ lesson.title }}</b></span>
-        <Link :href="route('learning.lessons.show', lesson.id)" class="font-semibold text-brand-600 hover:underline">Buka pelajaran</Link>
-        <button class="rounded-lg p-1 text-muted hover:bg-white hover:text-ink" title="Hapus filter" @click="go({ lesson: undefined })"><Icon name="x" :size="16" /></button>
+        <span class="flex-1">Questions about <b>{{ lesson.title }}</b></span>
+        <Link :href="route('learning.lessons.show', lesson.id)" class="font-semibold text-brand-600 hover:underline">Open lesson</Link>
+        <button class="rounded-lg p-1 text-muted hover:bg-white hover:text-ink" title="Clear filter" @click="go({ lesson: undefined })"><Icon name="x" :size="16" /></button>
     </div>
 
     <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -58,10 +58,10 @@ watch(classId, () => go());
         </div>
         <div class="flex flex-col gap-2 sm:flex-row">
             <select v-if="classes.length > 1" v-model="classId" class="field sm:w-52">
-                <option value="">Semua kelas</option>
+                <option value="">All classes</option>
                 <option v-for="c in classes" :key="c.id" :value="c.id">{{ c.name }}</option>
             </select>
-            <SearchInput v-model="search" placeholder="Cari pertanyaan…" />
+            <SearchInput v-model="search" placeholder="Search questions…" />
         </div>
     </div>
 
@@ -73,11 +73,11 @@ watch(classId, () => go());
     <div v-else class="card">
         <EmptyState
             icon="message-question"
-            :title="filters.tab === 'unanswered' ? 'Semua pertanyaan sudah dijawab 🎉' : 'Belum ada pertanyaan'"
-            :description="canAsk && filters.tab !== 'unanswered' ? 'Tidak ada pertanyaan yang bodoh. Coba tanyakan hal yang membuatmu bingung!' : null"
+            :title="filters.tab === 'unanswered' ? 'Every question has been answered' : 'No questions yet'"
+            :description="canAsk && filters.tab !== 'unanswered' ? 'There are no silly questions. Ask about anything that confuses you!' : null"
         />
         <div v-if="canAsk && filters.tab !== 'unanswered'" class="pb-8 text-center">
-            <Link :href="route('forum.questions.create', { lesson: lesson?.id })" class="btn-primary"><Icon name="plus" :size="18" /> Tanya sekarang</Link>
+            <Link :href="route('forum.questions.create', { lesson: lesson?.id })" class="btn-primary"><Icon name="plus" :size="18" /> Ask now</Link>
         </div>
     </div>
 </template>

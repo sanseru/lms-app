@@ -12,7 +12,7 @@
     --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'DM Mono', ui-monospace, monospace;
 
-    /* Brand ungu #5B4185 */
+    /* Brand purple #5B4185 */
     --color-brand-50: #f4f1f9;
     --color-brand-100: #e9e3f3;
     --color-brand-200: #d3c7e6;
@@ -24,14 +24,14 @@
     --color-brand-800: #3d2c59;
     --color-brand-900: #2b1f3f;
 
-    /* Aksen coral #F58464 */
+    /* Coral accent #F58464 */
     --color-accent-50: #fff1eb;
     --color-accent-100: #ffe0d4;
     --color-accent-200: #fcc9b6;
     --color-accent-300: #f9ae96;
     --color-accent-400: #f37352;
     --color-accent-500: #f58464;
-    /* 600 ke atas dipakai untuk teks coral: kontras >= 4.5:1 di putih dan accent-50 */
+    /* 600 and up are used for coral text: contrast >= 4.5:1 on white and accent-50 */
     --color-accent-600: #b84b27;
     --color-accent-700: #9a3d1f;
 
@@ -42,7 +42,7 @@
     --color-success-ink: #2f7d52;
     --color-success-soft: #e9f6ee;
     --color-ink: #1d2934;
-    /* Teks sekunder: >= 4.5:1 di paper, putih, dan chip */
+    /* Secondary text: >= 4.5:1 on paper, white and chip */
     --color-muted: #5f6b75;
     --color-line: #e6e9f0;
     --color-paper: #fbfcfa;
@@ -67,7 +67,7 @@
         background: var(--color-accent-200);
         color: var(--color-ink);
     }
-    /* Fokus keyboard yang selalu terlihat untuk tautan dan kontrol tanpa gaya fokus sendiri. */
+    /* Always-visible keyboard focus for links and controls without their own focus style. */
     :where(a, button, [role='button'], summary, select, input[type='checkbox'], input[type='radio']):focus-visible {
         outline: 2px solid var(--color-brand-500);
         outline-offset: 2px;
@@ -76,7 +76,7 @@
     :where(td, th) {
         font-variant-numeric: tabular-nums;
     }
-    /* Gerak berkurang: hentikan perpindahan posisi, pertahankan perubahan warna/opasitas sebagai umpan balik. */
+    /* Reduced motion: stop position changes, keep colour/opacity changes as feedback. */
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
         .animate-bounce, .animate-ping, .animate-pulse { animation: none; }
@@ -105,10 +105,10 @@
 @utility btn-danger {
     @apply btn bg-red-600 text-white hover:bg-red-700;
 }
-/* Panel sorotan (sapaan dashboard, level, kepala halaman kelas): satu warna dalam, bukan gradien. */
 @utility report-h {
     @apply mb-3 font-display text-base font-bold text-brand-700;
 }
+/* Highlight panel (dashboard greeting, level, class page header): one deep colour, not a gradient. */
 @utility panel-brand {
     @apply relative overflow-hidden rounded-3xl bg-brand-700 text-white;
     background-image: radial-gradient(color-mix(in oklab, white 14%, transparent) 1.2px, transparent 1.2px);
@@ -121,7 +121,7 @@
     @apply mb-1.5 block text-sm font-semibold text-ink;
 }
 
-/* Isi materi (HTML hasil Markdown) */
+/* Lesson content (HTML rendered from Markdown) */
 .lesson-prose {
     @apply leading-relaxed text-ink;
 }
@@ -142,7 +142,7 @@
 .lesson-prose table { @apply w-full text-sm; }
 .lesson-prose th, .lesson-prose td { @apply border-b border-line px-3 py-2 text-left; }
 
-/* Cetak hanya area .print-area (mis. sertifikat) dalam satu halaman A4 lanskap. */
+/* Print only the .print-area (e.g. a certificate) on one landscape A4 page. */
 @media print {
     @page { size: A4 landscape; margin: 0; }
     body * { visibility: hidden; }

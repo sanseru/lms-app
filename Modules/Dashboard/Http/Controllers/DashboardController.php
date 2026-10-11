@@ -24,7 +24,7 @@ use Modules\Sessions\Models\ClassSession;
 use Modules\Sessions\Models\SessionAttendance;
 
 /**
- * Satu URL /dashboard, tampilan berbeda per role utama user.
+ * One /dashboard URL, a different view per primary role.
  */
 class DashboardController extends Controller
 {
@@ -181,7 +181,7 @@ class DashboardController extends Controller
         ];
     }
 
-    /** Sesi terakhir yang dihadiri: materi, PR, dan catatan guru untuk orang tua. */
+    /** Last attended session: lesson, homework and the teacher's note for parents. */
     private function lastSessionFor(User $student): ?array
     {
         $attendance = SessionAttendance::where('student_id', $student->id)
@@ -211,8 +211,7 @@ class DashboardController extends Controller
             ->count();
     }
 
-    /** Ringkas progres kursus untuk kartu dashboard. */
-    /** Level dan lencana terbaru dari modul Gamifikasi. */
+    /** Level and latest badges from the Gamification module. */
     private function achievementsFor(User $student): ?array
     {
         if (! Route::has('gamification.me')) {
@@ -229,7 +228,7 @@ class DashboardController extends Controller
         ];
     }
 
-    /** Papan proyek aktif milik siswa. */
+    /** The student's active project boards. */
     private function projectsFor(User $student): array
     {
         if (! Route::has('kanban.projects.index')) {

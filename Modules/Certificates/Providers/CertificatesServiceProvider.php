@@ -11,9 +11,9 @@ use Modules\Gamification\Support\QueryRule;
 use Modules\Gamification\Support\XpRules;
 
 /**
- * Modul Sertifikat: guru/admin menerbitkan sertifikat untuk siswa yang
- * menyelesaikan kursus. Setiap sertifikat punya nomor, kode verifikasi publik
- * (/sertifikat/{kode}) dan QR, serta bisa dicetak atau disimpan sebagai PDF.
+ * Certificates module: teachers/admins issue certificates to students who
+ * finish a course. Each certificate has a number, a public verification code
+ * (/certificates/{code}) and a QR code, and can be printed or saved as PDF.
  */
 class CertificatesServiceProvider extends ModuleServiceProvider
 {
@@ -31,9 +31,9 @@ class CertificatesServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
-        // Contoh modul yang menambah aturan XP ke modul Gamifikasi.
+        // Example of a module adding an XP rule to the Gamification module.
         $this->callAfterResolving(XpRules::class, fn (XpRules $rules) => $rules->add(
-            new QueryRule('certificate', 'Mendapat sertifikat', 100, fn (User $u) => DB::table('certificates')
+            new QueryRule('certificate', 'Earned a certificate', 100, fn (User $u) => DB::table('certificates')
                 ->where('student_id', $u->id)->whereNull('revoked_at')->select('id as source_id', 'issued_at as at')),
         ));
     }
@@ -41,9 +41,9 @@ class CertificatesServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Sertifikat', 'certificates.index', 'award', 'Belajar', 37, roles: ['admin', 'teacher'], active: 'certificates.*'),
-            new NavItem('Sertifikatku', 'certificates.index', 'award', 'Belajar', 37, roles: ['student'], active: 'certificates.*'),
-            new NavItem('Sertifikat Anak', 'certificates.index', 'award', 'Belajar', 37, roles: ['guardian'], active: 'certificates.*'),
+            new NavItem('Certificates', 'certificates.index', 'award', 'Learning', 37, roles: ['admin', 'teacher'], active: 'certificates.*'),
+            new NavItem('My certificates', 'certificates.index', 'award', 'Learning', 37, roles: ['student'], active: 'certificates.*'),
+            new NavItem("Child's certificates", 'certificates.index', 'award', 'Learning', 37, roles: ['guardian'], active: 'certificates.*'),
         );
     }
 }

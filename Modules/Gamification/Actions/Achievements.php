@@ -9,7 +9,7 @@ use Modules\Gamification\Support\Badges;
 use Modules\Gamification\Support\Levels;
 use Modules\Gamification\Support\XpRules;
 
-/** Ringkasan XP, level, dan lencana seorang siswa. */
+/** A student's XP, level and badge summary. */
 class Achievements
 {
     public function __construct(private SyncXp $sync, private XpRules $rules) {}
@@ -40,7 +40,7 @@ class Achievements
         ];
     }
 
-    /** Lencana (yang belum didapat ikut dikirim dalam keadaan terkunci). */
+    /** Badges (ones not yet earned are included as locked). */
     public function badges(Collection $events): array
     {
         $byRule = $events->groupBy('rule');

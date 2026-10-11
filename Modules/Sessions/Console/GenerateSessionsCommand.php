@@ -8,9 +8,9 @@ use Modules\Sessions\Actions\GenerateSessions;
 
 class GenerateSessionsCommand extends Command
 {
-    protected $signature = 'sessions:generate {--weeks= : Jumlah minggu ke depan}';
+    protected $signature = 'sessions:generate {--weeks= : Number of weeks ahead}';
 
-    protected $description = 'Buat sesi kelas dari jadwal mingguan untuk beberapa minggu ke depan';
+    protected $description = 'Create class sessions from weekly schedules for the coming weeks';
 
     public function handle(GenerateSessions $generator): int
     {
@@ -21,7 +21,7 @@ class GenerateSessionsCommand extends Command
             $total += $generator->forClass($class, now(), now()->addWeeks($weeks));
         });
 
-        $this->info("{$total} sesi baru dibuat.");
+        $this->info("{$total} new session(s) created.");
 
         return self::SUCCESS;
     }

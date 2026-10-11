@@ -26,37 +26,37 @@ const submit = () =>
 </script>
 
 <template>
-    <Head :title="guardian ? 'Ubah orang tua' : 'Tambah orang tua'" />
+    <Head :title="guardian ? 'Edit parent' : 'Add parent'" />
 
-    <PageHeader eyebrow="Orang tua" :title="guardian ? guardian.name : 'Tambah orang tua'">
+    <PageHeader eyebrow="Parent" :title="guardian ? guardian.name : 'Add parent'">
         <template #back>
             <Link :href="route('people.guardians.index')" class="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600">
-                <Icon name="arrow-left" :size="16" /> Daftar orang tua
+                <Icon name="arrow-left" :size="16" /> Parent list
             </Link>
         </template>
     </PageHeader>
 
     <form class="card p-6 sm:p-8" @submit.prevent="submit">
-        <FormSection title="Akun login" description="Nomor HP wajib diisi untuk konfirmasi pembayaran.">
+        <FormSection title="Login account" description="A phone number is required for payment confirmations.">
             <AccountFields :form="form" :editing="!!guardian" />
         </FormSection>
 
-        <FormSection title="Anak" description="Pilih siswa yang menjadi tanggungan orang tua ini.">
-            <Field id="relationship" label="Hubungan" :error="form.errors.relationship">
+        <FormSection title="Children" description="Pick the students this parent is responsible for.">
+            <Field id="relationship" label="Relationship" :error="form.errors.relationship">
                 <select id="relationship" v-model="form.relationship" class="field">
-                    <option value="ayah">Ayah</option>
-                    <option value="ibu">Ibu</option>
-                    <option value="wali">Wali</option>
+                    <option value="ayah">Father</option>
+                    <option value="ibu">Mother</option>
+                    <option value="wali">Guardian</option>
                 </select>
             </Field>
             <div class="sm:col-span-2">
-                <CheckList v-model="form.student_ids" :options="students" :subtitle="(s) => s.code" empty="Belum ada data siswa." />
+                <CheckList v-model="form.student_ids" :options="students" :subtitle="(s) => s.code" empty="No students yet." />
             </div>
         </FormSection>
 
         <div class="flex justify-end gap-2 border-t border-line pt-6">
-            <Link :href="route('people.guardians.index')" class="btn-ghost">Batal</Link>
-            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Simpan</button>
+            <Link :href="route('people.guardians.index')" class="btn-ghost">Cancel</Link>
+            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Save</button>
         </div>
     </form>
 </template>

@@ -92,7 +92,7 @@ class CodeLessonType implements LessonTypeHandler
             ->all();
     }
 
-    /** Untuk tutor saat kelas Zoom: kode terbaru dan nilai terbaik tiap siswa. */
+    /** For teachers during a Zoom class: each student's latest code and best score. */
     private function classroom(Lesson $lesson): array
     {
         return CodeSubmission::with('student')
@@ -112,7 +112,7 @@ class CodeLessonType implements LessonTypeHandler
             ->all();
     }
 
-    /** Urutan acak yang tetap untuk siswa yang sama (tidak berubah saat halaman dimuat ulang). */
+    /** A shuffle that stays the same for the same student (does not change on reload). */
     private function shuffled(CodeExercise $exercise, User $user): array
     {
         $lines = $exercise->parsonsLines();
@@ -121,7 +121,7 @@ class CodeLessonType implements LessonTypeHandler
         shuffle($lines);
         mt_srand();
 
-        // Jangan sampai acakannya kebetulan sama dengan jawaban.
+        // Make sure the shuffle does not happen to match the answer.
         if ($lines === $original && count($lines) > 1) {
             $lines[] = array_shift($lines);
         }

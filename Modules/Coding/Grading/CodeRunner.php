@@ -7,8 +7,8 @@ use Modules\Coding\Models\CodeExercise;
 use Modules\Coding\Models\CodeTest;
 
 /**
- * Menjalankan kode untuk tes input→output / fungsi dan mengembalikan output mentah.
- * Driver: "browser" (hasil dari browser siswa) atau "judge0" (server terpisah).
+ * Runs code for input→output / function tests and returns the raw output.
+ * Drivers: "browser" (results from the student's browser) or "judge0" (separate server).
  */
 interface CodeRunner
 {
@@ -16,7 +16,7 @@ interface CodeRunner
 
     /**
      * @param  Collection<int, CodeTest>  $tests
-     * @param  array<int|string, array{output?: string|null, error?: string|null}>  $reported  hasil dari browser
+     * @param  array<int|string, array{output?: string|null, error?: string|null}>  $reported  results from the browser
      * @return array<int, array{output: string|null, error: string|null}>
      */
     public function run(CodeExercise $exercise, string $code, Collection $tests, array $reported): array;

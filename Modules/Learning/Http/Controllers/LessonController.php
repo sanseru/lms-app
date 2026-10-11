@@ -49,7 +49,7 @@ class LessonController extends Controller
             return $lesson;
         });
 
-        return to_route('learning.lessons.show', $lesson)->with('success', Lesson::types()[$lesson->type].' ditambahkan.');
+        return to_route('learning.lessons.show', $lesson)->with('success', Lesson::types()[$lesson->type].' added.');
     }
 
     public function show(Request $request, Lesson $lesson): Response
@@ -133,7 +133,7 @@ class LessonController extends Controller
             $this->syncQuestions($lesson, $request->validated('questions') ?? []);
         });
 
-        return to_route('learning.lessons.show', $lesson)->with('success', 'Perubahan disimpan.');
+        return to_route('learning.lessons.show', $lesson)->with('success', 'Changes saved.');
     }
 
     public function destroy(Lesson $lesson): RedirectResponse
@@ -141,10 +141,10 @@ class LessonController extends Controller
         $course = $lesson->course;
         $lesson->delete();
 
-        return to_route('learning.courses.show', $course)->with('success', 'Materi dihapus.');
+        return to_route('learning.courses.show', $course)->with('success', 'Lesson deleted.');
     }
 
-    /** Geser urutan materi naik/turun satu langkah. */
+    /** Move a lesson up or down one step. */
     public function move(Request $request, Lesson $lesson): RedirectResponse
     {
         $direction = $request->validate(['direction' => ['required', 'in:up,down']])['direction'];
@@ -165,17 +165,17 @@ class LessonController extends Controller
         return back();
     }
 
-    /** Siswa menandai materi bacaan selesai. */
+    /** Student marks a reading lesson as done. */
     public function complete(Request $request, Lesson $lesson): RedirectResponse
     {
         Gate::authorize('learn', $lesson);
         abort_unless($lesson->type === 'material', 422);
         LessonProgress::markDone($lesson->id, $request->user()->id);
 
-        return back()->with('success', 'Materi ditandai selesai.');
+        return back()->with('success', 'Lesson marked as done.');
     }
 
-    /** Jenis tambahan dari modul lain untuk pilihan di form. */
+    /** Extra types from other modules for the form's picker. */
     private function extraTypes(LessonTypes $extra, Course $course): array
     {
         return collect($extra->all())->map(fn ($h) => ['label' => $h->label(), 'icon' => $h->icon(), 'url' => $h->createUrl($course)])->all();
@@ -186,7 +186,7 @@ class LessonController extends Controller
         $data = collect($request->validated())->except('questions')->all();
         $data['is_published'] = $request->boolean('is_published', true);
 
-        // Kolom khusus jenis lain dikosongkan agar data tetap bersih.
+        // Clear columns that belong to other types to keep the data clean.
         if ($data['type'] !== 'quiz') {
             $data['pass_score'] = $data['max_attempts'] = $data['time_limit_minutes'] = $data['assessment'] = null;
         }
@@ -214,7 +214,7 @@ class LessonController extends Controller
                 'points' => $q['points'],
                 'explanation' => $q['explanation'] ?? null,
                 'concept' => isset($q['concept']) ? mb_strtolower(trim($q['concept'])) ?: null : null,
-                // Soal isian: setiap opsi adalah jawaban yang diterima, jadi semuanya benar.
+                // Short-answer questions: every option is an accepted answer, so they are all correct.
                 'options' => collect($q['options'])->map(fn ($o) => ['text' => trim($o['text']), 'correct' => $q['type'] === 'short' || (bool) ($o['correct'] ?? false)])->values()->all(),
             ];
 
@@ -234,10 +234,10 @@ class LessonController extends Controller
             $attempts = $lesson->attempts()->where('student_id', $user->id)->latest('id')->get();
             $last = $attempts->first();
             $remaining = $lesson->max_attempts ? max(0, $lesson->max_attempts - $attempts->count()) : null;
-            // Kunci jawaban dibuka setelah lulus atau kesempatan habis.
+            // The answer key is revealed after passing or running out of attempts.
             $reveal = $last && ($attempts->contains('passed', true) || $remaining === 0);
 
-            $data['attempts'] = $attempts->map(fn (QuizAttempt $a) => ['id' => $a->id, 'score' => $a->score, 'passed' => $a->passed, 'late' => $a->late, 'duration' => $a->duration_seconds, 'at' => $a->created_at->translatedFormat('d M Y, H:i')]);
+            $data['attempts'] = $attempts->map(fn (QuizAttempt $a) => ['id' => $a->id, 'score' => $a->score, 'passed' => $a->passed, 'late' => $a->late, 'duration' => $a->duration_seconds, 'at' => $a->created_at->format('d M Y, H:i')]);
             $data['timer'] = $lesson->time_limit_minutes ? [
                 'limit' => $lesson->time_limit_minutes,
                 'remaining' => app(QuizTimer::class)->remaining($lesson, $user->id),

@@ -55,7 +55,7 @@ test('class creation rejects a teacher schedule conflict', function () {
     $this->actingAs($admin)->post('/classes', classPayload(['teacher_id' => $teacher->id]))
         ->assertSessionHasErrors('teacher_id');
 
-    // Jam yang bersebelahan tidak dianggap bentrok.
+    // Back-to-back times do not count as a clash.
     $this->actingAs($admin)->post('/classes', classPayload(['teacher_id' => $teacher->id, 'start_time' => '08:00', 'end_time' => '09:30']))
         ->assertSessionHasNoErrors();
 });
@@ -86,7 +86,7 @@ test('students, teachers and guardians only see their own classes', function () 
     $guardian->children()->attach($student->id);
 
     $mine = makeClass(['teacher_id' => $teacher->id]);
-    $other = makeClass(['name' => 'Kelas lain']);
+    $other = makeClass(['name' => 'Another class']);
     $mine->students()->attach($student->id);
 
     foreach ([$teacher, $student, $guardian] as $user) {

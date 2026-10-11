@@ -12,11 +12,11 @@ const props = defineProps({ mode: String, projects: Array });
 
 const active = computed(() => props.projects.filter((p) => p.status === 'active'));
 const archived = computed(() => props.projects.filter((p) => p.status !== 'active'));
-const titles = { staff: 'Proyek kelas', student: 'Proyekku', guardian: 'Proyek anak' };
+const titles = { staff: 'Class projects', student: 'My projects', guardian: "Child's projects" };
 const descriptions = {
-    staff: 'Buat proyek untuk kelas, lalu pantau papan kanban setiap siswa dan cek kartu yang mereka kirim.',
-    student: 'Kerjakan proyekmu langkah demi langkah. Geser kartu dari kiri ke kanan sampai semuanya selesai!',
-    guardian: 'Lihat sejauh mana anak Anda mengerjakan proyek dari guru.',
+    staff: 'Create projects for your classes, then follow each student\'s kanban board and review the cards they send in.',
+    student: 'Work on your project step by step. Slide the cards from left to right until everything is done!',
+    guardian: 'See how far your child has got with projects from their teacher.',
 };
 const color = (p) => classColors[p.class.color] ?? classColors.violet;
 const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id) : route('kanban.boards.show', p.board.id));
@@ -25,9 +25,9 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
 <template>
     <Head :title="titles[mode]" />
 
-    <PageHeader eyebrow="Belajar" :title="titles[mode]" :description="descriptions[mode]">
+    <PageHeader eyebrow="Learning" :title="titles[mode]" :description="descriptions[mode]">
         <template v-if="mode === 'staff'" #actions>
-            <Link :href="route('kanban.projects.create')" class="btn-primary"><Icon name="plus" :size="18" /> Proyek baru</Link>
+            <Link :href="route('kanban.projects.create')" class="btn-primary"><Icon name="plus" :size="18" /> New project</Link>
         </template>
     </PageHeader>
 
@@ -47,22 +47,22 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
                 <div class="flex flex-1 flex-col gap-4 p-5">
                     <div class="flex flex-wrap items-center gap-2 text-xs">
                         <span v-if="p.due_date" :class="p.is_overdue ? 'bg-rose-50 text-rose-700' : 'bg-chip text-muted'" class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold">
-                            <Icon name="calendar-days" :size="12" /> {{ p.is_overdue ? 'Lewat tenggat' : `Tenggat ${p.due_date}` }}
+                            <Icon name="calendar-days" :size="12" /> {{ p.is_overdue ? 'Overdue' : `Due ${p.due_date}` }}
                         </span>
                         <span v-if="mode === 'staff' && p.to_review" class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-800">
-                            <Icon name="eye" :size="12" /> {{ p.to_review }} perlu dicek
+                            <Icon name="eye" :size="12" /> {{ p.to_review }} to review
                         </span>
-                        <span v-if="p.board?.completed" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700"><Icon name="trophy" :size="12" /> Selesai</span>
+                        <span v-if="p.board?.completed" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700"><Icon name="trophy" :size="12" /> Done</span>
                     </div>
 
                     <template v-if="mode === 'staff'">
                         <div class="mt-auto">
                             <div class="mb-1.5 flex justify-between text-sm">
-                                <span class="text-muted">Rata-rata progres</span>
+                                <span class="text-muted">Average progress</span>
                                 <span class="font-bold text-ink">{{ p.percent }}%</span>
                             </div>
                             <ProgressBar :value="p.percent" />
-                            <p class="mt-2 text-xs text-muted">{{ p.completed }} dari {{ p.students }} siswa selesai</p>
+                            <p class="mt-2 text-xs text-muted">{{ p.completed }} of {{ p.students }} students done</p>
                         </div>
                     </template>
                     <template v-else>
@@ -72,13 +72,13 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
                         </div>
                         <div class="mt-auto">
                             <div class="mb-1.5 flex justify-between text-sm">
-                                <span class="text-muted">{{ p.board.progress.done }} dari {{ p.board.progress.total }} langkah</span>
+                                <span class="text-muted">{{ p.board.progress.done }} of {{ p.board.progress.total }} steps</span>
                                 <span class="font-bold text-ink">{{ p.board.progress.percent }}%</span>
                             </div>
                             <ProgressBar :value="p.board.progress.percent" :tone="p.board.completed ? 'green' : 'brand'" />
                             <div class="mt-3 grid grid-cols-4 gap-1 text-center text-xs text-muted">
                                 <span v-for="(n, key) in p.board.progress.counts" :key="key" class="rounded-lg bg-chip/70 py-1">
-                                    <b class="block text-sm text-ink">{{ n }}</b>{{ { todo: 'Mau', doing: 'Sedang', review: 'Dicek', done: 'Selesai' }[key] }}
+                                    <b class="block text-sm text-ink">{{ n }}</b>{{ { todo: 'To do', doing: 'Doing', review: 'Review', done: 'Done' }[key] }}
                                 </span>
                             </div>
                         </div>
@@ -88,7 +88,7 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
         </div>
 
         <div v-if="archived.length">
-            <h2 class="mb-3 font-display font-bold text-muted">Diarsipkan</h2>
+            <h2 class="mb-3 font-display font-bold text-muted">Archived</h2>
             <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <Link v-for="p in archived" :key="`${p.id}-${p.board?.id ?? ''}`" :href="href(p)" class="flex items-center gap-3 rounded-2xl border border-line bg-white/60 p-4 hover:bg-white">
                     <span class="text-2xl grayscale">{{ p.emoji }}</span>
@@ -101,9 +101,9 @@ const href = (p) => (props.mode === 'staff' ? route('kanban.projects.show', p.id
     <div v-else class="card">
         <EmptyState
             icon="kanban"
-            :title="mode === 'staff' ? 'Belum ada proyek' : 'Belum ada proyek dari guru'"
-            :description="mode === 'staff' ? 'Proyek membantu siswa membuat karya sendiri, misalnya game atau website, langkah demi langkah.' : 'Proyek dari guru akan muncul di sini.'"
+            :title="mode === 'staff' ? 'No projects yet' : 'No projects from your teacher yet'"
+            :description="mode === 'staff' ? 'Projects help students build their own creations, like a game or a website, step by step.' : 'Projects from your teacher will show up here.'"
         />
-        <div v-if="mode === 'staff'" class="pb-8 text-center"><Link :href="route('kanban.projects.create')" class="btn-primary"><Icon name="plus" :size="18" /> Buat proyek pertama</Link></div>
+        <div v-if="mode === 'staff'" class="pb-8 text-center"><Link :href="route('kanban.projects.create')" class="btn-primary"><Icon name="plus" :size="18" /> Create your first project</Link></div>
     </div>
 </template>

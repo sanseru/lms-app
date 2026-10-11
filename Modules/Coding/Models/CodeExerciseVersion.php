@@ -4,7 +4,7 @@ namespace Modules\Coding\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/** Salinan isi soal coding pada satu versi. Nilai siswa menunjuk ke versi saat ia mengumpulkan. */
+/** A copy of a coding exercise at one version. A student score points to the version they submitted against. */
 class CodeExerciseVersion extends Model
 {
     public const UPDATED_AT = null;

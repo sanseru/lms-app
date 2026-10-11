@@ -35,7 +35,7 @@ class ProjectRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['class_room_id' => 'kelas', 'title' => 'judul', 'due_date' => 'tenggat', 'tasks.*.title' => 'judul langkah'];
+        return ['class_room_id' => 'class', 'title' => 'title', 'due_date' => 'due date', 'tasks.*.title' => 'step title'];
     }
 
     public function after(): array
@@ -44,7 +44,7 @@ class ProjectRequest extends FormRequest
             $class = ClassRoom::find($this->input('class_room_id'));
 
             if ($class && ! $this->user()->hasRole('admin') && $class->teacher_id !== $this->user()->id) {
-                $validator->errors()->add('class_room_id', 'Kamu hanya bisa membuat proyek untuk kelas yang kamu ajar.');
+                $validator->errors()->add('class_room_id', 'You can only create projects for classes you teach.');
             }
         }];
     }

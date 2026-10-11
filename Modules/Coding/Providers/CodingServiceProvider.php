@@ -10,8 +10,8 @@ use Modules\Coding\Support\CodeLessonType;
 use Modules\Learning\Support\LessonTypes;
 
 /**
- * Modul Coding: soal coding yang dinilai otomatis (Python, JavaScript, HTML/CSS,
- * susun baris). Soal adalah salah satu jenis isi kursus di modul Belajar.
+ * Coding module: auto-graded coding exercises (Python, JavaScript, HTML/CSS,
+ * arrange lines). An exercise is one kind of course content in the Learning module.
  */
 class CodingServiceProvider extends ModuleServiceProvider
 {

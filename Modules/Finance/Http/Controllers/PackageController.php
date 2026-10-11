@@ -49,17 +49,17 @@ class PackageController extends Controller
     {
         Package::create($this->validatePackage($request));
 
-        return back()->with('success', 'Paket ditambahkan.');
+        return back()->with('success', 'Package added.');
     }
 
     public function update(Request $request, Package $package): RedirectResponse
     {
         $package->update($this->validatePackage($request));
 
-        return back()->with('success', 'Paket diperbarui.');
+        return back()->with('success', 'Package updated.');
     }
 
-    /** Jual paket ke siswa: buat tagihan, paket aktif setelah lunas (atau langsung bila gratis/trial). */
+    /** Sell a package to a student: creates an invoice; the package activates once paid (or immediately if free/trial). */
     public function assign(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -68,7 +68,7 @@ class PackageController extends Controller
             'class_room_id' => ['nullable', Rule::exists('class_rooms', 'id')],
             'due_date' => ['required', 'date'],
             'activate_now' => ['boolean'],
-        ], [], ['package_id' => 'paket', 'student_id' => 'siswa', 'due_date' => 'jatuh tempo']);
+        ], [], ['package_id' => 'package', 'student_id' => 'student', 'due_date' => 'due date']);
 
         $package = Package::findOrFail($data['package_id']);
 
@@ -77,7 +77,7 @@ class PackageController extends Controller
                 'number' => Invoice::nextNumber(),
                 'student_id' => $data['student_id'],
                 'class_room_id' => $data['class_room_id'] ?? null,
-                'title' => "Paket {$package->name}",
+                'title' => "{$package->name} package",
                 'amount' => $package->price,
                 'due_date' => $data['due_date'],
                 'issued_by' => $request->user()->id,
@@ -99,18 +99,18 @@ class PackageController extends Controller
             }
         });
 
-        return back()->with('success', $package->price > 0 ? 'Paket dibuat beserta tagihannya.' : 'Paket gratis langsung aktif.');
+        return back()->with('success', $package->price > 0 ? 'Package created along with its invoice.' : 'Free package is active right away.');
     }
 
     public function cancel(StudentPackage $studentPackage): RedirectResponse
     {
         if ($studentPackage->usages()->exists()) {
-            return back()->with('error', 'Paket yang sudah terpakai tidak bisa dibatalkan.');
+            return back()->with('error', 'A package that has already been used cannot be cancelled.');
         }
 
         $studentPackage->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Paket dibatalkan.');
+        return back()->with('success', 'Package cancelled.');
     }
 
     private function validatePackage(Request $request): array
@@ -122,6 +122,6 @@ class PackageController extends Controller
             'valid_days' => ['required', 'integer', 'min:1', 'max:730'],
             'description' => ['nullable', 'string', 'max:500'],
             'is_active' => ['boolean'],
-        ], [], ['sessions_count' => 'jumlah sesi', 'price' => 'harga', 'valid_days' => 'masa berlaku']);
+        ], [], ['sessions_count' => 'number of sessions', 'price' => 'price', 'valid_days' => 'validity period']);
     }
 }

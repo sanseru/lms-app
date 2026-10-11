@@ -8,8 +8,8 @@ use Modules\Sessions\Events\SessionCompleted;
 use Modules\Sessions\Models\ClassSession;
 
 /**
- * Simpan absensi + catatan dalam satu langkah lalu tandai sesi selesai.
- * Bisa dipanggil ulang untuk koreksi; event selalu dipicu agar kuota dan honor ikut sinkron.
+ * Save attendance + notes in one step, then mark the session completed.
+ * Can be called again for corrections; the event always fires so quotas and tutor fees stay in sync.
  */
 class CompleteSession
 {

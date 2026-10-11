@@ -9,8 +9,8 @@ use Modules\Coding\Grading\Harness;
 use Modules\Coding\Models\CodeExercise;
 
 /**
- * Menjalankan kode di Judge0 CE (self-host di VPS terpisah, tanpa akses ke jaringan
- * internal). Output dari browser diabaikan sehingga nilai tidak bisa dipalsukan.
+ * Runs code on Judge0 CE (self-hosted on a separate VPS, with no access to the internal
+ * network). Browser output is ignored, so scores cannot be faked.
  */
 class Judge0Runner implements CodeRunner
 {
@@ -24,7 +24,7 @@ class Judge0Runner implements CodeRunner
     public function run(CodeExercise $exercise, string $code, Collection $tests, array $reported): array
     {
         $languageId = $this->config['languages'][$exercise->language] ?? null;
-        abort_unless($languageId, 422, "Bahasa {$exercise->language} belum dikonfigurasi untuk Judge0.");
+        abort_unless($languageId, 422, "The {$exercise->language} language is not configured for Judge0 yet.");
 
         $submissions = $tests->map(fn ($test) => [
             'language_id' => $languageId,
@@ -40,7 +40,7 @@ class Judge0Runner implements CodeRunner
 
         $tokens = collect($http->post('/submissions/batch?base64_encoded=true', ['submissions' => $submissions])->throw()->json())->pluck('token');
 
-        // Tunggu sampai semua selesai (status id > 2 = bukan antre/berjalan).
+        // Wait until all are done (status id > 2 = not queued/running).
         $results = [];
         for ($i = 0; $i < 20; $i++) {
             $results = $http->get('/submissions/batch', ['tokens' => $tokens->implode(','), 'base64_encoded' => 'true', 'fields' => 'status,stdout,stderr,compile_output'])
@@ -57,7 +57,7 @@ class Judge0Runner implements CodeRunner
             $statusId = $r['status']['id'] ?? 0;
             $decode = fn ($v) => $v === null ? null : base64_decode($v);
             $error = match (true) {
-                $statusId === 5 => 'Waktu habis',
+                $statusId === 5 => 'Time limit reached',
                 $statusId >= 6 => trim($decode($r['compile_output'] ?? null) ?: $decode($r['stderr'] ?? null) ?: ($r['status']['description'] ?? 'Error')),
                 default => null,
             };

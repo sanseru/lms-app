@@ -27,7 +27,7 @@ class SessionsServiceProvider extends ModuleServiceProvider
 
         ClassRoom::resolveRelationUsing('sessions', fn (ClassRoom $class) => $class->hasMany(ClassSession::class));
 
-        // Jadwal kelas dibuat/diubah: susun ulang sesi mendatang.
+        // Class schedule created/changed: rebuild upcoming sessions.
         ClassRoom::saved(function (ClassRoom $class) {
             if ($class->wasRecentlyCreated || $class->wasChanged(['schedule_days', 'start_time', 'end_time', 'start_date', 'end_date', 'status', 'teacher_id'])) {
                 app(GenerateSessions::class)->regenerateUpcoming($class);
@@ -41,6 +41,6 @@ class SessionsServiceProvider extends ModuleServiceProvider
 
     public function navigation(NavigationRegistry $nav): void
     {
-        $nav->add(new NavItem('Sesi & Absensi', 'sessions.index', 'clipboard-check', 'Akademik', 15, roles: ['admin', 'teacher'], active: 'sessions.*'));
+        $nav->add(new NavItem('Sessions & attendance', 'sessions.index', 'clipboard-check', 'Academic', 15, roles: ['admin', 'teacher'], active: 'sessions.*'));
     }
 }

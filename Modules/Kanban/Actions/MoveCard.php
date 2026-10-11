@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Modules\Kanban\Models\Card;
 
-/** Pindahkan kartu ke kolom dan urutan tertentu, lalu rapikan nomor urut. */
+/** Move a card to a given column and position, then tidy up the positions. */
 class MoveCard
 {
     public function handle(Card $card, string $column, int $index, User $by): Card

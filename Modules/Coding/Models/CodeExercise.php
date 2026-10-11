@@ -13,12 +13,12 @@ class CodeExercise extends Model
 
     public const MODES = [
         'io' => 'Input → output',
-        'function' => 'Fungsi',
-        'html' => 'Cek HTML/CSS',
-        'parsons' => 'Susun baris kode',
+        'function' => 'Function',
+        'html' => 'HTML/CSS check',
+        'parsons' => 'Arrange code lines',
     ];
 
-    /** Mode yang boleh dipakai tiap bahasa. */
+    /** Modes allowed for each language. */
     public const MODES_BY_LANGUAGE = [
         'python' => ['io', 'function', 'parsons'],
         'javascript' => ['io', 'function', 'parsons'],
@@ -26,11 +26,11 @@ class CodeExercise extends Model
     ];
 
     public const HTML_RULES = [
-        'exists' => 'Elemen ada',
-        'text' => 'Teks elemen berisi',
-        'attr' => 'Atribut elemen',
-        'count' => 'Jumlah elemen minimal',
-        'style' => 'Gaya CSS elemen',
+        'exists' => 'Element exists',
+        'text' => 'Element text contains',
+        'attr' => 'Element attribute',
+        'count' => 'Minimum element count',
+        'style' => 'Element CSS style',
     ];
 
     protected $fillable = [
@@ -53,13 +53,13 @@ class CodeExercise extends Model
         return $this->hasMany(CodeTest::class)->orderBy('position')->orderBy('id');
     }
 
-    /** Sidik isi yang dinilai: berubah bila solusi atau tes berubah, sehingga perlu diuji ulang. */
+    /** Fingerprint of the graded content: changes when the solution or tests change, so it must be re-verified. */
     public function contentHash(): string
     {
         $tests = $this->tests()->get()->map->only('kind', 'input', 'expected', 'property', 'weight')->all();
         $parts = [$this->language, $this->mode, $this->solution_code, $this->function_name, $this->case_sensitive, $tests];
 
-        // Aturan kode ikut sidik hanya bila ada, supaya soal lama tidak perlu diuji ulang.
+        // Code rules join the fingerprint only when present, so older exercises don't need re-verifying.
         if ($this->activeRules()) {
             $parts[] = $this->activeRules();
         }
@@ -67,7 +67,7 @@ class CodeExercise extends Model
         return sha1(json_encode($parts));
     }
 
-    /** Aturan kode hanya berlaku untuk soal yang kodenya dijalankan. */
+    /** Code rules only apply to exercises whose code is run. */
     public function activeRules(): array
     {
         return in_array($this->mode, ['io', 'function'], true) ? array_values($this->rules ?? []) : [];
@@ -78,7 +78,7 @@ class CodeExercise extends Model
         return $this->hasMany(CodeExerciseVersion::class)->orderByDesc('version');
     }
 
-    /** Isi soal yang menentukan nilai, disimpan per versi. */
+    /** The exercise content that determines the score, stored per version. */
     public function snapshot(): array
     {
         return [
@@ -97,7 +97,7 @@ class CodeExercise extends Model
         return $this->mode === 'parsons' || ($this->verified_hash !== null && $this->verified_hash === $this->contentHash());
     }
 
-    /** Baris solusi untuk soal Parsons (baris kosong dibuang, indentasi dipertahankan). */
+    /** Solution lines for a Parsons exercise (blank lines dropped, indentation kept). */
     public function parsonsLines(): array
     {
         return collect(preg_split('/\R/', $this->solution_code))

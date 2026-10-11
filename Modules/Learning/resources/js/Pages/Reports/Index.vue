@@ -21,9 +21,9 @@ const close = (r) => form.post(route('learning.reports.resolve', r.id), { preser
 <template>
     <Head title="Reported problems" />
 
-    <PageHeader eyebrow="Belajar" title="Reported problems" description="Students flag lessons and exercises that look wrong. Fix the lesson, then close the report so the student knows.">
+    <PageHeader eyebrow="Learning" title="Reported problems" description="Students flag lessons and exercises that look wrong. Fix the lesson, then close the report so the student knows.">
         <template #back>
-            <Link :href="route('learning.grading.index')" class="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><Icon name="arrow-left" :size="15" /> Penilaian tugas</Link>
+            <Link :href="route('learning.grading.index')" class="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><Icon name="arrow-left" :size="15" /> Grading</Link>
         </template>
     </PageHeader>
 

@@ -10,10 +10,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Learning\Actions\StudentProgress;
 
-/** Rapor belajar per siswa untuk orang tua, guru, dan admin. */
+/** Per-student learning report for parents, teachers and admins. */
 class ProgressController extends Controller
 {
-    /** Orang tua: langsung ke anak pertama bila hanya satu, atau pilih anak. */
+    /** Parents: go straight to the child if there is only one, otherwise pick a child. */
     public function index(Request $request): Response|RedirectResponse
     {
         $children = $request->user()->children()->orderBy('name')->get();

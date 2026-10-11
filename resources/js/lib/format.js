@@ -6,13 +6,12 @@ export const compactRupiah = (value) =>
 
 export const greeting = () => {
     const hour = new Date().getHours();
-    if (hour < 11) return 'Selamat pagi';
-    if (hour < 15) return 'Selamat siang';
-    if (hour < 18) return 'Selamat sore';
-    return 'Selamat malam';
+    if (hour < 11) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
 };
 
-/** Warna kartu kelas: kelas Tailwind lengkap agar tidak terhapus saat build. `grad` = latar sampul solid (teks putih >= 4.5:1). */
+/** Class card colours: full Tailwind classes so they survive the build. `grad` = solid cover background (white text >= 4.5:1). */
 export const classColors = {
     violet: { bg: 'bg-violet-50', ring: 'ring-violet-200', dot: 'bg-violet-500', text: 'text-violet-700', solid: 'bg-violet-500', grad: 'bg-violet-700' },
     sky: { bg: 'bg-sky-50', ring: 'ring-sky-200', dot: 'bg-sky-500', text: 'text-sky-700', solid: 'bg-sky-500', grad: 'bg-sky-700' },

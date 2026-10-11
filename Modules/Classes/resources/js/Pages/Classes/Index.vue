@@ -23,19 +23,19 @@ const filters = useFilters(
 </script>
 
 <template>
-    <Head title="Kelas" />
+    <Head title="Classes" />
 
-    <PageHeader eyebrow="Akademik" title="Kelas" :description="can.manage ? 'Kelas online via Zoom beserta guru dan siswanya.' : 'Kelas yang kamu ikuti.'">
+    <PageHeader eyebrow="Academic" title="Classes" :description="can.manage ? 'Online Zoom classes with their teachers and students.' : 'The classes you take part in.'">
         <template v-if="can.manage" #actions>
-            <Link :href="route('classes.create')" class="btn-accent"><Icon name="plus" :size="18" /> Buat kelas</Link>
+            <Link :href="route('classes.create')" class="btn-accent"><Icon name="plus" :size="18" /> Create class</Link>
         </template>
     </PageHeader>
 
     <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center">
-        <SearchInput v-model="filters.search" placeholder="Cari nama atau kode kelas…" />
+        <SearchInput v-model="filters.search" placeholder="Search by class name or code…" />
         <div class="flex flex-wrap gap-2">
             <button
-                v-for="(label, key) in { '': 'Semua', ...statuses }"
+                v-for="(label, key) in { '': 'All', ...statuses }"
                 :key="key"
                 :class="filters.status === key ? 'bg-brand-600 text-white' : 'bg-white text-muted ring-1 ring-line hover:text-ink'"
                 class="rounded-full px-4 py-2 text-sm font-semibold transition"
@@ -45,7 +45,7 @@ const filters = useFilters(
             </button>
         </div>
         <select v-if="subjects.length > 1" v-model="filters.subject" class="field lg:ml-auto lg:w-52">
-            <option value="">Semua pelajaran</option>
+            <option value="">All subjects</option>
             <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
         </select>
     </div>
@@ -57,10 +57,10 @@ const filters = useFilters(
     <div v-else class="card">
         <EmptyState
             icon="school"
-            :title="can.manage ? 'Belum ada kelas' : 'Kamu belum terdaftar di kelas mana pun'"
-            :description="can.manage ? 'Buat kelas, tentukan jadwal dan link Zoom, lalu tambahkan siswa.' : 'Hubungi admin untuk didaftarkan ke kelas.'"
+            :title="can.manage ? 'No classes yet' : 'You are not in any class yet'"
+            :description="can.manage ? 'Create a class, set its schedule and Zoom link, then add students.' : 'Ask an admin to add you to a class.'"
         >
-            <Link v-if="can.manage" :href="route('classes.create')" class="btn-primary"><Icon name="plus" :size="18" /> Buat kelas</Link>
+            <Link v-if="can.manage" :href="route('classes.create')" class="btn-primary"><Icon name="plus" :size="18" /> Create class</Link>
         </EmptyState>
     </div>
 

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Laporan siswa bahwa ada yang salah di sebuah pelajaran atau soal. */
+/** A student report that something is wrong in a lesson or exercise. */
 class LessonReport extends Model
 {
     public const REASONS = [

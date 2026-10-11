@@ -53,18 +53,18 @@ const submit = () => {
 };
 
 const visibilityHelp = {
-    class: 'Teman sekelas bisa ikut membaca dan menjawab.',
-    private: 'Hanya kamu dan guru yang bisa melihat.',
+    class: 'Classmates can read and answer too.',
+    private: 'Only you and your teacher can see it.',
 };
 </script>
 
 <template>
-    <Head :title="editing ? 'Ubah pertanyaan' : 'Tanya sesuatu'" />
+    <Head :title="editing ? 'Edit question' : 'Ask a question'" />
 
-    <PageHeader eyebrow="Tanya jawab" :title="editing ? 'Ubah pertanyaan' : 'Tanya sesuatu'">
+    <PageHeader eyebrow="Q&A" :title="editing ? 'Edit question' : 'Ask a question'">
         <template #back>
             <Link :href="editing ? route('forum.questions.show', question.id) : route('forum.questions.index')" class="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink">
-                <Icon name="arrow-left" :size="15" /> Kembali
+                <Icon name="arrow-left" :size="15" /> Back
             </Link>
         </template>
     </PageHeader>
@@ -72,7 +72,7 @@ const visibilityHelp = {
     <div class="grid gap-6 lg:grid-cols-3">
         <form class="space-y-5 lg:col-span-2" @submit.prevent="submit">
             <div class="card space-y-5 p-5 sm:p-6">
-                <Field v-if="!editing" label="Kelas" :error="form.errors.class_room_id" required>
+                <Field v-if="!editing" label="Class" :error="form.errors.class_room_id" required>
                     <div class="grid gap-2 sm:grid-cols-2">
                         <button
                             v-for="c in classes"
@@ -88,42 +88,42 @@ const visibilityHelp = {
                     </div>
                 </Field>
 
-                <Field v-if="selectedClass?.lessons.length" label="Tentang pelajaran" hint="Opsional. Membantu guru tahu bagian mana yang membingungkan." :error="form.errors.lesson_id">
+                <Field v-if="selectedClass?.lessons.length" label="About a lesson" hint="Optional. Helps your teacher see which part is confusing." :error="form.errors.lesson_id">
                     <select v-model="form.lesson_id" class="field">
-                        <option value="">Pertanyaan umum</option>
+                        <option value="">General question</option>
                         <option v-for="l in selectedClass.lessons" :key="l.id" :value="l.id">{{ l.title }}</option>
                     </select>
                 </Field>
 
-                <Field label="Judul pertanyaan" :error="form.errors.title" required hint="Singkat dan jelas, mis. &quot;Kenapa perulangan for-ku tidak berhenti?&quot;">
-                    <input v-model="form.title" type="text" maxlength="150" class="field" placeholder="Apa yang membuatmu bingung?" />
+                <Field label="Question title" :error="form.errors.title" required hint="Short and clear, e.g. &quot;Why does my for loop never stop?&quot;">
+                    <input v-model="form.title" type="text" maxlength="150" class="field" placeholder="What are you stuck on?" />
                 </Field>
 
-                <Field label="Ceritakan lebih lengkap" :error="form.errors.body" required hint="Apa yang sudah kamu coba? Apa yang kamu harapkan terjadi? Tulis `kode` di antara tanda petik terbalik.">
-                    <textarea v-model="form.body" rows="6" maxlength="5000" class="field" placeholder="Aku sudah mencoba… tapi hasilnya…" />
+                <Field label="Tell us more" :error="form.errors.body" required hint="What have you tried? What did you expect to happen? Put `code` between backticks.">
+                    <textarea v-model="form.body" rows="6" maxlength="5000" class="field" placeholder="I tried… but what happened was…" />
                 </Field>
 
                 <div>
-                    <button v-if="!showCode" type="button" class="btn-ghost text-sm" @click="showCode = true"><Icon name="code" :size="16" /> Tambahkan kode</button>
-                    <Field v-else label="Kode kamu" :error="form.errors.code" hint="Tempel kode yang bermasalah. Spasi dan indentasi tetap terjaga.">
+                    <button v-if="!showCode" type="button" class="btn-ghost text-sm" @click="showCode = true"><Icon name="code" :size="16" /> Add code</button>
+                    <Field v-else label="Your code" :error="form.errors.code" hint="Paste the code that is not working. Spaces and indentation are kept.">
                         <textarea v-model="form.code" rows="8" spellcheck="false" class="field bg-[#241a35] font-mono text-sm text-[#f3eefb] placeholder:text-white/40" placeholder="for i in range(5):&#10;    print(i)" @keydown.tab.prevent="indent" />
                     </Field>
                 </div>
 
-                <Field label="Gambar (opsional)" :error="form.errors.image" hint="Tangkapan layar error atau hasil program. JPG/PNG, maks 4 MB.">
+                <Field label="Image (optional)" :error="form.errors.image" hint="A screenshot of the error or your program's output. JPG/PNG, max 4 MB.">
                     <div v-if="preview" class="relative inline-block">
-                        <img :src="preview" alt="Pratinjau gambar" class="max-h-56 rounded-xl border border-line" />
-                        <button type="button" class="absolute -top-2 -right-2 grid size-7 place-items-center rounded-full bg-ink text-white shadow" title="Hapus gambar" @click="removeImage"><Icon name="x" :size="14" /></button>
+                        <img :src="preview" alt="Image preview" class="max-h-56 rounded-xl border border-line" />
+                        <button type="button" class="absolute -top-2 -right-2 grid size-7 place-items-center rounded-full bg-ink text-white shadow" title="Remove image" @click="removeImage"><Icon name="x" :size="14" /></button>
                     </div>
                     <label v-else class="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed border-line px-4 py-4 text-sm text-muted hover:border-brand-300 hover:text-ink">
-                        <Icon name="image" :size="20" /> Pilih gambar
+                        <Icon name="image" :size="20" /> Choose an image
                         <input type="file" accept="image/*" class="hidden" @change="pickImage" />
                     </label>
                 </Field>
             </div>
 
             <div class="card space-y-4 p-5 sm:p-6">
-                <p class="label !mb-0">Siapa yang bisa melihat?</p>
+                <p class="label !mb-0">Who can see it?</p>
                 <div class="grid gap-2 sm:grid-cols-2">
                     <label
                         v-for="(label, key) in visibilities"
@@ -141,32 +141,32 @@ const visibilityHelp = {
                 <label v-if="isStudent && form.visibility === 'class'" class="flex items-start gap-3 rounded-xl bg-chip/60 p-3 text-sm">
                     <input v-model="form.anonymous" type="checkbox" class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" />
                     <span>
-                        <span class="flex items-center gap-1.5 font-semibold text-ink"><Icon name="eye-off" :size="15" /> Sembunyikan namaku dari teman</span>
-                        <span class="text-xs text-muted">Teman melihat "Teman sekelas". Guru dan orang tuamu tetap tahu siapa yang bertanya.</span>
+                        <span class="flex items-center gap-1.5 font-semibold text-ink"><Icon name="eye-off" :size="15" /> Hide my name from classmates</span>
+                        <span class="text-xs text-muted">Classmates will see "A classmate". Your teacher and parents still know who asked.</span>
                     </span>
                 </label>
                 <p v-if="form.errors.visibility" class="text-sm font-medium text-rose-600">{{ form.errors.visibility }}</p>
             </div>
 
             <div class="flex justify-end gap-2">
-                <Link :href="editing ? route('forum.questions.show', question.id) : route('forum.questions.index')" class="btn-ghost">Batal</Link>
-                <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="send" :size="16" /> {{ editing ? 'Simpan' : 'Kirim pertanyaan' }}</button>
+                <Link :href="editing ? route('forum.questions.show', question.id) : route('forum.questions.index')" class="btn-ghost">Cancel</Link>
+                <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="send" :size="16" /> {{ editing ? 'Save' : 'Send question' }}</button>
             </div>
         </form>
 
         <aside class="space-y-4">
             <div class="panel-brand p-5">
-                <p class="font-display text-lg font-bold">Tips bertanya</p>
+                <p class="font-display text-lg font-bold">Tips for asking</p>
                 <ol class="mt-2 list-decimal space-y-2 pl-5 text-sm text-brand-100 marker:font-bold marker:text-accent-300">
-                    <li>Tulis apa yang ingin kamu buat.</li>
-                    <li>Ceritakan apa yang sudah kamu coba.</li>
-                    <li>Tempel kode dan pesan error-nya.</li>
-                    <li>Kalau sudah terjawab, pilih jawaban terbaik ya!</li>
+                    <li>Say what you are trying to make.</li>
+                    <li>Explain what you have already tried.</li>
+                    <li>Paste your code and the error message.</li>
+                    <li>Once it is answered, pick the best answer!</li>
                 </ol>
             </div>
             <div class="card p-5 text-sm text-muted">
-                <p class="font-semibold text-ink">Tidak ada pertanyaan yang bodoh</p>
-                <p class="mt-1">Teman sekelasmu mungkin juga bingung hal yang sama. Dengan bertanya, kamu membantu mereka juga.</p>
+                <p class="font-semibold text-ink">There are no silly questions</p>
+                <p class="mt-1">Your classmates might be stuck on the same thing. When you ask, you help them too.</p>
             </div>
         </aside>
     </div>

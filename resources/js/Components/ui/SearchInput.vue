@@ -2,7 +2,7 @@
 import Icon from './Icon.vue';
 
 const model = defineModel({ type: String, default: '' });
-defineProps({ placeholder: { type: String, default: 'Cari…' } });
+defineProps({ placeholder: { type: String, default: 'Search…' } });
 </script>
 
 <template>

@@ -8,28 +8,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Classes\Models\ClassRoom;
 
-/** Calon siswa dari formulir coba gratis atau dicatat admin dari WhatsApp. */
+/** A prospective student from the free trial form, or logged by an admin from WhatsApp. */
 class Lead extends Model
 {
     public const STATUSES = [
-        'new' => 'Baru masuk',
-        'contacted' => 'Sudah dihubungi',
-        'trial_scheduled' => 'Trial dijadwalkan',
-        'trial_done' => 'Sudah trial',
-        'won' => 'Jadi siswa',
-        'lost' => 'Tidak lanjut',
+        'new' => 'New',
+        'contacted' => 'Contacted',
+        'trial_scheduled' => 'Trial scheduled',
+        'trial_done' => 'Trial done',
+        'won' => 'Enrolled',
+        'lost' => 'Not continuing',
     ];
 
-    /** Kolom papan pipeline (yang sudah selesai ditampilkan terpisah). */
+    /** Pipeline board columns (closed leads are shown separately). */
     public const OPEN = ['new', 'contacted', 'trial_scheduled', 'trial_done'];
 
     public const INTERESTS = [
-        'Scratch Junior & Scratch', 'Game Maker', 'Python Pro', 'Web Developer', 'AI & Data Explorer', 'Android & IoT', 'Belum tahu, minta saran',
+        'Scratch Junior & Scratch', 'Game Maker', 'Python Pro', 'Web Developer', 'AI & Data Explorer', 'Android & IoT', 'Not sure yet, please advise',
     ];
 
     public const SOURCES = [
-        'instagram' => 'Instagram', 'tiktok' => 'TikTok', 'google' => 'Google', 'teman' => 'Teman atau keluarga',
-        'sekolah' => 'Sekolah', 'whatsapp' => 'WhatsApp', 'lainnya' => 'Lainnya',
+        'instagram' => 'Instagram', 'tiktok' => 'TikTok', 'google' => 'Google', 'teman' => 'Friends or family',
+        'sekolah' => 'School', 'whatsapp' => 'WhatsApp', 'lainnya' => 'Other',
     ];
 
     protected $fillable = [
@@ -63,7 +63,7 @@ class Lead extends Model
         return $this->belongsTo(User::class, 'student_id');
     }
 
-    /** Nomor untuk tautan wa.me: 08xx menjadi 628xx. */
+    /** Number for wa.me links: 08xx becomes 628xx. */
     public function waNumber(): string
     {
         $digits = preg_replace('/\D/', '', $this->phone);

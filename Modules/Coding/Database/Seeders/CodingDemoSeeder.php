@@ -8,7 +8,7 @@ use Modules\Learning\Models\Course;
 use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
 
-/** Soal coding contoh (sudah lulus Uji solusi) dan beberapa jawaban siswa. */
+/** Sample coding exercises (already passed Test solution) and a few student answers. */
 class CodingDemoSeeder
 {
     public function run(): void
@@ -17,34 +17,34 @@ class CodingDemoSeeder
         $web = Course::firstWhere('subject', 'Web Development');
 
         if ($python) {
-            $this->exercise($python, 'Hitung luas persegi', 'io', 'python', 15,
-                "Kucing Oyen punya kebun berbentuk persegi. Bantu dia menghitung **luas kebunnya**!\n\nProgram membaca satu angka (panjang sisi) lalu mencetak luasnya.\n\n```\nInput:  4\nOutput: 16\n```",
-                "sisi = int(input())\n# hitung luasnya di sini\n",
-                "sisi = int(input())\nprint(sisi * sisi)\n",
+            $this->exercise($python, 'Find the area of a square', 'io', 'python', 15,
+                "Ginger the cat has a square garden. Help her work out **the area of her garden**!\n\nThe program reads one number (the side length) and prints the area.\n\n```\nInput:  4\nOutput: 16\n```",
+                "side = int(input())\n# work out the area here\n",
+                "side = int(input())\nprint(side * side)\n",
                 [['4', '16', false], ['0', '0', false], ['12', '144', true], ['1', '1', true]],
-                ['Luas persegi = sisi × sisi', 'Di Python, perkalian memakai tanda *'], 'variabel', 1);
+                ['Area of a square = side × side', 'In Python, multiplication uses the * sign'], 'variables', 1);
 
-            $this->exercise($python, 'Fungsi: genap atau ganjil?', 'function', 'python', 15,
-                'Buat fungsi `genap(n)` yang mengembalikan `True` bila `n` genap dan `False` bila ganjil.',
-                "def genap(n):\n    # kembalikan True atau False\n    pass\n",
-                "def genap(n):\n    return n % 2 == 0\n",
+            $this->exercise($python, 'Function: even or odd?', 'function', 'python', 15,
+                'Write a function `is_even(n)` that returns `True` when `n` is even and `False` when it is odd.',
+                "def is_even(n):\n    # return True or False\n    pass\n",
+                "def is_even(n):\n    return n % 2 == 0\n",
                 [['[4]', 'true', false], ['[7]', 'false', false], ['[0]', 'true', true], ['[-3]', 'false', true]],
-                ['Operator % memberi sisa bagi', 'Bilangan genap: sisa bagi 2 sama dengan 0'], 'percabangan', 2, 'genap');
+                ['The % operator gives the remainder', 'Even numbers: the remainder after dividing by 2 is 0'], 'conditionals', 2, 'is_even');
 
-            $this->exercise($python, 'Susun: hitung mundur roket', 'parsons', 'python', 10,
-                'Susun baris kode agar program menghitung mundur dari 3 lalu mencetak **Meluncur!** 🚀',
+            $this->exercise($python, 'Arrange: rocket countdown', 'parsons', 'python', 10,
+                'Put the code lines in order so the program counts down from 3 and then prints **Liftoff!** 🚀',
                 null,
-                "for i in range(3, 0, -1):\n    print(i)\nprint(\"Meluncur!\")",
-                [], ['Perulangan for ditulis paling atas', 'Baris yang menjorok masuk ke dalam perulangan'], 'perulangan', 1);
+                "for i in range(3, 0, -1):\n    print(i)\nprint(\"Liftoff!\")",
+                [], ['The for loop goes at the top', 'Indented lines belong inside the loop'], 'loops', 1);
         }
 
         if ($web) {
-            $this->exercise($web, 'Kartu profil HTML', 'html', 'html', 20,
-                "Buat halaman profil sederhana:\n\n- Judul `<h1>` berisi namamu\n- Paragraf tentang hobimu\n- Gambar dengan atribut `alt`\n- Latar halaman berwarna biru muda (`lightblue`)",
+            $this->exercise($web, 'HTML profile card', 'html', 'html', 20,
+                "Build a simple profile page:\n\n- An `<h1>` heading with your name\n- A paragraph about your hobbies\n- An image with an `alt` attribute\n- A light blue page background (`lightblue`)",
                 "<!doctype html>\n<html>\n  <head>\n    <style>\n      body {  }\n    </style>\n  </head>\n  <body>\n\n  </body>\n</html>\n",
-                "<!doctype html>\n<html>\n  <head>\n    <style>\n      body { background-color: lightblue; }\n    </style>\n  </head>\n  <body>\n    <h1>Halo, aku Raka</h1>\n    <p>Hobiku bermain sepak bola dan membuat game.</p>\n    <img src=\"https://placehold.co/120\" alt=\"Foto Raka\">\n  </body>\n</html>\n",
+                "<!doctype html>\n<html>\n  <head>\n    <style>\n      body { background-color: lightblue; }\n    </style>\n  </head>\n  <body>\n    <h1>Hi, I'm Raka</h1>\n    <p>I love playing football and making games.</p>\n    <img src=\"https://placehold.co/120\" alt=\"Photo of Raka\">\n  </body>\n</html>\n",
                 [['h1', null, false, 'exists'], ['p', null, false, 'exists'], ['img', '', false, 'attr', 'alt'], ['body', 'lightblue', false, 'style', 'background-color']],
-                ['Atribut alt ditulis di dalam tag img', 'Warna latar memakai properti background-color'], 'html dasar', 1);
+                ['The alt attribute goes inside the img tag', 'The background colour uses the background-color property'], 'html basics', 1);
         }
 
         $this->sampleSubmissions();
@@ -68,7 +68,7 @@ class CodingDemoSeeder
             ]);
         }
 
-        // Contoh data: solusi sudah diuji.
+        // Sample data: the solution is already tested.
         $exercise->update(['verified_hash' => $exercise->contentHash(), 'verified_at' => now()]);
     }
 

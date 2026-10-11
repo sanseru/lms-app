@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SubmissionController extends Controller
 {
-    /** Siswa mengumpulkan atau mengumpulkan ulang (setelah diminta revisi). */
+    /** Student submits, or resubmits after a revision request. */
     public function store(SubmissionRequest $request, Lesson $lesson): RedirectResponse
     {
         $user = $request->user();
@@ -39,7 +39,7 @@ class SubmissionController extends Controller
 
         LessonProgress::markDone($lesson->id, $user->id);
 
-        return back()->with('success', 'Tugas terkumpul. Guru akan menilainya.');
+        return back()->with('success', 'Assignment submitted. Your teacher will grade it.');
     }
 
     public function grade(GradeRequest $request, AssignmentSubmission $submission): RedirectResponse
@@ -54,7 +54,7 @@ class SubmissionController extends Controller
             'graded_at' => now(),
         ]);
 
-        return back()->with('success', $data['status'] === 'graded' ? 'Nilai tersimpan.' : 'Siswa diminta merevisi tugas.');
+        return back()->with('success', $data['status'] === 'graded' ? 'Grade saved.' : 'Student asked to revise the assignment.');
     }
 
     public function file(AssignmentSubmission $submission): StreamedResponse

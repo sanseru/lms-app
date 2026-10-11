@@ -11,18 +11,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Kelas online (Zoom) dengan jadwal mingguan tetap.
- * Nama "ClassRoom" dipakai karena "Class" adalah kata kunci PHP.
+ * Online (Zoom) class with a fixed weekly schedule.
+ * Named "ClassRoom" because "Class" is a PHP keyword.
  */
 class ClassRoom extends Model
 {
     use SoftDeletes;
 
-    public const DAYS = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
+    public const DAYS = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'];
 
-    public const LEVELS = ['beginner' => 'Pemula', 'intermediate' => 'Menengah', 'advanced' => 'Lanjutan'];
+    public const LEVELS = ['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'];
 
-    public const STATUSES = ['upcoming' => 'Akan datang', 'active' => 'Berjalan', 'finished' => 'Selesai'];
+    public const STATUSES = ['upcoming' => 'Upcoming', 'active' => 'Running', 'finished' => 'Finished'];
 
     public const COLORS = ['violet', 'sky', 'emerald', 'amber', 'rose', 'indigo'];
 
@@ -55,7 +55,7 @@ class ClassRoom extends Model
             ->withTimestamps();
     }
 
-    /** Kelas yang bisa dilihat user sesuai perannya. */
+    /** Classes the user can see based on their role. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->can('classes.manage')) {
@@ -84,7 +84,7 @@ class ClassRoom extends Model
         return $days.' · '.substr($this->start_time, 0, 5).'–'.substr($this->end_time, 0, 5);
     }
 
-    /** Cari kelas lain milik guru yang sama yang jadwalnya bentrok. */
+    /** Find another class of the same teacher whose schedule clashes. */
     public static function conflictsFor(?int $teacherId, array $days, string $start, string $end, ?int $ignoreId = null): ?self
     {
         if (! $teacherId) {

@@ -16,8 +16,8 @@ use Modules\Learning\Policies\LessonPolicy;
 use Modules\Learning\Support\LessonTypes;
 
 /**
- * Modul Belajar: kursus berisi materi, kuis (dinilai otomatis), dan tugas
- * (dinilai guru). Kursus dipasang ke kelas lewat kolom class_rooms.course_id.
+ * Learning module: courses hold lessons, quizzes (auto-graded) and assignments
+ * (graded by the teacher). A course is attached to a class via class_rooms.course_id.
  */
 class LearningServiceProvider extends ModuleServiceProvider
 {
@@ -52,10 +52,10 @@ class LearningServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Kursus & Materi', 'learning.courses.index', 'book-open', 'Belajar', 30, roles: ['admin', 'teacher'], active: 'learning.courses.*|learning.lessons.*'),
-            new NavItem('Penilaian Tugas', 'learning.grading.index', 'file-pen', 'Belajar', 31, roles: ['admin', 'teacher']),
-            new NavItem('Materi Saya', 'learning.courses.index', 'book-open', 'Belajar', 30, roles: ['student'], active: 'learning.courses.*|learning.lessons.*|learning.progress.*'),
-            new NavItem('Progres Belajar', 'learning.progress.index', 'graduation-cap', 'Belajar', 30, roles: ['guardian'], active: 'learning.*'),
+            new NavItem('Courses & lessons', 'learning.courses.index', 'book-open', 'Learning', 30, roles: ['admin', 'teacher'], active: 'learning.courses.*|learning.lessons.*'),
+            new NavItem('Grading', 'learning.grading.index', 'file-pen', 'Learning', 31, roles: ['admin', 'teacher']),
+            new NavItem('Course', 'learning.courses.index', 'book-open', 'Learning', 30, roles: ['student'], active: 'learning.courses.*|learning.lessons.*|learning.progress.*'),
+            new NavItem('Learning progress', 'learning.progress.index', 'graduation-cap', 'Learning', 30, roles: ['guardian'], active: 'learning.*'),
         );
     }
 }

@@ -15,6 +15,7 @@ use Modules\Finance\Models\StudentPackage;
 use Modules\Finance\Models\TeacherPayout;
 use Modules\Forum\Database\Seeders\ForumDemoSeeder;
 use Modules\Kanban\Database\Seeders\KanbanDemoSeeder;
+use Modules\Lab\Database\Seeders\LabDemoSeeder;
 use Modules\Leads\Database\Seeders\LeadsDemoSeeder;
 use Modules\Learning\Database\Seeders\LearningDemoSeeder;
 use Modules\People\Actions\SavePerson;
@@ -22,7 +23,7 @@ use Modules\Sessions\Actions\CompleteSession;
 use Modules\Sessions\Actions\GenerateSessions;
 
 /**
- * Data contoh untuk mencoba aplikasi. Semua akun memakai kata sandi "password".
+ * Demo data for trying out the app. Every account uses the password "password".
  */
 class DemoSeeder extends Seeder
 {
@@ -38,7 +39,7 @@ class DemoSeeder extends Seeder
 
         $teachers = collect([
             ['Budi Santoso', 'budi', 'Python, Data Science'],
-            ['Sari Wulandari', 'sari', 'Scratch, Desain Game'],
+            ['Sari Wulandari', 'sari', 'Scratch, Game Design'],
             ['Rizky Pratama', 'rizky', 'Web Development, Roblox'],
         ])->map(fn ($t) => $save->teacher([
             'name' => $t[0], 'username' => $t[1], 'email' => "{$t[1]}@alprogmatics.test", 'phone' => '0812'.random_int(10000000, 99999999),
@@ -47,22 +48,22 @@ class DemoSeeder extends Seeder
         ]));
 
         $kids = [
-            ['Aldi Saputra', 'aldi', '5 SD'], ['Nadia Putri', 'nadia', '6 SD'], ['Raka Aditya', 'raka', '4 SD'],
-            ['Kirana Ayu', 'kirana', '1 SMP'], ['Farel Ramadhan', 'farel', '5 SD'], ['Alya Zahra', 'alya', '2 SMP'],
-            ['Dimas Arya', 'dimas', '6 SD'], ['Salsa Amelia', 'salsa', '3 SD'], ['Bima Sakti', 'bima', '1 SMP'],
-            ['Citra Lestari', 'citra', '4 SD'],
+            ['Aldi Saputra', 'aldi', 'Grade 5'], ['Nadia Putri', 'nadia', 'Grade 6'], ['Raka Aditya', 'raka', 'Grade 4'],
+            ['Kirana Ayu', 'kirana', 'Grade 7'], ['Farel Ramadhan', 'farel', 'Grade 5'], ['Alya Zahra', 'alya', 'Grade 8'],
+            ['Dimas Arya', 'dimas', 'Grade 6'], ['Salsa Amelia', 'salsa', 'Grade 3'], ['Bima Sakti', 'bima', 'Grade 7'],
+            ['Citra Lestari', 'citra', 'Grade 4'],
         ];
 
         $students = collect($kids)->map(fn ($k) => $save->student([
             'name' => $k[0], 'username' => $k[1], 'status' => 'active', 'password' => 'password',
-            'grade' => $k[2], 'school' => 'SD/SMP Harapan Bangsa', 'joined_at' => now()->subMonths(random_int(1, 10)),
+            'grade' => $k[2], 'school' => 'Harapan Bangsa School', 'joined_at' => now()->subMonths(random_int(1, 10)),
         ]));
 
-        // Satu orang tua per dua anak.
+        // One parent per two children.
         $students->chunk(2)->values()->each(function ($pair, $i) use ($save) {
-            $last = explode(' ', $pair->first()->name)[1] ?? 'Keluarga';
+            $last = explode(' ', $pair->first()->name)[1] ?? 'Family';
             $save->guardian([
-                'name' => ($i % 2 ? 'Bapak ' : 'Ibu ').$last, 'username' => 'ortu'.($i + 1), 'email' => 'ortu'.($i + 1).'@example.test',
+                'name' => ($i % 2 ? 'Mr. ' : 'Mrs. ').$last, 'username' => 'ortu'.($i + 1), 'email' => 'ortu'.($i + 1).'@example.test',
                 'phone' => '0813'.random_int(10000000, 99999999), 'status' => 'active', 'password' => 'password',
                 'relationship' => $i % 2 ? 'ayah' : 'ibu', 'student_ids' => $pair->pluck('id')->all(),
             ]);
@@ -79,7 +80,7 @@ class DemoSeeder extends Seeder
             'color' => $c[7], 'status' => 'active', 'capacity' => 8, 'start_date' => now()->subMonths(2)->startOfMonth()->toDateString(),
             'zoom_url' => 'https://us06web.zoom.us/j/8'.random_int(100000000, 999999999),
             'zoom_meeting_id' => '8'.random_int(10, 99).' '.random_int(1000, 9999).' '.random_int(1000, 9999), 'zoom_passcode' => 'kode'.random_int(10, 99),
-            'description' => "Kelas {$c[0]} secara online lewat Zoom. Siswa belajar konsep dasar lalu langsung praktik membuat proyek kecil.",
+            'description' => "The {$c[0]} class runs online over Zoom. Students learn the basics, then practise right away by building small projects.",
         ]));
 
         $students->each(function (User $student, $i) use ($classes) {
@@ -89,11 +90,11 @@ class DemoSeeder extends Seeder
             }
         });
 
-        // Tagihan SPP bulan lalu (sebagian besar lunas) dan bulan ini.
+        // Monthly tuition invoices for last month (mostly paid) and this month.
         foreach ([now()->subMonth(), now()] as $month) {
             foreach ($students as $i => $student) {
                 $invoice = Invoice::create([
-                    'number' => Invoice::nextNumber(), 'student_id' => $student->id, 'title' => 'SPP '.$month->translatedFormat('F Y'),
+                    'number' => Invoice::nextNumber(), 'student_id' => $student->id, 'title' => 'Tuition '.$month->translatedFormat('F Y'),
                     'period' => $month->copy()->startOfMonth(), 'amount' => 350000, 'due_date' => $month->copy()->day(10), 'issued_by' => $admin->id,
                 ]);
 
@@ -122,6 +123,7 @@ class DemoSeeder extends Seeder
         (new ForumDemoSeeder)->run();
         (new KanbanDemoSeeder)->run();
         (new CertificatesDemoSeeder)->run();
+        (new LabDemoSeeder)->run();
         (new LeadsDemoSeeder)->run();
         Artisan::call('xp:sync');
     }
@@ -129,17 +131,17 @@ class DemoSeeder extends Seeder
     private function sessionsPackagesAndPayroll(User $admin, $students, $classes): void
     {
         $catalog = collect([
-            ['Trial gratis', 1, 0, 14, 'Satu sesi percobaan untuk calon siswa.'],
-            ['Reguler 8 sesi', 8, 680000, 60, 'Dua kali seminggu selama sebulan.'],
-            ['Hemat 16 sesi', 16, 1280000, 120, 'Lebih hemat 6% dibanding paket reguler.'],
-            ['Intensif 24 sesi', 24, 1800000, 150, null],
+            ['Free trial', 1, 0, 14, 'One trial session for new students.'],
+            ['Regular 8 sessions', 8, 680000, 60, 'Twice a week for a month.'],
+            ['Saver 16 sessions', 16, 1280000, 120, 'Save 6% compared to the regular package.'],
+            ['Intensive 24 sessions', 24, 1800000, 150, null],
         ])->map(fn ($p) => Package::create(['name' => $p[0], 'sessions_count' => $p[1], 'price' => $p[2], 'valid_days' => $p[3], 'description' => $p[4]]));
 
-        // Setiap siswa punya paket reguler yang sudah lunas, aktif sejak 4 minggu lalu.
+        // Every student has a paid regular package, active since 4 weeks ago.
         foreach ($students as $i => $student) {
             $pkg = $catalog[$i % 3 === 0 ? 2 : 1];
             $invoice = Invoice::create([
-                'number' => Invoice::nextNumber(), 'student_id' => $student->id, 'title' => "Paket {$pkg->name}",
+                'number' => Invoice::nextNumber(), 'student_id' => $student->id, 'title' => "Package {$pkg->name}",
                 'amount' => $pkg->price, 'due_date' => now()->subWeeks(4), 'issued_by' => $admin->id,
             ]);
             StudentPackage::create([
@@ -155,10 +157,10 @@ class DemoSeeder extends Seeder
             StudentPackage::where('invoice_id', $invoice->id)->first()->activate(now()->subWeeks(4));
         }
 
-        // Sesi 4 minggu terakhir: sebagian besar sudah diisi absensinya.
+        // Sessions of the last 4 weeks: most already have attendance filled in.
         $generator = app(GenerateSessions::class);
         $complete = app(CompleteSession::class);
-        $topics = ['Pengenalan variabel', 'Perulangan for', 'Kondisi if-else', 'Membuat fungsi', 'List dan loop', 'Mini proyek: kuis', 'Event dan sprite', 'Membuat game tangkap bola', 'HTML dasar', 'CSS flexbox'];
+        $topics = ['Introduction to variables', 'For loops', 'If-else conditions', 'Writing functions', 'Lists and loops', 'Mini project: quiz', 'Events and sprites', 'Making a catch-the-ball game', 'HTML basics', 'CSS flexbox'];
 
         foreach ($classes as $class) {
             $generator->forClass($class, now()->subWeeks(4), now());
@@ -167,10 +169,10 @@ class DemoSeeder extends Seeder
                 ->each(function ($session, $n) use ($class, $complete, $topics) {
                     $complete->handle($session, [
                         'topic' => $topics[($n + $class->id) % count($topics)],
-                        'homework' => $n % 2 ? 'Selesaikan latihan di modul dan kirim tangkapan layar.' : null,
-                        'parent_note' => 'Anak-anak aktif bertanya dan berhasil menyelesaikan latihan inti.',
+                        'homework' => $n % 2 ? 'Finish the exercises in the module and send a screenshot.' : null,
+                        'parent_note' => 'The kids asked lots of questions and finished the core exercises.',
                         'flagged' => $n === 3 && $class->id === 2,
-                        'internal_note' => $n === 3 && $class->id === 2 ? 'Koneksi Zoom dua siswa terputus-putus.' : null,
+                        'internal_note' => $n === 3 && $class->id === 2 ? 'Two students had a patchy Zoom connection.' : null,
                         'attendances' => $class->students->map(fn ($s, $k) => [
                             'student_id' => $s->id,
                             'status' => ($n + $k) % 9 === 0 ? 'excused' : (($n + $k) % 13 === 0 ? 'absent' : 'present'),
@@ -179,7 +181,7 @@ class DemoSeeder extends Seeder
                 });
         }
 
-        // Honor bulan lalu sudah direkap dan dibayar.
+        // Last month's tutor fees are already summarised and paid.
         $lastMonth = now()->subMonth();
         PayrollItem::whereBetween('session_date', [$lastMonth->copy()->startOfMonth(), $lastMonth->copy()->endOfMonth()])
             ->get()->groupBy('teacher_id')

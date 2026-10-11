@@ -25,6 +25,6 @@ class AnswerRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['body' => 'jawaban'];
+        return ['body' => 'answer'];
     }
 }

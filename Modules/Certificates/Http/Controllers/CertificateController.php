@@ -43,7 +43,7 @@ class CertificateController extends Controller
     {
         $certificate = $issue->handle(User::findOrFail($request->validated('student_id')), $request->validated(), $request->user());
 
-        return back()->with('success', "Sertifikat {$certificate->number} terbit untuk {$certificate->student->name}.");
+        return back()->with('success', "Certificate {$certificate->number} issued to {$certificate->student->name}.");
     }
 
     public function show(Request $request, Certificate $certificate): Response
@@ -62,10 +62,10 @@ class CertificateController extends Controller
         abort_unless($this->canManage($request->user(), $certificate), 403);
         $certificate->update(['revoked_at' => $certificate->revoked_at ? null : now()]);
 
-        return back()->with('success', $certificate->revoked_at ? 'Sertifikat dicabut. Halaman verifikasi kini menyatakan tidak berlaku.' : 'Sertifikat berlaku kembali.');
+        return back()->with('success', $certificate->revoked_at ? 'Certificate revoked. The verification page now shows it as no longer valid.' : 'Certificate is valid again.');
     }
 
-    /** Halaman publik untuk memeriksa keaslian sertifikat dari kode/QR. */
+    /** Public page to check a certificate is genuine from its code/QR. */
     public function verify(string $code): Response
     {
         $certificate = Certificate::with('student')->where('code', strtoupper($code))->first();
@@ -74,7 +74,7 @@ class CertificateController extends Controller
             'code' => strtoupper($code),
             'certificate' => $certificate ? [
                 'number' => $certificate->number,
-                // Nama belakang disingkat untuk melindungi data anak.
+                // Last names are shortened to protect children's data.
                 'student' => collect(explode(' ', $certificate->student->name))->map(fn ($p, $i) => $i === 0 ? $p : mb_substr($p, 0, 1).'.')->implode(' '),
                 'title' => $certificate->title,
                 'issued_at' => $certificate->issued_at->translatedFormat('d F Y'),

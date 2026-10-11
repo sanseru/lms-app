@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import Icon from '@/Components/ui/Icon.vue';
 
-/** Susun baris kode yang diacak. Bisa diseret, atau pakai tombol naik/turun (ramah keyboard & layar sentuh). */
+/** Arrange shuffled code lines. Drag them, or use the up/down buttons (keyboard and touch friendly). */
 const model = defineModel({ type: Array, required: true });
 defineProps({ results: { type: Array, default: null }, disabled: Boolean });
 
@@ -38,8 +38,8 @@ const onDrop = (to) => {
         >
             <span class="w-5 text-right text-xs font-bold text-muted">{{ i + 1 }}</span>
             <code class="flex-1 font-mono text-sm whitespace-pre text-ink">{{ line }}</code>
-            <button type="button" :disabled="disabled || i === 0" class="rounded-lg p-1 text-muted hover:bg-chip disabled:opacity-30" :aria-label="`Naikkan baris ${i + 1}`" @click="move(i, i - 1)"><Icon name="arrow-up" :size="15" /></button>
-            <button type="button" :disabled="disabled || i === model.length - 1" class="rounded-lg p-1 text-muted hover:bg-chip disabled:opacity-30" :aria-label="`Turunkan baris ${i + 1}`" @click="move(i, i + 1)"><Icon name="arrow-down" :size="15" /></button>
+            <button type="button" :disabled="disabled || i === 0" class="rounded-lg p-1 text-muted hover:bg-chip disabled:opacity-30" :aria-label="`Move line ${i + 1} up`" @click="move(i, i - 1)"><Icon name="arrow-up" :size="15" /></button>
+            <button type="button" :disabled="disabled || i === model.length - 1" class="rounded-lg p-1 text-muted hover:bg-chip disabled:opacity-30" :aria-label="`Move line ${i + 1} down`" @click="move(i, i + 1)"><Icon name="arrow-down" :size="15" /></button>
         </li>
     </ol>
 </template>

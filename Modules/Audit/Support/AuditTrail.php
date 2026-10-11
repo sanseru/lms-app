@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Request;
 use Modules\Audit\Models\Activity;
 
 /**
- * Daftar model yang diawasi beserta kolom pentingnya. Modul lain bisa
- * menambah model sendiri: app(AuditTrail::class)->watch(...).
+ * Watched models and their important columns. Other modules can
+ * add their own: app(AuditTrail::class)->watch(...).
  */
 class AuditTrail
 {
-    /** Nilai kolom ini tidak pernah disimpan, hanya fakta bahwa ia berubah. */
+    /** These values are never stored, only the fact that they changed. */
     private const SECRET = ['password', 'remember_token', 'calendar_token'];
 
     /** @var array<class-string, array{category: string, fields: array<int, string>, events: array<int, string>, label: Closure, values: array<string, array<string, string>|Closure>}> */
@@ -23,10 +23,10 @@ class AuditTrail
     private bool $paused = false;
 
     /**
-     * @param  array<int, string>  $fields  kolom yang dicatat saat berubah
+     * @param  array<int, string>  $fields  columns recorded when they change
      * @param  array<int, string>  $events  created, updated, deleted
-     * @param  Closure(Model): string  $label  nama singkat objek, mis. nomor tagihan
-     * @param  array<string, array<string, string>|Closure>  $values  cara menampilkan nilai kolom, mis. status => STATUSES
+     * @param  Closure(Model): string  $label  short label for the object, e.g. invoice number
+     * @param  array<string, array<string, string>|Closure>  $values  how to display column values, e.g. status => STATUSES
      */
     public function watch(string $model, string $category, array $fields, Closure $label, array $events = ['created', 'updated', 'deleted'], array $values = []): void
     {
@@ -40,16 +40,16 @@ class AuditTrail
     /** @return array<int, string> */
     public function categories(): array
     {
-        return collect($this->watched)->pluck('category')->push('Akun')->unique()->sort()->values()->all();
+        return collect($this->watched)->pluck('category')->push('Account')->unique()->sort()->values()->all();
     }
 
-    /** Berhenti mencatat sampai proses selesai (dipakai saat seeding). */
+    /** Stop recording until the process ends (used while seeding). */
     public function pause(): void
     {
         $this->paused = true;
     }
 
-    /** Jalankan tanpa mencatat, mis. saat mengisi data contoh. */
+    /** Run without recording, e.g. while filling demo data. */
     public function withoutRecording(Closure $callback): mixed
     {
         $this->paused = true;
@@ -119,7 +119,7 @@ class AuditTrail
         return match (true) {
             $value instanceof \DateTimeInterface => $value->format($value->format('H:i:s') === '00:00:00' ? 'Y-m-d' : 'Y-m-d H:i'),
             $value instanceof \BackedEnum => $value->value,
-            is_bool($value) => $value ? 'ya' : 'tidak',
+            is_bool($value) => $value ? 'yes' : 'no',
             default => $value,
         };
     }

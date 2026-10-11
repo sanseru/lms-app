@@ -7,7 +7,7 @@ use Modules\Forum\Actions\PostAnswer;
 use Modules\Forum\Actions\ToggleVote;
 use Modules\Forum\Models\Question;
 
-/** Contoh pertanyaan dan jawaban di kelas demo. */
+/** Sample questions and answers in the demo classes. */
 class ForumDemoSeeder
 {
     public function run(): void
@@ -18,60 +18,60 @@ class ForumDemoSeeder
         $samples = [
             'Python' => [
                 [
-                    'title' => 'Kenapa muncul error "unexpected indent"?',
-                    'body' => 'Aku mau mencetak angka 1 sampai 5 tapi muncul **IndentationError**. Padahal kodenya sudah sama seperti di video.',
-                    'code' => "for i in range(1, 6):\nprint(i)\n    print('selesai')",
+                    'title' => 'Why do I get an "unexpected indent" error?',
+                    'body' => 'I want to print the numbers 1 to 5 but I get an **IndentationError**. My code looks just like the one in the video.',
+                    'code' => "for i in range(1, 6):\nprint(i)\n    print('done')",
                     'answers' => [
-                        ['staff', "Python memakai spasi di awal baris untuk tahu baris mana yang masuk ke dalam perulangan.\n\nBaris `print(i)` harus menjorok 4 spasi, sedangkan `print('selesai')` sebaiknya **tidak** menjorok kalau mau dicetak sekali saja di akhir.", "for i in range(1, 6):\n    print(i)\nprint('selesai')"],
-                        ['student', 'Aku juga pernah begitu! Coba tekan Tab sekali di depan print(i).', null],
+                        ['staff', "Python uses the spaces at the start of a line to know which lines belong inside the loop.\n\nThe `print(i)` line needs to be indented 4 spaces, and `print('done')` should **not** be indented if you only want it printed once at the end.", "for i in range(1, 6):\n    print(i)\nprint('done')"],
+                        ['student', 'That happened to me too! Try pressing Tab once in front of print(i).', null],
                     ],
                     'accept' => 0, 'votes' => 3, 'pinned' => true,
                 ],
                 [
-                    'title' => 'Bedanya = dan == apa ya?',
-                    'body' => 'Di soal genap ganjil ada `n % 2 == 0`. Kenapa tidak pakai satu tanda sama dengan saja?',
+                    'title' => 'What is the difference between = and ==?',
+                    'body' => 'The even/odd exercise has `n % 2 == 0`. Why not just use one equals sign?',
                     'answers' => [
-                        ['staff', "`=` artinya **menyimpan** nilai ke variabel, misalnya `umur = 10`.\n\n`==` artinya **membandingkan**, hasilnya `True` atau `False`. Jadi `n % 2 == 0` bertanya: apakah sisa bagi n dengan 2 sama dengan 0?", null],
+                        ['staff', "`=` means **store** a value in a variable, for example `age = 10`.\n\n`==` means **compare**, and the result is `True` or `False`. So `n % 2 == 0` asks: is the remainder of n divided by 2 equal to 0?", null],
                     ],
                     'accept' => null, 'votes' => 2,
                 ],
                 [
-                    'title' => 'Bagaimana cara membuat angka acak untuk game tebak angka?',
-                    'body' => 'Aku mau bikin game tebak angka 1 sampai 10, tapi angkanya harus beda-beda setiap main.',
+                    'title' => 'How do I make a random number for a guessing game?',
+                    'body' => 'I want to make a game where you guess a number from 1 to 10, but the number should be different every time you play.',
                     'answers' => [], 'votes' => 1,
                 ],
                 [
-                    'title' => 'Program input() tidak mau dijumlah',
-                    'body' => 'Kalau aku masukkan 2 dan 3, hasilnya malah 23 bukan 5. Kenapa?',
+                    'title' => 'My input() numbers will not add up',
+                    'body' => 'When I type 2 and 3, I get 23 instead of 5. Why?',
                     'code' => "a = input()\nb = input()\nprint(a + b)",
                     'answers' => [
-                        ['student', 'Karena input() hasilnya teks. Harus diubah jadi angka pakai int().', "a = int(input())\nb = int(input())\nprint(a + b)"],
+                        ['student', 'Because input() gives you text. You have to turn it into a number with int().', "a = int(input())\nb = int(input())\nprint(a + b)"],
                     ],
                     'accept' => 0, 'votes' => 0, 'private' => false,
                 ],
             ],
             'Web Development' => [
                 [
-                    'title' => 'Gambarku tidak muncul di halaman HTML',
-                    'body' => 'Aku sudah menulis tag img tapi yang muncul cuma ikon gambar rusak.',
-                    'code' => '<img src="kucing.png">',
+                    'title' => 'My picture does not show up on my HTML page',
+                    'body' => 'I wrote the img tag but all I see is a broken image icon.',
+                    'code' => '<img src="cat.png">',
                     'answers' => [
-                        ['staff', "Cek dua hal:\n\n1. Nama file harus **persis sama**, termasuk huruf besar kecil dan ekstensinya (.png atau .jpg).\n2. File gambar harus ada di folder yang sama dengan file HTML-mu.\n\nJangan lupa tambahkan `alt` supaya ada keterangan kalau gambarnya gagal dimuat.", '<img src="kucing.png" alt="Kucingku Oyen">'],
+                        ['staff', "Check two things:\n\n1. The file name must match **exactly**, including upper and lower case letters and the extension (.png or .jpg).\n2. The image file must be in the same folder as your HTML file.\n\nDon't forget to add `alt` so there is a description if the picture fails to load.", '<img src="cat.png" alt="My cat Ginger">'],
                     ],
                     'accept' => 0, 'votes' => 2,
                 ],
                 [
-                    'title' => 'Cara membuat tombol di tengah halaman?',
-                    'body' => 'Sudah coba `text-align: center` tapi tombolnya tetap di kiri.',
+                    'title' => 'How do I put a button in the middle of the page?',
+                    'body' => 'I tried `text-align: center` but the button stays on the left.',
                     'answers' => [], 'votes' => 0, 'private' => true,
                 ],
             ],
             'Scratch' => [
                 [
-                    'title' => 'Sprite-ku keluar dari layar terus',
-                    'body' => 'Waktu aku tekan panah kanan, kucingnya jalan terus sampai hilang. Blok apa yang harus dipakai?',
+                    'title' => 'My sprite keeps going off the screen',
+                    'body' => 'When I press the right arrow, the cat keeps walking until it disappears. Which block should I use?',
                     'answers' => [
-                        ['staff', 'Tambahkan blok **"jika di tepi, pantulkan"** setelah blok gerak. Atau pakai blok "jika posisi x > 220 maka ubah x ke 220" supaya berhenti di pinggir.', null],
+                        ['staff', 'Add the **"if on edge, bounce"** block after the move block. Or use "if x position > 220 then set x to 220" so it stops at the edge.', null],
                     ],
                     'accept' => null, 'votes' => 1,
                 ],

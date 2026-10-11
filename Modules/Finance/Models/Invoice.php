@@ -12,10 +12,10 @@ use Modules\Classes\Models\ClassRoom;
 class Invoice extends Model
 {
     public const STATUSES = [
-        'unpaid' => 'Belum bayar',
-        'partial' => 'Sebagian',
-        'paid' => 'Lunas',
-        'cancelled' => 'Dibatalkan',
+        'unpaid' => 'Unpaid',
+        'partial' => 'Partially paid',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
     ];
 
     protected $fillable = ['number', 'student_id', 'class_room_id', 'title', 'period', 'amount', 'paid_amount', 'due_date', 'status', 'notes', 'issued_by'];
@@ -69,7 +69,7 @@ class Invoice extends Model
         return in_array($this->status, ['unpaid', 'partial']) && $this->due_date->isPast() && ! $this->due_date->isToday();
     }
 
-    /** Hitung ulang total terbayar dari pembayaran terverifikasi. */
+    /** Recalculate the paid total from verified payments. */
     public function recalculate(): void
     {
         if ($this->status === 'cancelled') {
@@ -87,7 +87,7 @@ class Invoice extends Model
             },
         ])->save();
 
-        // Paket kuota aktif setelah tagihannya lunas.
+        // Session packages activate once their invoice is paid.
         if ($this->status === 'paid') {
             $this->studentPackages()->where('status', 'pending_payment')->get()->each->activate();
         }

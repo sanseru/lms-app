@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Kursus = kurikulum yang bisa dipakai banyak kelas.
+        // Course = a curriculum many classes can use.
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string('title');
@@ -35,9 +35,9 @@ return new class extends Migration
             $table->longText('body')->nullable();             // markdown
             $table->string('video_url')->nullable();
             $table->unsignedSmallInteger('duration_minutes')->nullable();
-            $table->unsignedTinyInteger('pass_score')->nullable();     // kuis
-            $table->unsignedTinyInteger('max_attempts')->nullable();   // kuis, null = tak terbatas
-            $table->unsignedSmallInteger('max_score')->nullable();     // tugas
+            $table->unsignedTinyInteger('pass_score')->nullable();     // quiz
+            $table->unsignedTinyInteger('max_attempts')->nullable();   // quiz, null = unlimited
+            $table->unsignedSmallInteger('max_score')->nullable();     // assignment
             $table->boolean('is_published')->default(true);
             $table->timestamps();
 

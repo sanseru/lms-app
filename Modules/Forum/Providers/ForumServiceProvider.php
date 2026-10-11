@@ -12,9 +12,9 @@ use Modules\Forum\Policies\AnswerPolicy;
 use Modules\Forum\Policies\QuestionPolicy;
 
 /**
- * Modul Tanya Jawab: siswa bertanya per kelas (opsional terkait pelajaran),
- * guru dan teman sekelas menjawab, penanya atau guru memilih jawaban terbaik.
- * Orang tua bisa membaca pertanyaan anaknya.
+ * Q&A module: students ask questions per class (optionally tied to a lesson),
+ * teachers and classmates answer, and the asker or teacher picks the best answer.
+ * Parents can read their child's questions.
  */
 class ForumServiceProvider extends ModuleServiceProvider
 {
@@ -33,6 +33,6 @@ class ForumServiceProvider extends ModuleServiceProvider
 
     public function navigation(NavigationRegistry $nav): void
     {
-        $nav->add(new NavItem('Tanya Jawab', 'forum.questions.index', 'message-circle', 'Belajar', 35, active: 'forum.*'));
+        $nav->add(new NavItem('Q&A', 'forum.questions.index', 'message-circle', 'Learning', 35, active: 'forum.*'));
     }
 }

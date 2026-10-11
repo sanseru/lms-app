@@ -4,7 +4,7 @@ namespace Modules\Learning\Support;
 
 use Modules\Learning\Contracts\LessonTypeHandler;
 
-/** Daftar jenis isi kursus tambahan yang didaftarkan modul lain. */
+/** Registry of extra course content types registered by other modules. */
 class LessonTypes
 {
     /** @var array<string, LessonTypeHandler> */

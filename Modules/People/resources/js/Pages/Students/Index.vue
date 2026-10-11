@@ -22,21 +22,21 @@ const confirm = useConfirm();
 </script>
 
 <template>
-    <Head title="Siswa" />
+    <Head title="Students" />
 
-    <PageHeader eyebrow="Pengguna" title="Siswa" :description="`${stats.active} siswa aktif dari ${stats.total} terdaftar.`">
+    <PageHeader eyebrow="People" title="Students" :description="`${stats.active} active out of ${stats.total} registered students.`">
         <template #actions>
-            <Link :href="route('people.students.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Tambah siswa</Link>
+            <Link :href="route('people.students.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Add student</Link>
         </template>
     </PageHeader>
 
     <div class="card overflow-hidden">
         <div class="flex flex-col gap-3 border-b border-line p-4 sm:flex-row sm:items-center">
-            <SearchInput v-model="filters.search" placeholder="Cari nama, username, kode…" />
+            <SearchInput v-model="filters.search" placeholder="Search by name, username, code…" />
             <select v-model="filters.status" class="field sm:w-44">
-                <option value="">Semua status</option>
-                <option value="active">Aktif</option>
-                <option value="inactive">Nonaktif</option>
+                <option value="">All statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
             </select>
         </div>
 
@@ -44,12 +44,12 @@ const confirm = useConfirm();
             <table class="w-full text-left text-sm">
                 <thead class="bg-chip/60 text-xs font-bold uppercase tracking-wide text-muted">
                     <tr>
-                        <th class="px-5 py-3">Siswa</th>
-                        <th class="px-5 py-3">Sekolah / Kelas</th>
-                        <th class="px-5 py-3">Orang tua</th>
-                        <th class="px-5 py-3 text-center">Kelas kursus</th>
+                        <th class="px-5 py-3">Student</th>
+                        <th class="px-5 py-3">School / Grade</th>
+                        <th class="px-5 py-3">Parents</th>
+                        <th class="px-5 py-3 text-center">Classes</th>
                         <th class="px-5 py-3">Status</th>
-                        <th class="px-5 py-3"><span class="sr-only">Aksi</span></th>
+                        <th class="px-5 py-3"><span class="sr-only">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-line">
@@ -65,23 +65,23 @@ const confirm = useConfirm();
                         </td>
                         <td class="px-5 py-3 text-muted">
                             <p class="text-ink">{{ student.school ?? '–' }}</p>
-                            <p v-if="student.grade" class="text-xs">Kelas {{ student.grade }}</p>
+                            <p v-if="student.grade" class="text-xs">Grade {{ student.grade }}</p>
                         </td>
                         <td class="px-5 py-3">
                             <p v-for="g in student.guardians" :key="g.id" class="text-ink">{{ g.name }} <span class="text-xs text-muted">{{ g.phone }}</span></p>
-                            <span v-if="!student.guardians.length" class="text-xs font-semibold text-amber-700">Belum dihubungkan</span>
+                            <span v-if="!student.guardians.length" class="text-xs font-semibold text-amber-700">Not linked yet</span>
                         </td>
                         <td class="px-5 py-3 text-center font-display font-bold text-ink">{{ student.classes_count }}</td>
                         <td class="px-5 py-3"><StatusBadge :status="student.status" /></td>
                         <td class="px-5 py-3">
                             <div class="flex justify-end gap-1">
-                                <Link :href="route('people.students.edit', student.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Ubah">
+                                <Link :href="route('people.students.edit', student.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Edit">
                                     <Icon name="pencil" :size="16" />
                                 </Link>
                                 <button
                                     class="rounded-lg p-2 text-muted hover:bg-rose-50 hover:text-rose-600"
-                                    title="Hapus"
-                                    @click="confirm.ask({ title: `Hapus ${student.name}?`, message: 'Akun siswa akan dinonaktifkan dan disembunyikan dari daftar.', url: route('people.students.destroy', student.id) })"
+                                    title="Delete"
+                                    @click="confirm.ask({ title: `Delete ${student.name}?`, message: 'The student account will be deactivated and hidden from the list.', url: route('people.students.destroy', student.id) })"
                                 >
                                     <Icon name="trash" :size="16" />
                                 </button>
@@ -95,10 +95,10 @@ const confirm = useConfirm();
         <EmptyState
             v-else
             icon="graduation-cap"
-            :title="filters.search || filters.status ? 'Tidak ada siswa yang cocok' : 'Belum ada siswa'"
-            :description="filters.search || filters.status ? 'Coba ubah kata kunci atau filter.' : 'Tambahkan siswa pertama, lalu hubungkan dengan orang tuanya.'"
+            :title="filters.search || filters.status ? 'No matching students' : 'No students yet'"
+            :description="filters.search || filters.status ? 'Try a different keyword or filter.' : 'Add your first student, then link them to their parents.'"
         >
-            <Link v-if="!filters.search && !filters.status" :href="route('people.students.create')" class="btn-primary"><Icon name="plus" :size="18" /> Tambah siswa</Link>
+            <Link v-if="!filters.search && !filters.status" :href="route('people.students.create')" class="btn-primary"><Icon name="plus" :size="18" /> Add student</Link>
         </EmptyState>
 
         <Pagination :meta="students" />

@@ -23,9 +23,9 @@ const form = useForm({
 const emojis = ['🚀', '🎮', '🌐', '🤖', '🐱', '🎨', '🧩', '🏆', '📱', '🌋', '🐍', '⭐'];
 
 const presets = [
-    { label: 'Game Scratch', emoji: '🐱', tasks: ['Tulis ide game dan aturannya', 'Pilih sprite dan latar', 'Buat gerakan karakter', 'Tambahkan skor dan nyawa', 'Uji coba bersama teman', 'Bagikan link proyek'] },
-    { label: 'Program Python', emoji: '🐍', tasks: ['Tulis apa yang dilakukan programmu', 'Buat input dan output', 'Tambahkan percabangan if', 'Tambahkan perulangan', 'Uji dengan 3 contoh input', 'Rapikan kode dan beri komentar'] },
-    { label: 'Website pribadi', emoji: '🌐', tasks: ['Rancang isi halaman di kertas', 'Buat struktur HTML', 'Tambahkan gambar dengan alt', 'Hias dengan CSS', 'Buat tampilan rapi di HP', 'Publikasikan dan bagikan link'] },
+    { label: 'Scratch game', emoji: '🐱', tasks: ['Write down your game idea and rules', 'Pick sprites and a backdrop', 'Make the character move', 'Add a score and lives', 'Test it with a friend', 'Share your project link'] },
+    { label: 'Python program', emoji: '🐍', tasks: ['Write down what your program does', 'Add input and output', 'Add an if statement', 'Add a loop', 'Test it with 3 example inputs', 'Tidy up the code and add comments'] },
+    { label: 'Personal website', emoji: '🌐', tasks: ['Sketch the page on paper', 'Build the HTML structure', 'Add pictures with alt text', 'Style it with CSS', 'Make it look good on a phone', 'Publish it and share the link'] },
 ];
 const applyPreset = (p) => {
     form.emoji = p.emoji;
@@ -53,18 +53,18 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="editing ? 'Ubah proyek' : 'Proyek baru'" />
+    <Head :title="editing ? 'Edit project' : 'New project'" />
 
-    <PageHeader eyebrow="Proyek" :title="editing ? 'Ubah proyek' : 'Proyek baru'" description="Setiap siswa di kelas mendapat papan kanban sendiri berisi langkah-langkah di bawah.">
+    <PageHeader eyebrow="Projects" :title="editing ? 'Edit project' : 'New project'" description="Every student in the class gets their own kanban board with the steps below.">
         <template #back>
-            <Link :href="editing ? route('kanban.projects.show', project.id) : route('kanban.projects.index')" class="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><Icon name="arrow-left" :size="15" /> Kembali</Link>
+            <Link :href="editing ? route('kanban.projects.show', project.id) : route('kanban.projects.index')" class="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink"><Icon name="arrow-left" :size="15" /> Back</Link>
         </template>
     </PageHeader>
 
     <form class="grid gap-6 lg:grid-cols-5" @submit.prevent="submit">
         <div class="space-y-6 lg:col-span-3">
             <div class="card space-y-5 p-5 sm:p-6">
-                <Field v-if="!editing" label="Kelas" :error="form.errors.class_room_id" required>
+                <Field v-if="!editing" label="Class" :error="form.errors.class_room_id" required>
                     <div v-if="classes.length" class="grid gap-2 sm:grid-cols-2">
                         <button
                             v-for="c in classes"
@@ -77,11 +77,11 @@ const submit = () => {
                             <span :class="(classColors[c.color] ?? classColors.violet).dot" class="size-2.5 rounded-full" /> <span class="truncate">{{ c.name }}</span>
                         </button>
                     </div>
-                    <p v-else class="text-sm text-muted">Kamu belum mengajar kelas aktif.</p>
+                    <p v-else class="text-sm text-muted">You are not teaching any active classes yet.</p>
                 </Field>
 
                 <div class="flex gap-4">
-                    <Field label="Ikon" class="shrink-0">
+                    <Field label="Icon" class="shrink-0">
                         <div class="grid grid-cols-4 gap-1 rounded-xl border border-line p-1.5">
                             <button
                                 v-for="e in emojis"
@@ -94,31 +94,31 @@ const submit = () => {
                         </div>
                     </Field>
                     <div class="min-w-0 flex-1 space-y-5">
-                        <Field label="Judul proyek" :error="form.errors.title" required>
-                            <input v-model="form.title" type="text" maxlength="150" class="field" placeholder="mis. Game Tangkap Bola" />
+                        <Field label="Project title" :error="form.errors.title" required>
+                            <input v-model="form.title" type="text" maxlength="150" class="field" placeholder="e.g. Catch the Ball Game" />
                         </Field>
-                        <Field label="Tenggat" :error="form.errors.due_date" hint="Opsional">
+                        <Field label="Due date" :error="form.errors.due_date" hint="Optional">
                             <input v-model="form.due_date" type="date" class="field" />
                         </Field>
                     </div>
                 </div>
 
-                <Field label="Penjelasan untuk siswa" :error="form.errors.description" hint="Apa yang harus dibuat dan bagaimana hasilnya dikumpulkan.">
-                    <textarea v-model="form.description" rows="4" class="field" placeholder="Buat game sederhana dengan minimal satu karakter yang bisa digerakkan…" />
+                <Field label="Instructions for students" :error="form.errors.description" hint="What to build and how to hand in the result.">
+                    <textarea v-model="form.description" rows="4" class="field" placeholder="Make a simple game with at least one character you can move…" />
                 </Field>
 
                 <label class="flex items-start gap-3 rounded-xl bg-chip/60 p-4 text-sm">
                     <input v-model="form.requires_review" type="checkbox" class="mt-0.5 rounded text-brand-600 focus:ring-brand-500" />
                     <span>
-                        <span class="font-semibold text-ink">Guru mengecek setiap langkah</span>
-                        <span class="block text-xs text-muted">Siswa memindahkan kartu ke "Minta dicek guru", lalu guru menyetujui atau mengembalikan dengan catatan. Matikan agar siswa bisa langsung menandai selesai.</span>
+                        <span class="font-semibold text-ink">Teacher reviews every step</span>
+                        <span class="block text-xs text-muted">Students move cards to "Ready for review", then the teacher approves them or sends them back with a note. Turn this off to let students mark steps done themselves.</span>
                     </span>
                 </label>
 
                 <Field v-if="editing" label="Status">
                     <select v-model="form.status" class="field">
-                        <option value="active">Aktif</option>
-                        <option value="archived">Diarsipkan (siswa tidak bisa mengubah papan)</option>
+                        <option value="active">Active</option>
+                        <option value="archived">Archived (students can't change their boards)</option>
                     </select>
                 </Field>
             </div>
@@ -127,35 +127,35 @@ const submit = () => {
         <div class="space-y-4 lg:col-span-2">
             <div class="card p-5 sm:p-6">
                 <div class="mb-3 flex items-center justify-between">
-                    <p class="font-display font-bold text-ink">Langkah bawaan</p>
-                    <span class="text-xs text-muted">{{ form.tasks.length }} kartu</span>
+                    <p class="font-display font-bold text-ink">Default steps</p>
+                    <span class="text-xs text-muted">{{ form.tasks.length }} {{ form.tasks.length === 1 ? 'card' : 'cards' }}</span>
                 </div>
                 <div v-if="!editing" class="mb-4 flex flex-wrap gap-2">
-                    <span class="text-xs text-muted">Pakai contoh:</span>
+                    <span class="text-xs text-muted">Use a template:</span>
                     <button v-for="p in presets" :key="p.label" type="button" class="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100" @click="applyPreset(p)">{{ p.emoji }} {{ p.label }}</button>
                 </div>
                 <ol class="space-y-2">
                     <li v-for="(t, i) in form.tasks" :key="i" class="rounded-xl border border-line bg-white p-2.5">
                         <div class="flex items-center gap-2">
                             <span class="grid size-6 shrink-0 place-items-center rounded-md bg-brand-50 text-xs font-bold text-brand-700">{{ i + 1 }}</span>
-                            <input v-model="t.title" type="text" maxlength="150" class="field py-1.5 text-sm" placeholder="Judul langkah" />
+                            <input v-model="t.title" type="text" maxlength="150" class="field py-1.5 text-sm" placeholder="Step title" />
                             <div class="flex shrink-0">
-                                <button type="button" class="rounded-md p-1 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" :disabled="i === 0" title="Naik" @click="moveTask(i, -1)"><Icon name="arrow-up" :size="14" /></button>
-                                <button type="button" class="rounded-md p-1 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" :disabled="i === form.tasks.length - 1" title="Turun" @click="moveTask(i, 1)"><Icon name="arrow-down" :size="14" /></button>
-                                <button type="button" class="rounded-md p-1 text-muted hover:bg-rose-50 hover:text-rose-600" title="Hapus" @click="removeTask(i)"><Icon name="x" :size="14" /></button>
+                                <button type="button" class="rounded-md p-1 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" :disabled="i === 0" title="Move up" @click="moveTask(i, -1)"><Icon name="arrow-up" :size="14" /></button>
+                                <button type="button" class="rounded-md p-1 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" :disabled="i === form.tasks.length - 1" title="Move down" @click="moveTask(i, 1)"><Icon name="arrow-down" :size="14" /></button>
+                                <button type="button" class="rounded-md p-1 text-muted hover:bg-rose-50 hover:text-rose-600" title="Remove" @click="removeTask(i)"><Icon name="x" :size="14" /></button>
                             </div>
                         </div>
-                        <textarea v-model="t.description" rows="1" class="field mt-2 py-1.5 text-xs" placeholder="Petunjuk (opsional)" />
+                        <textarea v-model="t.description" rows="1" class="field mt-2 py-1.5 text-xs" placeholder="Hint (optional)" />
                         <p v-if="form.errors[`tasks.${i}.title`]" class="mt-1 text-xs text-rose-600">{{ form.errors[`tasks.${i}.title`] }}</p>
                     </li>
                 </ol>
-                <button type="button" class="btn-ghost mt-3 w-full justify-center text-sm" @click="addTask"><Icon name="plus" :size="16" /> Tambah langkah</button>
-                <p class="mt-3 text-xs text-muted">Siswa juga bisa menambah kartu sendiri. Langkah yang diubah ikut berubah di papan siswa yang belum menyelesaikannya.</p>
+                <button type="button" class="btn-ghost mt-3 w-full justify-center text-sm" @click="addTask"><Icon name="plus" :size="16" /> Add step</button>
+                <p class="mt-3 text-xs text-muted">Students can add their own cards too. Edited steps also change on the boards of students who haven't finished them yet.</p>
             </div>
 
             <div class="flex justify-end gap-2">
-                <Link :href="editing ? route('kanban.projects.show', project.id) : route('kanban.projects.index')" class="btn-ghost">Batal</Link>
-                <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="16" /> {{ editing ? 'Simpan' : 'Buat proyek' }}</button>
+                <Link :href="editing ? route('kanban.projects.show', project.id) : route('kanban.projects.index')" class="btn-ghost">Cancel</Link>
+                <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="16" /> {{ editing ? 'Save' : 'Create project' }}</button>
             </div>
         </div>
     </form>

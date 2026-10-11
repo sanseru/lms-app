@@ -10,16 +10,16 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 use Throwable;
 
 /**
- * Menilai satu jawaban. Semua mode menghasilkan format yang sama:
- * status, skor 0–100, jumlah tes lulus, dan daftar hasil per tes.
+ * Grades one answer. Every mode returns the same shape:
+ * status, score 0–100, number of passed tests, and a per-test result list.
  */
 class Grader
 {
     public function __construct(private CodeRunner $runner, private OutputComparator $compare, private CodeRules $rules) {}
 
     /**
-     * @param  array<int|string, array{output?: string|null, error?: string|null}>  $reported  output dari browser
-     * @param  array<int|string, bool>  $styles  hasil cek gaya CSS dari browser (hanya bisa diukur di browser)
+     * @param  array<int|string, array{output?: string|null, error?: string|null}>  $reported  output from the browser
+     * @param  array<int|string, bool>  $styles  CSS style check results from the browser (only measurable in the browser)
      */
     public function grade(CodeExercise $exercise, string $code, array $reported = [], array $styles = []): array
     {
@@ -56,7 +56,7 @@ class Grader
         $outputs = $this->runner->run($exercise, $code, $exercise->tests, $reported);
 
         return $exercise->tests->map(function (CodeTest $test) use ($exercise, $outputs) {
-            $out = $outputs[$test->id] ?? ['output' => null, 'error' => 'Tes tidak dijalankan'];
+            $out = $outputs[$test->id] ?? ['output' => null, 'error' => 'Test was not run'];
             $actual = $exercise->mode === 'function' ? Harness::extract($out['output']) : $out['output'];
             $passed = empty($out['error']) && ($exercise->mode === 'function'
                 ? $this->compare->json($test->expected, $actual)
@@ -66,7 +66,7 @@ class Grader
         })->all();
     }
 
-    /** Aturan struktur dicek ulang di server; gaya CSS hanya bisa diukur di browser. */
+    /** Structure rules are re-checked on the server; CSS styles can only be measured in the browser. */
     private function html(CodeExercise $exercise, string $code, array $styles): array
     {
         $xpath = $this->dom($code);
@@ -93,7 +93,7 @@ class Grader
         })->all();
     }
 
-    /** Parsons: setiap baris di posisi yang benar mendapat poin (indentasi ikut dinilai). */
+    /** Parsons: every line in the right position earns a point (indentation counts too). */
     private function parsons(CodeExercise $exercise, string $code): array
     {
         $solution = $exercise->parsonsLines();
@@ -104,8 +104,8 @@ class Grader
             'passed' => ($given[$i] ?? null) === $line,
             'hidden' => false,
             'weight' => 1,
-            'label' => 'Baris '.($i + 1),
-            'message' => ($given[$i] ?? null) === $line ? null : 'Belum di posisi yang benar',
+            'label' => 'Line '.($i + 1),
+            'message' => ($given[$i] ?? null) === $line ? null : 'Not in the right spot yet',
             'error' => null,
             'expected' => null,
             'actual' => null,
@@ -122,7 +122,7 @@ class Grader
             'weight' => $test->weight,
             'message' => $passed ? null : ($test->fail_message ?: null),
             'error' => $error ? $this->friendlyError($error) : null,
-            // Untuk tes tersembunyi, jawaban dan output tidak ditampilkan.
+            // For hidden tests, the answer and output are not shown.
             'expected' => $test->is_hidden ? null : $test->expected,
             'actual' => $test->is_hidden ? null : ($actual === null ? null : mb_substr($actual, 0, 2000)),
             'input' => $test->is_hidden ? null : $input,
@@ -131,8 +131,9 @@ class Grader
 
     private function friendlyError(string $error): string
     {
-        if (str_contains(strtolower($error), 'waktu habis') || str_contains(strtolower($error), 'timeout')) {
-            return 'Waktu habis. Mungkin ada perulangan yang tidak pernah berhenti.';
+        $lower = strtolower($error);
+        if (str_contains($lower, 'time limit') || str_contains($lower, 'timeout') || str_contains($lower, 'waktu habis')) {
+            return 'Time limit reached. Maybe a loop never stops?';
         }
 
         return mb_substr($error, 0, 300);

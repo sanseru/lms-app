@@ -7,9 +7,9 @@ use Modules\Learning\Models\Course;
 use Modules\Learning\Models\Lesson;
 
 /**
- * Jenis isi kursus tambahan dari modul lain (mis. soal coding).
- * Modul mendaftarkannya lewat LessonTypes::register() di service provider-nya;
- * modul Belajar lalu menampilkan jenis itu di daftar isi, progres, dan rapor.
+ * An extra course content type from another module (e.g. coding exercises).
+ * Modules register it via LessonTypes::register() in their service provider;
+ * the Learning module then shows that type in the outline, progress and report.
  */
 interface LessonTypeHandler
 {
@@ -17,21 +17,21 @@ interface LessonTypeHandler
 
     public function label(): string;
 
-    /** Nama ikon di komponen Icon.vue. */
+    /** Icon name in the Icon.vue component. */
     public function icon(): string;
 
     public function createUrl(Course $course): string;
 
     public function editUrl(Lesson $lesson): string;
 
-    /** Halaman Inertia untuk membuka isi ini, mis. "Coding::Exercises/Show". */
+    /** Inertia page that opens this content, e.g. "Coding::Exercises/Show". */
     public function showPage(): string;
 
-    /** Props tambahan untuk halaman show (di luar data kursus/daftar isi). */
+    /** Extra props for the show page (besides course/outline data). */
     public function showData(Lesson $lesson, User $user, bool $manage, bool $learn): array;
 
     /**
-     * Nilai terbaik siswa per isi, untuk rapor.
+     * The student's best score per item, for the report.
      *
      * @param  array<int>  $lessonIds
      * @return array<int, array{best: int|null, tries: int}>

@@ -3,10 +3,10 @@
 namespace Modules\Coding\Grading;
 
 /**
- * Aturan kode sederhana yang dicek di server, mis. "wajib memakai for",
- * "dilarang memakai sum", "maksimal 6 baris". Komentar dan isi string
- * diabaikan supaya aturan tidak bisa diakali dengan menulis kata kuncinya
- * di komentar.
+ * Simple code rules checked on the server, e.g. "must use for",
+ * "must not use sum", "at most 6 lines". Comments and string contents
+ * are ignored so a rule can't be gamed by writing the keyword in a
+ * comment.
  */
 class CodeRules
 {
@@ -14,7 +14,7 @@ class CodeRules
 
     /**
      * @param  array<int, array{type: string, value: string, message?: string|null}>  $rules
-     * @return array<int, array<string, mixed>> hasil per aturan dalam format yang sama dengan hasil tes
+     * @return array<int, array<string, mixed>> per-rule results in the same format as test results
      */
     public function check(array $rules, string $language, string $code): array
     {
@@ -58,7 +58,7 @@ class CodeRules
         };
     }
 
-    /** Kata seperti `for` dicocokkan utuh (bukan bagian dari `format`); selain itu dicari apa adanya. */
+    /** Words like `for` match as whole words (not part of `format`); anything else is matched literally. */
     private function contains(string $code, string $needle): bool
     {
         if ($needle === '') {
@@ -70,7 +70,7 @@ class CodeRules
             : str_contains($code, $needle);
     }
 
-    /** Buang komentar dan isi string literal (diganti string kosong). */
+    /** Strip comments and string literal contents (replaced with empty strings). */
     public function strip(string $language, string $code): string
     {
         $patterns = $language === 'python'

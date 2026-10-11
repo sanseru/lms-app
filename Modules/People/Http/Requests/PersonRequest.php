@@ -8,8 +8,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 /**
- * Aturan dasar akun (nama, username, email, password) yang dipakai
- * form siswa, guru, dan orang tua.
+ * Base account rules (name, username, email, password) shared by
+ * the student, teacher and parent forms.
  */
 abstract class PersonRequest extends FormRequest
 {
@@ -32,9 +32,9 @@ abstract class PersonRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'nama',
-            'phone' => 'nomor HP',
-            'password' => 'kata sandi',
+            'name' => 'name',
+            'phone' => 'phone number',
+            'password' => 'password',
         ];
     }
 
@@ -50,7 +50,7 @@ abstract class PersonRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if (! $this->filled('username') && ! $this->filled('email')) {
-                $validator->errors()->add('username', 'Isi username atau email agar akun bisa dipakai login.');
+                $validator->errors()->add('username', 'Enter a username or email so the account can log in.');
             }
         });
     }

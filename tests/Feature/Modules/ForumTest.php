@@ -7,7 +7,7 @@ use Modules\Forum\Models\Answer;
 use Modules\Forum\Models\Question;
 use Modules\Learning\Models\Course;
 
-/** Kelas dengan guru, dua siswa, dan kursus berisi satu pelajaran. */
+/** A class with a teacher, two students and a course with one lesson. */
 function forumSetup(): array
 {
     $teacher = userWithRole('teacher');
@@ -26,7 +26,7 @@ function forumSetup(): array
 
 function ask(array $s, array $data = []): Question
 {
-    test()->actingAs($s['a'])->post('/tanya', $data + [
+    test()->actingAs($s['a'])->post('/questions', $data + [
         'class_room_id' => $s['class']->id, 'title' => 'Kenapa error indent?', 'body' => 'Tolong bantu', 'visibility' => 'class',
     ])->assertSessionHasNoErrors();
 
@@ -41,7 +41,7 @@ test('student asks a question about a lesson in their class', function () {
         ->and($q->lesson_id)->toBe($s['lesson']->id)
         ->and($q->status())->toBe('unanswered');
 
-    $this->actingAs($s['b'])->get("/tanya/{$q->id}")->assertOk()
+    $this->actingAs($s['b'])->get("/questions/{$q->id}")->assertOk()
         ->assertInertia(fn ($p) => $p->component('Forum::Questions/Show')->where('question.code', "for i in range(3):\nprint(i)")->where('can.answer', true));
 });
 
@@ -49,8 +49,8 @@ test('student cannot ask in a class they are not enrolled in or about another co
     $s = forumSetup();
     $other = forumSetup();
 
-    $this->actingAs($s['a'])->post('/tanya', ['class_room_id' => $other['class']->id, 'title' => 'Halo semua', 'body' => 'x', 'visibility' => 'class'])->assertForbidden();
-    $this->actingAs($s['a'])->post('/tanya', [
+    $this->actingAs($s['a'])->post('/questions', ['class_room_id' => $other['class']->id, 'title' => 'Halo semua', 'body' => 'x', 'visibility' => 'class'])->assertForbidden();
+    $this->actingAs($s['a'])->post('/questions', [
         'class_room_id' => $s['class']->id, 'lesson_id' => $other['lesson']->id, 'title' => 'Halo semua', 'body' => 'x', 'visibility' => 'class',
     ])->assertSessionHasErrors('lesson_id');
 });
@@ -61,54 +61,54 @@ test('private questions are hidden from classmates but visible to teacher and pa
     $guardian->children()->attach($s['a']->id, ['relationship' => 'ibu']);
     $q = ask($s, ['visibility' => 'private']);
 
-    $this->actingAs($s['b'])->get("/tanya/{$q->id}")->assertForbidden();
-    $this->actingAs($s['teacher'])->get("/tanya/{$q->id}")->assertOk();
-    $this->actingAs($guardian)->get("/tanya/{$q->id}")->assertOk()->assertInertia(fn ($p) => $p->where('can.answer', false));
-    $this->actingAs($guardian)->post("/tanya/{$q->id}/jawaban", ['body' => 'Coba lagi nak'])->assertForbidden();
-    $this->actingAs(userWithRole('teacher'))->get("/tanya/{$q->id}")->assertForbidden();
+    $this->actingAs($s['b'])->get("/questions/{$q->id}")->assertForbidden();
+    $this->actingAs($s['teacher'])->get("/questions/{$q->id}")->assertOk();
+    $this->actingAs($guardian)->get("/questions/{$q->id}")->assertOk()->assertInertia(fn ($p) => $p->where('can.answer', false));
+    $this->actingAs($guardian)->post("/questions/{$q->id}/answers", ['body' => 'Coba lagi nak'])->assertForbidden();
+    $this->actingAs(userWithRole('teacher'))->get("/questions/{$q->id}")->assertForbidden();
 
-    $this->actingAs($s['b'])->get('/tanya')->assertInertia(fn ($p) => $p->where('counts.all', 0));
+    $this->actingAs($s['b'])->get('/questions')->assertInertia(fn ($p) => $p->where('counts.all', 0));
 });
 
 test('anonymous questions hide the name from classmates only', function () {
     $s = forumSetup();
     $q = ask($s, ['anonymous' => true]);
 
-    $this->actingAs($s['b'])->get("/tanya/{$q->id}")->assertInertia(fn ($p) => $p->where('question.author.name', 'Teman sekelas'));
-    $this->actingAs($s['teacher'])->get("/tanya/{$q->id}")->assertInertia(fn ($p) => $p->where('question.author.name', $s['a']->name));
+    $this->actingAs($s['b'])->get("/questions/{$q->id}")->assertInertia(fn ($p) => $p->where('question.author.name', 'A classmate'));
+    $this->actingAs($s['teacher'])->get("/questions/{$q->id}")->assertInertia(fn ($p) => $p->where('question.author.name', $s['a']->name));
 });
 
 test('teacher answer marks question as answered by staff and is listed first', function () {
     $s = forumSetup();
     $q = ask($s);
 
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/jawaban", ['body' => 'Coba tambah spasi'])->assertSessionHasNoErrors();
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/answers", ['body' => 'Coba tambah spasi'])->assertSessionHasNoErrors();
     expect($q->fresh()->staff_answered_at)->toBeNull();
-    $this->actingAs($s['teacher'])->get('/tanya?tab=unanswered')->assertInertia(fn ($p) => $p->where('counts.unanswered', 1));
+    $this->actingAs($s['teacher'])->get('/questions?tab=unanswered')->assertInertia(fn ($p) => $p->where('counts.unanswered', 1));
 
-    $this->actingAs($s['teacher'])->post("/tanya/{$q->id}/jawaban", ['body' => 'Indentasi 4 spasi ya'])->assertSessionHasNoErrors();
+    $this->actingAs($s['teacher'])->post("/questions/{$q->id}/answers", ['body' => 'Indentasi 4 spasi ya'])->assertSessionHasNoErrors();
     $q->refresh();
     expect($q->staff_answered_at)->not->toBeNull()->and($q->answers_count)->toBe(2);
 
-    $this->actingAs($s['a'])->get("/tanya/{$q->id}")
+    $this->actingAs($s['a'])->get("/questions/{$q->id}")
         ->assertInertia(fn ($p) => $p->where('answers.0.by_staff', true)->where('answers.1.by_staff', false));
-    $this->actingAs($s['teacher'])->get('/tanya')->assertInertia(fn ($p) => $p->where('counts.unanswered', 0));
+    $this->actingAs($s['teacher'])->get('/questions')->assertInertia(fn ($p) => $p->where('counts.unanswered', 0));
 });
 
 test('asker accepts an answer which resolves the question; classmates cannot', function () {
     $s = forumSetup();
     $q = ask($s);
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/jawaban", ['body' => 'Pakai int()']);
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/answers", ['body' => 'Pakai int()']);
     $answer = Answer::first();
 
-    $this->actingAs($s['b'])->post("/tanya/jawaban/{$answer->id}/terbaik")->assertForbidden();
-    $this->actingAs($s['a'])->post("/tanya/jawaban/{$answer->id}/terbaik")->assertRedirect();
+    $this->actingAs($s['b'])->post("/questions/answers/{$answer->id}/accept")->assertForbidden();
+    $this->actingAs($s['a'])->post("/questions/answers/{$answer->id}/accept")->assertRedirect();
 
     $q->refresh();
     expect($q->accepted_answer_id)->toBe($answer->id)->and($q->status())->toBe('resolved');
 
-    // Menghapus jawaban terbaik membuka lagi pertanyaannya.
-    $this->actingAs($s['teacher'])->delete("/tanya/jawaban/{$answer->id}")->assertRedirect();
+    // Deleting the best answer reopens the question.
+    $this->actingAs($s['teacher'])->delete("/questions/answers/{$answer->id}")->assertRedirect();
     expect($q->fresh()->status())->toBe('unanswered')->and($q->fresh()->accepted_answer_id)->toBeNull();
 });
 
@@ -116,10 +116,10 @@ test('votes toggle and cannot be cast on own content', function () {
     $s = forumSetup();
     $q = ask($s);
 
-    $this->actingAs($s['a'])->post("/tanya/{$q->id}/dukung")->assertForbidden();
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/dukung");
+    $this->actingAs($s['a'])->post("/questions/{$q->id}/upvote")->assertForbidden();
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/upvote");
     expect($q->fresh()->votes_count)->toBe(1);
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/dukung");
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/upvote");
     expect($q->fresh()->votes_count)->toBe(0);
 });
 
@@ -127,13 +127,13 @@ test('only teacher can pin; author can delete only before answers', function () 
     $s = forumSetup();
     $q = ask($s);
 
-    $this->actingAs($s['a'])->post("/tanya/{$q->id}/sematkan")->assertForbidden();
-    $this->actingAs($s['teacher'])->post("/tanya/{$q->id}/sematkan");
+    $this->actingAs($s['a'])->post("/questions/{$q->id}/pin")->assertForbidden();
+    $this->actingAs($s['teacher'])->post("/questions/{$q->id}/pin");
     expect($q->fresh()->pinned)->toBeTrue();
 
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/jawaban", ['body' => 'Jawabanku']);
-    $this->actingAs($s['a'])->delete("/tanya/{$q->id}")->assertForbidden();
-    $this->actingAs($s['teacher'])->delete("/tanya/{$q->id}")->assertRedirect('/tanya');
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/answers", ['body' => 'Jawabanku']);
+    $this->actingAs($s['a'])->delete("/questions/{$q->id}")->assertForbidden();
+    $this->actingAs($s['teacher'])->delete("/questions/{$q->id}")->assertRedirect('/questions');
     expect(Question::count())->toBe(0)->and(Answer::count())->toBe(0);
 });
 
@@ -143,15 +143,15 @@ test('question image is stored privately and served only to viewers', function (
     $q = ask($s, ['image' => UploadedFile::fake()->image('error.png'), 'visibility' => 'private']);
 
     Storage::disk('local')->assertExists($q->image_path);
-    $this->actingAs($s['teacher'])->get("/tanya/{$q->id}/gambar")->assertOk();
-    $this->actingAs($s['b'])->get("/tanya/{$q->id}/gambar")->assertForbidden();
+    $this->actingAs($s['teacher'])->get("/questions/{$q->id}/image")->assertOk();
+    $this->actingAs($s['b'])->get("/questions/{$q->id}/image")->assertForbidden();
 });
 
 test('lesson summary powers the ask card on lesson pages', function () {
     $s = forumSetup();
     ask($s, ['lesson_id' => $s['lesson']->id]);
 
-    $this->actingAs($s['b'])->getJson("/tanya/pelajaran/{$s['lesson']->id}")
+    $this->actingAs($s['b'])->getJson("/questions/lesson/{$s['lesson']->id}")
         ->assertOk()->assertJsonPath('count', 1)->assertJsonPath('can_ask', true);
 });
 

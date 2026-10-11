@@ -21,9 +21,9 @@ class Question extends Model
         'pinned', 'accepted_answer_id', 'resolved_at', 'staff_answered_at', 'last_activity_at',
     ];
 
-    public const VISIBILITIES = ['class' => 'Semua teman sekelas', 'private' => 'Hanya guru'];
+    public const VISIBILITIES = ['class' => 'Whole class', 'private' => 'Teacher only'];
 
-    public const STATUSES = ['unanswered' => 'Belum dijawab', 'answered' => 'Ada jawaban', 'resolved' => 'Terjawab'];
+    public const STATUSES = ['unanswered' => 'Unanswered', 'answered' => 'Has answers', 'resolved' => 'Resolved'];
 
     protected function casts(): array
     {
@@ -62,9 +62,9 @@ class Question extends Model
     }
 
     /**
-     * Pertanyaan yang boleh dilihat user: guru melihat semua di kelasnya, siswa melihat
-     * pertanyaan kelas (bukan yang khusus guru) plus miliknya sendiri, orang tua melihat
-     * pertanyaan anaknya.
+     * Questions the user may see: teachers see everything in their classes, students see
+     * class questions (not teacher-only ones) plus their own, parents see their child's
+     * questions.
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
@@ -91,7 +91,7 @@ class Question extends Model
         };
     }
 
-    /** Guru kelas ini atau admin. */
+    /** This class's teacher or an admin. */
     public function isStaff(User $user): bool
     {
         return $user->hasRole('admin') || $this->classRoom->teacher_id === $user->id;
@@ -111,18 +111,18 @@ class Question extends Model
         return Str::markdown($this->body, ['html_input' => 'escape', 'allow_unsafe_links' => false]);
     }
 
-    /** Nama penanya; anonim untuk teman sekelas, tetapi guru tetap tahu. */
+    /** The asker's name; anonymous to classmates, but the teacher still knows. */
     public function authorFor(User $viewer): array
     {
         $hidden = $this->anonymous && $viewer->id !== $this->author_id && ! $this->isStaff($viewer)
             && ! $viewer->children()->whereKey($this->author_id)->exists();
 
         return $hidden
-            ? ['id' => 0, 'name' => 'Teman sekelas', 'initials' => '?', 'anonymous' => true]
+            ? ['id' => 0, 'name' => 'A classmate', 'initials' => '?', 'anonymous' => true]
             : ['id' => $this->author->id, 'name' => $this->author->name, 'initials' => $this->author->initials(), 'anonymous' => $this->anonymous];
     }
 
-    /** Ringkasan untuk daftar. */
+    /** Summary for lists. */
     public function toItem(User $viewer, array $votedIds = []): array
     {
         $status = $this->status();

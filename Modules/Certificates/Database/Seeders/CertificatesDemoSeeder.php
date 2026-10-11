@@ -6,7 +6,7 @@ use Modules\Certificates\Actions\EligibleStudents;
 use Modules\Certificates\Actions\IssueCertificate;
 use Modules\Classes\Models\ClassRoom;
 
-/** Sertifikat untuk siswa yang sudah tamat kursus, plus satu sertifikat lomba. */
+/** Certificates for students who finished a course, plus one contest certificate. */
 class CertificatesDemoSeeder
 {
     public function run(): void
@@ -23,8 +23,8 @@ class CertificatesDemoSeeder
         if ($student = $scratch?->students()->orderBy('name')->first()) {
             $issue->handle($student, [
                 'class_room_id' => $scratch->id,
-                'title' => 'Lomba Game Scratch Antar Kelas',
-                'achievement' => 'sebagai Juara 1 dengan karya "Kucing Penangkap Bola" dalam',
+                'title' => 'Inter-Class Scratch Game Contest',
+                'achievement' => 'for winning 1st place with "Ball Catcher Cat" in the',
                 'issued_at' => now()->subDays(5)->toDateString(),
             ], $scratch->teacher);
         }

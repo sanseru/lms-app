@@ -18,7 +18,7 @@ class QuizController extends Controller
         abort_unless($lesson->type === 'quiz' && $lesson->time_limit_minutes, 422);
 
         if ($this->outOfTries($lesson, $request->user()->id)) {
-            return back()->with('error', 'Kesempatan mengerjakan kuis ini sudah habis.');
+            return back()->with('error', 'You have no attempts left for this quiz.');
         }
 
         $timer->start($lesson, $request->user()->id);
@@ -34,13 +34,13 @@ class QuizController extends Controller
         $user = $request->user();
 
         if ($this->outOfTries($lesson, $user->id)) {
-            return back()->with('error', 'Kesempatan mengerjakan kuis ini sudah habis.');
+            return back()->with('error', 'You have no attempts left for this quiz.');
         }
 
         $data = $request->validate([
             'answers' => ['required', 'array'],
             'answers.*' => ['nullable'],
-        ], [], ['answers' => 'jawaban']);
+        ], [], ['answers' => 'answers']);
 
         $duration = null;
         $late = false;
@@ -64,8 +64,8 @@ class QuizController extends Controller
         }
 
         return back()->with($attempt->passed ? 'success' : 'error', $attempt->passed
-            ? "Hebat! Nilai kamu {$attempt->score}. Kuis lulus."
-            : "Nilai kamu {$attempt->score}. Butuh {$lesson->passScore()} untuk lulus, coba lagi ya.");
+            ? "Great job! You scored {$attempt->score}. Quiz passed."
+            : "You scored {$attempt->score}. You need {$lesson->passScore()} to pass, so give it another try.");
     }
 
     private function outOfTries(Lesson $lesson, int $studentId): bool

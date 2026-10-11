@@ -12,10 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('class_room_id')->constrained()->cascadeOnDelete();
-            $table->date('month'); // hari pertama bulan
+            $table->date('month'); // first day of the month
             $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->text('highlights')->nullable(); // yang sudah bagus
-            $table->text('focus')->nullable();      // fokus bulan depan
+            $table->text('highlights')->nullable(); // going well
+            $table->text('focus')->nullable();      // focus for next month
             $table->timestamps();
 
             $table->unique(['student_id', 'class_room_id', 'month']);

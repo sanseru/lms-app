@@ -18,9 +18,9 @@ use Modules\Reports\Models\MonthlyReportNote;
 use Modules\Sessions\Models\SessionAttendance;
 
 /**
- * Rangkuman satu bulan belajar seorang siswa untuk orang tua: kehadiran,
- * catatan tiap sesi, materi dan nilai, proyek, prestasi, dan catatan guru.
- * Bagian dari modul yang tidak aktif dilewati.
+ * One month of a student's learning summarised for parents: attendance,
+ * per-session notes, lessons and scores, projects, achievements and teacher notes.
+ * Sections from inactive modules are skipped.
  */
 class MonthlyReport
 {
@@ -131,7 +131,7 @@ class MonthlyReport
             ->all();
     }
 
-    /** Nilai terbaik per kuis yang dikerjakan bulan ini. */
+    /** Best score per quiz taken this month. */
     private function quizzes(User $student, CarbonImmutable $from, CarbonImmutable $to): array
     {
         return DB::table('quiz_attempts as q')
@@ -159,7 +159,7 @@ class MonthlyReport
             ->all();
     }
 
-    /** Soal coding yang berhasil dipecahkan pertama kali bulan ini. */
+    /** Coding exercises first solved this month. */
     private function code(User $student, CarbonImmutable $from, CarbonImmutable $to): ?array
     {
         if (! Schema::hasTable('code_submissions')) {
@@ -224,7 +224,7 @@ class MonthlyReport
             ->get(['title', 'number'])->map(fn ($r) => (array) $r)->all();
     }
 
-    /** Kuota dan tagihan per hari ini, agar orang tua tahu apa yang perlu disiapkan. */
+    /** Session packages and invoices as of today, so parents know what to prepare. */
     private function account(User $student): array
     {
         return [

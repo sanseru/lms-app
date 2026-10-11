@@ -22,26 +22,26 @@ const submit = () => (props.course ? form.put(route('learning.courses.update', p
 </script>
 
 <template>
-    <Head :title="course ? 'Ubah kursus' : 'Kursus baru'" />
-    <PageHeader eyebrow="Belajar" :title="course ? 'Ubah kursus' : 'Kursus baru'" />
+    <Head :title="course ? 'Edit course' : 'New course'" />
+    <PageHeader eyebrow="Learning" :title="course ? 'Edit course' : 'New course'" />
 
     <form class="card p-6 sm:p-8" @submit.prevent="submit">
-        <FormSection title="Informasi kursus" description="Kursus adalah kurikulum yang bisa dipakai beberapa kelas sekaligus.">
-            <Field id="title" label="Judul kursus" :error="form.errors.title" required class="sm:col-span-2">
-                <input id="title" v-model="form.title" type="text" class="field" placeholder="mis. Python Start: Dasar Pemrograman" />
+        <FormSection title="Course details" description="A course is a curriculum that several classes can use at once.">
+            <Field id="title" label="Course title" :error="form.errors.title" required class="sm:col-span-2">
+                <input id="title" v-model="form.title" type="text" class="field" placeholder="e.g. Python Start: Programming Basics" />
             </Field>
-            <Field id="subject" label="Mata pelajaran" :error="form.errors.subject" required>
-                <input id="subject" v-model="form.subject" type="text" class="field" placeholder="mis. Python" />
+            <Field id="subject" label="Subject" :error="form.errors.subject" required>
+                <input id="subject" v-model="form.subject" type="text" class="field" placeholder="e.g. Python" />
             </Field>
             <Field id="level" label="Level" :error="form.errors.level" required>
                 <select id="level" v-model="form.level" class="field">
                     <option v-for="(label, key) in levels" :key="key" :value="key">{{ label }}</option>
                 </select>
             </Field>
-            <Field id="description" label="Deskripsi" :error="form.errors.description" class="sm:col-span-2">
-                <textarea id="description" v-model="form.description" rows="3" class="field" placeholder="Apa yang akan dipelajari dan dibuat siswa." />
+            <Field id="description" label="Description" :error="form.errors.description" class="sm:col-span-2">
+                <textarea id="description" v-model="form.description" rows="3" class="field" placeholder="What students will learn and build." />
             </Field>
-            <Field label="Warna sampul">
+            <Field label="Cover color">
                 <div class="flex gap-2 pt-1">
                     <button
                         v-for="color in colors"
@@ -54,7 +54,7 @@ const submit = () => (props.course ? form.put(route('learning.courses.update', p
                     />
                 </div>
             </Field>
-            <Field label="Status" :error="form.errors.status" hint="Kursus draf hanya terlihat oleh guru dan admin.">
+            <Field label="Status" :error="form.errors.status" hint="Draft courses are only visible to teachers and admins.">
                 <div class="flex gap-2">
                     <button
                         v-for="(label, key) in statuses"
@@ -71,8 +71,8 @@ const submit = () => (props.course ? form.put(route('learning.courses.update', p
         </FormSection>
 
         <div class="flex justify-end gap-2 pt-6">
-            <Link :href="course ? route('learning.courses.show', course.id) : route('learning.courses.index')" class="btn-ghost">Batal</Link>
-            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Simpan</button>
+            <Link :href="course ? route('learning.courses.show', course.id) : route('learning.courses.index')" class="btn-ghost">Cancel</Link>
+            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Save</button>
         </div>
     </form>
 </template>

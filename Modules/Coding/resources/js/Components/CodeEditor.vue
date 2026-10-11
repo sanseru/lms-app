@@ -9,12 +9,12 @@ import { keymap } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-/** Editor kode (CodeMirror 6) dengan huruf besar agar nyaman untuk anak dan tablet. */
+/** Code editor (CodeMirror 6) with large text so it is comfortable for kids and tablets. */
 const props = defineProps({
     language: { type: String, default: 'python' },
     readonly: { type: Boolean, default: false },
     minHeight: { type: String, default: '280px' },
-    label: { type: String, default: 'Editor kode' },
+    label: { type: String, default: 'Code editor' },
 });
 const model = defineModel({ type: String, default: '' });
 const emit = defineEmits(['run']);
@@ -48,7 +48,7 @@ onMounted(() => {
             ],
         }),
     });
-    // Ukur ulang setelah font termuat agar nomor baris sejajar dengan kode.
+    // Re-measure after fonts load so line numbers line up with the code.
     document.fonts?.ready.then(() => view?.requestMeasure());
 });
 

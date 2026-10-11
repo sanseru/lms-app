@@ -16,7 +16,7 @@ router.on('navigate', () => (sidebarOpen.value = false));
 
 const isActive = (pattern) => pattern.split('|').some((p) => route().current(p));
 
-// Toast dari flash message server.
+// Toast from the server's flash message.
 const toast = ref(null);
 let timer;
 watch(
@@ -41,8 +41,8 @@ const roleTone = {
 
 <template>
     <div class="min-h-full">
-        <a href="#konten" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:shadow-lg">Langsung ke konten</a>
-        <!-- Overlay mobile -->
+        <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:shadow-lg">Skip to content</a>
+        <!-- Mobile overlay -->
         <Transition enter-from-class="opacity-0" leave-to-class="opacity-0" enter-active-class="transition" leave-active-class="transition">
             <div v-if="sidebarOpen" class="fixed inset-0 z-40 bg-ink/40 backdrop-blur-[2px] lg:hidden" @click="sidebarOpen = false" />
         </Transition>
@@ -56,7 +56,7 @@ const roleTone = {
                 <Link :href="route('dashboard')" class="flex items-center">
                     <img src="/images/logo-header.png" alt="Alprogmatics" class="h-11 w-auto" />
                 </Link>
-                <button class="grid size-11 place-items-center rounded-lg text-muted hover:bg-chip lg:hidden" aria-label="Tutup menu" @click="sidebarOpen = false">
+                <button class="grid size-11 place-items-center rounded-lg text-muted hover:bg-chip lg:hidden" aria-label="Close menu" @click="sidebarOpen = false">
                     <Icon name="x" />
                 </button>
             </div>
@@ -86,10 +86,10 @@ const roleTone = {
 
         </aside>
 
-        <!-- Konten -->
+        <!-- Content -->
         <div class="lg:pl-72">
             <header class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-white/85 px-4 backdrop-blur sm:px-6 lg:px-8">
-                <button class="grid size-11 place-items-center rounded-lg text-ink hover:bg-chip lg:hidden" :aria-expanded="sidebarOpen" @click="sidebarOpen = true" aria-label="Buka menu">
+                <button class="grid size-11 place-items-center rounded-lg text-ink hover:bg-chip lg:hidden" :aria-expanded="sidebarOpen" @click="sidebarOpen = true" aria-label="Open menu">
                     <Icon name="menu" />
                 </button>
                 <img src="/images/logo-header.png" alt="" class="h-8 w-auto lg:hidden" />
@@ -99,7 +99,7 @@ const roleTone = {
                         <template #trigger>
                             <button
                                 class="relative grid size-11 place-items-center rounded-xl border border-line text-muted hover:bg-chip hover:text-ink"
-                                :aria-label="notifications.unread ? `Notifikasi, ${notifications.unread} belum dibaca` : 'Notifikasi'"
+                                :aria-label="notifications.unread ? `Notifications, ${notifications.unread} unread` : 'Notifications'"
                             >
                                 <Icon name="bell" />
                                 <span
@@ -112,13 +112,13 @@ const roleTone = {
                         </template>
                         <template #content>
                             <div class="flex items-center justify-between border-b border-line px-4 py-3">
-                                <p class="font-display text-sm font-bold text-ink">Notifikasi</p>
+                                <p class="font-display text-sm font-bold text-ink">Notifications</p>
                                 <button
                                     v-if="notifications.unread"
                                     class="text-xs font-semibold text-brand-600 hover:underline"
                                     @click="router.post(route('notifications.read-all'), {}, { preserveScroll: true })"
                                 >
-                                    Tandai semua dibaca
+                                    Mark all as read
                                 </button>
                             </div>
                             <ul v-if="notifications.latest.length" class="max-h-96 divide-y divide-line overflow-y-auto">
@@ -135,9 +135,9 @@ const roleTone = {
                                     </Link>
                                 </li>
                             </ul>
-                            <p v-else class="px-4 py-8 text-center text-sm text-muted">Belum ada notifikasi.</p>
+                            <p v-else class="px-4 py-8 text-center text-sm text-muted">No notifications yet.</p>
                             <Link :href="route('notifications.index')" class="block border-t border-line px-4 py-2.5 text-center text-sm font-semibold text-brand-600 hover:bg-chip/60">
-                                Lihat semua
+                                View all
                             </Link>
                         </template>
                     </Dropdown>
@@ -145,7 +145,7 @@ const roleTone = {
                     <Dropdown align="right" width="48">
                         <template #trigger>
                             <button class="flex min-h-11 items-center gap-3 rounded-xl py-1 pr-2 pl-1 hover:bg-chip">
-                                <span class="sr-only sm:hidden">Menu akun</span>
+                                <span class="sr-only sm:hidden">Account menu</span>
                                 <Avatar :initials="user.initials" :seed="user.id" size="sm" />
                                 <span class="hidden text-left sm:block">
                                     <span class="block text-sm font-bold leading-tight text-ink">{{ user.name }}</span>
@@ -155,14 +155,14 @@ const roleTone = {
                             </button>
                         </template>
                         <template #content>
-                            <DropdownLink :href="route('profile.edit')">Profil saya</DropdownLink>
-                            <DropdownLink :href="route('logout')" method="post" as="button">Keluar</DropdownLink>
+                            <DropdownLink :href="route('profile.edit')">My profile</DropdownLink>
+                            <DropdownLink :href="route('logout')" method="post" as="button">Sign out</DropdownLink>
                         </template>
                     </Dropdown>
                 </div>
             </header>
 
-            <main id="konten" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+            <main id="content" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
                 <slot />
             </main>
         </div>
@@ -187,7 +187,7 @@ const roleTone = {
                     <Icon :name="toast.type === 'success' ? 'check' : 'alert-triangle'" :size="16" />
                 </span>
                 <p class="pt-1 text-sm font-medium text-ink">{{ toast.message }}</p>
-                <button class="-m-1 ml-0 grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-chip hover:text-ink" aria-label="Tutup pemberitahuan" @click="toast = null"><Icon name="x" :size="16" /></button>
+                <button class="-m-1 ml-0 grid size-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-chip hover:text-ink" aria-label="Dismiss notification" @click="toast = null"><Icon name="x" :size="16" /></button>
             </div>
         </Transition>
     </div>

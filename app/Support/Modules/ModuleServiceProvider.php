@@ -8,34 +8,34 @@ use Illuminate\Support\ServiceProvider;
 use ReflectionClass;
 
 /**
- * Basis service provider untuk setiap modul di folder Modules/.
+ * Base service provider for every module in Modules/.
  *
- * Konvensi folder modul:
- *   Modules/<Nama>/
- *     Providers/<Nama>ServiceProvider.php
+ * Module folder convention:
+ *   Modules/<Name>/
+ *     Providers/<Name>ServiceProvider.php
  *     Http/Controllers, Http/Requests
  *     Models, Policies, Actions
  *     Database/Migrations, Database/Factories
- *     routes/web.php          (otomatis memakai middleware web + auth)
- *     routes/public.php       (hanya middleware web, untuk halaman publik)
- *     resources/js/Pages      (halaman Inertia: Inertia::render('<Nama>::Halaman'))
+ *     routes/web.php          (uses web + auth middleware automatically)
+ *     routes/public.php       (web middleware only, for public pages)
+ *     resources/js/Pages      (Inertia pages: Inertia::render('<Name>::Page'))
  */
 abstract class ModuleServiceProvider extends ServiceProvider
 {
-    /** Nama modul, sama dengan nama folder. */
+    /** Module name, same as the folder name. */
     abstract public function name(): string;
 
     /**
-     * Permission milik modul ini, dibuat otomatis oleh seeder.
+     * Permissions owned by this module, created by the seeder.
      *
-     * @return array<string, array<int, string>> permission => role yang mendapatkannya
+     * @return array<string, array<int, string>> permission => roles that get it
      */
     public function permissions(): array
     {
         return [];
     }
 
-    /** Daftarkan menu navigasi modul. */
+    /** Register the module's navigation items. */
     public function navigation(NavigationRegistry $nav): void {}
 
     public function boot(): void

@@ -18,7 +18,7 @@ class AchievementController extends Controller
 {
     public function __construct(private Achievements $achievements) {}
 
-    /** Prestasiku (siswa) atau prestasi anak pertama (orang tua). */
+    /** My achievements (student) or the first child's achievements (parent). */
     public function me(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
@@ -47,7 +47,7 @@ class AchievementController extends Controller
         return $this->render($student, $viewer);
     }
 
-    /** Guru dan admin: ringkasan XP siswa per kelas. */
+    /** Teachers and admins: student XP summary per class. */
     public function classes(Request $request): Response
     {
         $user = $request->user();
@@ -89,7 +89,7 @@ class AchievementController extends Controller
         ]);
     }
 
-    /** Lima besar XP bulan ini di setiap kelas siswa (nama depan saja). */
+    /** Top five XP this month in each of the student's classes (first names only). */
     private function leaderboards(User $student): array
     {
         return $student->enrolledClasses()->wherePivot('status', 'active')->get()->map(function (ClassRoom $class) use ($student) {

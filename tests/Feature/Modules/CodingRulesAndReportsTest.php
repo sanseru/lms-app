@@ -7,7 +7,7 @@ use Modules\Learning\Models\LessonReport;
 
 test('code rules ignore comments and strings and match whole words', function () {
     $rules = new CodeRules;
-    $code = "# pakai for di sini\nangka = [1, 2]\nprint(\"sum\")\ntotal = 0\nfor a in angka:\n    total += a\nprint(total)";
+    $code = "# use for here\nnumbers = [1, 2]\nprint(\"sum\")\ntotal = 0\nfor a in numbers:\n    total += a\nprint(total)";
     $result = collect($rules->check([
         ['type' => 'require', 'value' => 'for'],
         ['type' => 'forbid', 'value' => 'sum'],
@@ -48,11 +48,11 @@ test('changing a graded exercise creates a new version and keeps old scores', fu
     $fresh->update(['verified_hash' => $fresh->contentHash()]);
     [$visible, $hidden] = testIds($lesson);
     $payload = fn (array $extra = []) => $extra + [
-        'title' => 'Luas persegi', 'language' => 'python', 'mode' => 'io', 'solution_code' => "s = int(input())\nprint(s * s)", 'time_limit_ms' => 2000, 'is_published' => true,
+        'title' => 'Square area', 'language' => 'python', 'mode' => 'io', 'solution_code' => "s = int(input())\nprint(s * s)", 'time_limit_ms' => 2000, 'is_published' => true,
         'tests' => [['id' => $visible, 'kind' => 'io', 'input' => '4', 'expected' => '16', 'weight' => 1], ['id' => $hidden, 'kind' => 'io', 'input' => '1.5', 'expected' => '2.25', 'is_hidden' => true, 'weight' => 1]],
     ];
 
-    // Belum ada yang mengumpulkan: perubahan tetap di versi 1.
+    // Nobody has submitted yet: the change stays on version 1.
     $this->actingAs($teacher)->put("/lessons/{$lesson->id}/code", $payload())->assertSessionHasNoErrors();
     expect(CodeExercise::first()->version)->toBe(1)->and(CodeExercise::first()->isVerified())->toBeTrue();
 
@@ -84,7 +84,7 @@ test('students report a problem and the teacher closes it', function () {
     $this->actingAs($student)->post("/lessons/{$lesson->id}/report", ['reason' => 'unclear']);
 
     expect(LessonReport::count())->toBe(1)
-        ->and($teacher->notifications()->first()->data['title'])->toBe('Problem reported: Luas persegi');
+        ->and($teacher->notifications()->first()->data['title'])->toBe('Problem reported: Square area');
 
     $this->actingAs($teacher)->get("/lessons/{$lesson->id}")->assertInertia(fn ($page) => $page->where('reports.open', 1));
     $this->actingAs($student)->get("/lessons/{$lesson->id}")->assertInertia(fn ($page) => $page->where('reports.mine', true));

@@ -7,9 +7,9 @@ use Modules\Coding\Grading\CodeRunner;
 use Modules\Coding\Models\CodeExercise;
 
 /**
- * Kode sudah dijalankan di browser siswa (Pyodide / Web Worker); server hanya
- * menerima outputnya lalu membandingkan dengan jawaban yang disimpan di server.
- * Jawaban tes tersembunyi tidak pernah dikirim ke browser.
+ * The code already ran in the student's browser (Pyodide / Web Worker); the server only
+ * receives the output and compares it with the answers stored on the server.
+ * Hidden test answers are never sent to the browser.
  */
 class BrowserRunner implements CodeRunner
 {

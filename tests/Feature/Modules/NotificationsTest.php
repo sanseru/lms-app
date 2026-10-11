@@ -29,7 +29,7 @@ beforeEach(function () {
     ]);
     $this->class->students()->attach($this->student->id);
 
-    // Sesi pagi ini sudah lewat dan belum diisi.
+    // This morning's session is over and not reported yet.
     $this->session = ClassSession::create([
         'class_room_id' => $this->class->id, 'teacher_id' => $this->teacher->id,
         'starts_at' => '2026-10-07 08:00', 'ends_at' => '2026-10-07 09:00',
@@ -46,8 +46,8 @@ function notificationTitles($user): array
 test('notify skips duplicates with the same key and inactive users', function () {
     $inactive = userWithRole('student', ['status' => 'inactive']);
 
-    Notify::send([$this->student, $inactive], 'Halo', key: 'k1');
-    Notify::send($this->student, 'Halo', key: 'k1');
+    Notify::send([$this->student, $inactive], 'Hello', key: 'k1');
+    Notify::send($this->student, 'Hello', key: 'k1');
 
     expect($this->student->notifications()->count())->toBe(1)
         ->and($inactive->notifications()->count())->toBe(0);
@@ -55,35 +55,35 @@ test('notify skips duplicates with the same key and inactive users', function ()
 
 test('invoice and payment flow notifies guardians and admins', function () {
     $invoice = Invoice::create([
-        'number' => Invoice::nextNumber(), 'student_id' => $this->student->id, 'title' => 'SPP Oktober',
+        'number' => Invoice::nextNumber(), 'student_id' => $this->student->id, 'title' => 'Tuition October',
         'amount' => 350000, 'due_date' => now()->addDays(5),
     ]);
-    expect(notificationTitles($this->guardian))->toContain("Tagihan baru {$invoice->number}");
+    expect(notificationTitles($this->guardian))->toContain("New invoice {$invoice->number}");
 
     $this->actingAs($this->guardian)->post("/finance/invoices/{$invoice->id}/payments", [
         'amount' => 350000, 'paid_at' => today()->toDateString(), 'method' => 'transfer',
-        'proof' => UploadedFile::fake()->image('bukti.jpg'),
+        'proof' => UploadedFile::fake()->image('proof.jpg'),
     ]);
-    expect(notificationTitles($this->admin))->toContain('Bukti transfer menunggu verifikasi');
+    expect(notificationTitles($this->admin))->toContain('Transfer proof waiting for verification');
 
     $payment = Payment::firstOrFail();
-    $this->actingAs($this->admin)->post("/finance/payments/{$payment->id}/reject", ['reason' => 'Nominal tidak sesuai']);
-    expect(notificationTitles($this->guardian))->toContain('Pembayaran ditolak');
+    $this->actingAs($this->admin)->post("/finance/payments/{$payment->id}/reject", ['reason' => 'Amount does not match']);
+    expect(notificationTitles($this->guardian))->toContain('Payment rejected');
 });
 
 test('completing a session sends a summary to guardians and homework to students once', function () {
     $session = $this->session;
-    $report = ['topic' => 'Perulangan', 'homework' => 'Latihan 3', 'parent_note' => 'Aktif sekali',
+    $report = ['topic' => 'Loops', 'homework' => 'Exercise 3', 'parent_note' => 'Very active',
         'attendances' => [['student_id' => $this->student->id, 'status' => 'present']]];
 
     $this->actingAs($this->teacher)->put("/sessions/{$session->id}", $report)->assertRedirect();
-    $this->actingAs($this->teacher)->put("/sessions/{$session->id}", $report)->assertRedirect(); // koreksi
+    $this->actingAs($this->teacher)->put("/sessions/{$session->id}", $report)->assertRedirect(); // correction
 
     $summary = $this->guardian->notifications()->get();
     expect($summary)->toHaveCount(1)
-        ->and($summary->first()->data['title'])->toBe('Ringkasan sesi Python Start')
-        ->and($summary->first()->data['body'])->toContain('Aktif sekali')
-        ->and(notificationTitles($this->student))->toBe(['PR dari sesi Python Start']);
+        ->and($summary->first()->data['title'])->toBe('Session summary: Python Start')
+        ->and($summary->first()->data['body'])->toContain('Very active')
+        ->and(notificationTitles($this->student))->toBe(['Homework from Python Start']);
 });
 
 test('teachers are reminded about unreported sessions', function () {
@@ -91,42 +91,42 @@ test('teachers are reminded about unreported sessions', function () {
     $this->artisan('sessions:remind-reports')->assertSuccessful();
 
     expect($this->teacher->notifications()->count())->toBe(1)
-        ->and(notificationTitles($this->teacher)[0])->toBe('Laporan sesi Python Start belum diisi');
+        ->and(notificationTitles($this->teacher)[0])->toBe('Session report for Python Start is not filled in yet');
 });
 
 test('questions, answers, and graded assignments notify the right people', function () {
     $course = Course::create(['title' => 'Python', 'subject' => 'Python', 'level' => 'beginner', 'color' => 'violet', 'status' => 'published']);
-    $lesson = $course->lessons()->create(['title' => 'Tugas 1', 'type' => 'assignment', 'position' => 1, 'is_published' => true]);
+    $lesson = $course->lessons()->create(['title' => 'Assignment 1', 'type' => 'assignment', 'position' => 1, 'is_published' => true]);
 
-    $question = Question::create(['class_room_id' => $this->class->id, 'author_id' => $this->student->id, 'title' => 'Kenapa error?', 'body' => 'x', 'visibility' => 'class']);
-    expect(notificationTitles($this->teacher))->toBe(['Pertanyaan baru di Python Start']);
+    $question = Question::create(['class_room_id' => $this->class->id, 'author_id' => $this->student->id, 'title' => 'Why the error?', 'body' => 'x', 'visibility' => 'class']);
+    expect(notificationTitles($this->teacher))->toBe(['New question in Python Start']);
 
-    Answer::create(['question_id' => $question->id, 'author_id' => $this->teacher->id, 'body' => 'Cek indentasi', 'by_staff' => true]);
-    expect(notificationTitles($this->student))->toBe(['Guru menjawab pertanyaanmu']);
+    Answer::create(['question_id' => $question->id, 'author_id' => $this->teacher->id, 'body' => 'Check the indentation', 'by_staff' => true]);
+    expect(notificationTitles($this->student))->toBe(['Your teacher answered your question']);
 
-    $submission = AssignmentSubmission::create(['lesson_id' => $lesson->id, 'student_id' => $this->student->id, 'body' => 'jawaban', 'status' => 'submitted', 'submitted_at' => now()]);
+    $submission = AssignmentSubmission::create(['lesson_id' => $lesson->id, 'student_id' => $this->student->id, 'body' => 'my answer', 'status' => 'submitted', 'submitted_at' => now()]);
     $submission->update(['status' => 'graded', 'score' => 90, 'graded_by' => $this->teacher->id, 'graded_at' => now()]);
 
-    expect(notificationTitles($this->student))->toContain('Tugas dinilai: Tugas 1')
-        ->and(notificationTitles($this->guardian))->toContain('Tugas dinilai: Tugas 1');
+    expect(notificationTitles($this->student))->toContain('Assignment graded: Assignment 1')
+        ->and(notificationTitles($this->guardian))->toContain('Assignment graded: Assignment 1');
 });
 
 test('users read their notifications and the bell shows the unread count', function () {
-    Notify::send($this->student, 'Satu', url: '/dashboard');
-    Notify::send($this->student, 'Dua');
+    Notify::send($this->student, 'One', url: '/dashboard');
+    Notify::send($this->student, 'Two');
 
-    $this->actingAs($this->student)->get('/notifikasi')
+    $this->actingAs($this->student)->get('/notifications')
         ->assertInertia(fn ($page) => $page->component('Notifications::Index')
             ->has('items.data', 2)
             ->where('notifications.unread', 2));
 
-    $first = $this->student->notifications()->where('data->title', 'Satu')->first();
-    $this->actingAs($this->student)->get("/notifikasi/{$first->id}")->assertRedirect('/dashboard');
+    $first = $this->student->notifications()->where('data->title', 'One')->first();
+    $this->actingAs($this->student)->get("/notifications/{$first->id}")->assertRedirect('/dashboard');
     expect($first->fresh()->read_at)->not->toBeNull();
 
-    // Notifikasi orang lain tidak bisa dibuka.
-    $this->actingAs($this->guardian)->get("/notifikasi/{$first->id}")->assertNotFound();
+    // Other people's notifications cannot be opened.
+    $this->actingAs($this->guardian)->get("/notifications/{$first->id}")->assertNotFound();
 
-    $this->actingAs($this->student)->post('/notifikasi/baca-semua');
+    $this->actingAs($this->student)->post('/notifications/read-all');
     expect($this->student->unreadNotifications()->count())->toBe(0);
 });

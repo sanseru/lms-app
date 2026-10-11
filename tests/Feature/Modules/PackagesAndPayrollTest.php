@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->teacher->teacherProfile()->create(['employee_code' => 'GRU-1', 'rate_per_session' => 120000]);
     $this->student = userWithRole('student');
     $this->student->studentProfile()->create(['student_code' => 'SIS-1']);
-    $this->package = Package::create(['name' => 'Reguler', 'sessions_count' => 2, 'price' => 200000, 'valid_days' => 30]);
+    $this->package = Package::create(['name' => 'Regular', 'sessions_count' => 2, 'price' => 200000, 'valid_days' => 30]);
 
     $this->class = ClassRoom::create([
         'code' => 'PYT-001', 'name' => 'Python Start', 'subject' => 'Python', 'teacher_id' => $this->teacher->id,
@@ -34,7 +34,7 @@ function completeNext($test, string $status = 'present')
 {
     $session = $test->class->sessions()->where('status', 'scheduled')->orderBy('starts_at')->first();
     $test->actingAs($test->teacher)->put("/sessions/{$session->id}", [
-        'topic' => 'Materi', 'attendances' => [['student_id' => $test->student->id, 'status' => $status]],
+        'topic' => 'Lesson', 'attendances' => [['student_id' => $test->student->id, 'status' => $status]],
     ]);
 
     return $session->fresh();
@@ -73,7 +73,7 @@ test('free trial packages are active immediately without an invoice', function (
 
 test('completed sessions use up the quota and excused ones give it back', function () {
     $sp = StudentPackage::create([
-        'student_id' => $this->student->id, 'package_id' => $this->package->id, 'name' => 'Reguler',
+        'student_id' => $this->student->id, 'package_id' => $this->package->id, 'name' => 'Regular',
         'sessions_total' => 2, 'price' => 200000, 'valid_days' => 30,
     ]);
     $sp->activate();
@@ -81,15 +81,15 @@ test('completed sessions use up the quota and excused ones give it back', functi
     $first = completeNext($this);
     expect($sp->fresh()->remaining())->toBe(1);
 
-    // Koreksi: ternyata izin, kuota kembali.
+    // Correction: the student was actually excused, so the quota comes back.
     $this->actingAs($this->teacher)->put("/sessions/{$first->id}", [
-        'topic' => 'Materi', 'attendances' => [['student_id' => $this->student->id, 'status' => 'excused']],
+        'topic' => 'Lesson', 'attendances' => [['student_id' => $this->student->id, 'status' => 'excused']],
     ]);
     expect($sp->fresh()->remaining())->toBe(2);
 
-    // Masuk sesi pertama lagi lalu dua sesi berikutnya: kuota habis, sesi ketiga tidak tercatat.
+    // Mark the first session present again, then two more: quota used up, the third is not counted.
     $this->actingAs($this->teacher)->put("/sessions/{$first->id}", [
-        'topic' => 'Materi', 'attendances' => [['student_id' => $this->student->id, 'status' => 'present']],
+        'topic' => 'Lesson', 'attendances' => [['student_id' => $this->student->id, 'status' => 'present']],
     ]);
     completeNext($this);
     $third = completeNext($this);
@@ -100,7 +100,7 @@ test('completed sessions use up the quota and excused ones give it back', functi
 });
 
 test('class specific packages are used before general ones', function () {
-    $general = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'Umum', 'sessions_total' => 5, 'price' => 0, 'valid_days' => 30]);
+    $general = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'General', 'sessions_total' => 5, 'price' => 0, 'valid_days' => 30]);
     $general->activate(now()->subDays(10));
     $specific = StudentPackage::create(['student_id' => $this->student->id, 'class_room_id' => $this->class->id, 'name' => 'Python', 'sessions_total' => 5, 'price' => 0, 'valid_days' => 30]);
     $specific->activate();
@@ -111,7 +111,7 @@ test('class specific packages are used before general ones', function () {
 });
 
 test('expired packages are not used', function () {
-    $sp = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'Lama', 'sessions_total' => 5, 'price' => 0, 'valid_days' => 5]);
+    $sp = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'Old', 'sessions_total' => 5, 'price' => 0, 'valid_days' => 5]);
     $sp->activate(now()->subDays(30));
 
     $session = completeNext($this);
@@ -121,8 +121,8 @@ test('expired packages are not used', function () {
 
 test('each completed session records one tutor fee at the teacher rate', function () {
     $session = completeNext($this);
-    // Simpan ulang (koreksi) tidak menggandakan honor.
-    $this->actingAs($this->teacher)->put("/sessions/{$session->id}", ['topic' => 'Revisi', 'attendances' => []]);
+    // Saving again (a correction) does not double the fee.
+    $this->actingAs($this->teacher)->put("/sessions/{$session->id}", ['topic' => 'Revision', 'attendances' => []]);
 
     expect(PayrollItem::count())->toBe(1)
         ->and(PayrollItem::first())->amount->toBe(120000)->teacher_id->toBe($this->teacher->id);
@@ -143,12 +143,12 @@ test('admin bundles a month of fees into a slip and marks it paid', function () 
     expect($payout)->total->toBe(280000)->sessions_count->toBe(2)
         ->and(PayrollItem::whereNull('teacher_payout_id')->count())->toBe(0);
 
-    // Slip kedua untuk periode yang sama tidak punya item lagi.
+    // A second pay slip for the same period has no items left.
     $this->actingAs($this->admin)->post('/finance/payroll', ['teacher_id' => $this->teacher->id, 'month' => '2026-10'])
         ->assertSessionHas('error');
 
     $this->actingAs($this->admin)->post("/finance/payroll/{$payout->id}/paid", [
-        'paid_at' => '2026-10-07', 'proof' => UploadedFile::fake()->image('bukti.jpg'),
+        'paid_at' => '2026-10-07', 'proof' => UploadedFile::fake()->image('proof.jpg'),
     ])->assertSessionHas('success');
 
     expect($payout->fresh()->status)->toBe('paid');
@@ -183,12 +183,12 @@ test('deleting an unpaid slip returns sessions to the unbundled list', function 
 test('guardian dashboard shows remaining quota and the last session note', function () {
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($this->student->id);
-    $sp = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'Reguler', 'sessions_total' => 8, 'price' => 0, 'valid_days' => 30]);
+    $sp = StudentPackage::create(['student_id' => $this->student->id, 'name' => 'Regular', 'sessions_total' => 8, 'price' => 0, 'valid_days' => 30]);
     $sp->activate();
 
     $session = $this->class->sessions()->orderBy('starts_at')->first();
     $this->actingAs($this->teacher)->put("/sessions/{$session->id}", [
-        'topic' => 'Fungsi', 'parent_note' => 'Hebat!', 'internal_note' => 'rahasia',
+        'topic' => 'Functions', 'parent_note' => 'Great job!', 'internal_note' => 'private',
         'attendances' => [['student_id' => $this->student->id, 'status' => 'present']],
     ]);
 
@@ -196,8 +196,8 @@ test('guardian dashboard shows remaining quota and the last session note', funct
         ->assertInertia(fn ($page) => $page
             ->component('Dashboard::Guardian')
             ->where('children.0.packages.0.remaining', 7)
-            ->where('children.0.lastSession.topic', 'Fungsi')
-            ->where('children.0.lastSession.parent_note', 'Hebat!'));
+            ->where('children.0.lastSession.topic', 'Functions')
+            ->where('children.0.lastSession.parent_note', 'Great job!'));
 
     $this->actingAs($guardian)->get("/sessions/{$session->id}")
         ->assertInertia(fn ($page) => $page->where('session.internal_note', null));

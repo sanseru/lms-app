@@ -27,14 +27,14 @@ function certSetup(): array
 test('students who finished every lesson are listed as eligible', function () {
     $s = certSetup();
 
-    $this->actingAs($s['teacher'])->get('/sertifikat-saya')
+    $this->actingAs($s['teacher'])->get('/my-certificates')
         ->assertInertia(fn ($p) => $p->where('mode', 'staff')->has('eligible', 1)->where('eligible.0.student.id', $s['a']->id));
 });
 
 test('teacher issues a certificate that the student can view and the public can verify', function () {
     $s = certSetup();
 
-    $this->actingAs($s['teacher'])->post('/sertifikat-saya', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id])
+    $this->actingAs($s['teacher'])->post('/my-certificates', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id])
         ->assertSessionHasNoErrors();
     $cert = Certificate::first();
 
@@ -42,27 +42,27 @@ test('teacher issues a certificate that the student can view and the public can 
         ->and($cert->number)->toStartWith('ALP/'.now()->format('Y/m').'/0001')
         ->and(strlen($cert->code))->toBe(10);
 
-    $this->actingAs($s['a'])->get("/sertifikat-saya/{$cert->id}")->assertOk();
-    $this->actingAs($s['b'])->get("/sertifikat-saya/{$cert->id}")->assertForbidden();
-    $this->actingAs($s['teacher'])->get('/sertifikat-saya')->assertInertia(fn ($p) => $p->has('eligible', 0)->has('certificates', 1));
+    $this->actingAs($s['a'])->get("/my-certificates/{$cert->id}")->assertOk();
+    $this->actingAs($s['b'])->get("/my-certificates/{$cert->id}")->assertForbidden();
+    $this->actingAs($s['teacher'])->get('/my-certificates')->assertInertia(fn ($p) => $p->has('eligible', 0)->has('certificates', 1));
 
     auth()->logout();
-    $this->get("/sertifikat/{$cert->code}")->assertOk()
+    $this->get("/certificates/{$cert->code}")->assertOk()
         ->assertInertia(fn ($p) => $p->component('Certificates::Verify')->where('certificate.valid', true)->where('certificate.student', 'Aldi S.'));
-    $this->get('/sertifikat/ZZZZZZZZZZ')->assertInertia(fn ($p) => $p->where('certificate', null));
+    $this->get('/certificates/ZZZZZZZZZZ')->assertInertia(fn ($p) => $p->where('certificate', null));
 });
 
 test('certificates give xp and the graduate badge; revoking removes them', function () {
     $s = certSetup();
-    $this->actingAs($s['teacher'])->post('/sertifikat-saya', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id]);
+    $this->actingAs($s['teacher'])->post('/my-certificates', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id]);
     $cert = Certificate::first();
 
     $badges = collect(app(Achievements::class)->summary($s['a'])['badges'])->keyBy('key');
     expect($badges['lulusan']['earned_at'])->not->toBeNull();
 
-    $this->actingAs($s['teacher'])->post("/sertifikat-saya/{$cert->id}/cabut")->assertRedirect();
+    $this->actingAs($s['teacher'])->post("/my-certificates/{$cert->id}/revoke")->assertRedirect();
     expect($cert->fresh()->revoked_at)->not->toBeNull();
-    $this->get("/sertifikat/{$cert->code}")->assertInertia(fn ($p) => $p->where('certificate.valid', false));
+    $this->get("/certificates/{$cert->code}")->assertInertia(fn ($p) => $p->where('certificate.valid', false));
 
     $badges = collect(app(Achievements::class)->summary($s['a'])['badges'])->keyBy('key');
     expect($badges['lulusan']['earned_at'])->toBeNull();
@@ -72,23 +72,23 @@ test('teachers can only issue for their own class and enrolled students', functi
     $s = certSetup();
     $stranger = userWithRole('student');
 
-    $this->actingAs(userWithRole('teacher'))->post('/sertifikat-saya', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
+    $this->actingAs(userWithRole('teacher'))->post('/my-certificates', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
         ->assertSessionHasErrors('class_room_id');
-    $this->actingAs($s['teacher'])->post('/sertifikat-saya', ['student_id' => $stranger->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
+    $this->actingAs($s['teacher'])->post('/my-certificates', ['student_id' => $stranger->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
         ->assertSessionHasErrors('student_id');
-    $this->actingAs($s['a'])->post('/sertifikat-saya', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
+    $this->actingAs($s['a'])->post('/my-certificates', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'title' => 'X'])
         ->assertForbidden();
-    $this->actingAs($s['teacher'])->post('/sertifikat-saya', ['student_id' => $s['b']->id, 'class_room_id' => $s['class']->id, 'title' => 'Juara Lomba', 'achievement' => 'sebagai Juara 1'])
+    $this->actingAs($s['teacher'])->post('/my-certificates', ['student_id' => $s['b']->id, 'class_room_id' => $s['class']->id, 'title' => 'Juara Lomba', 'achievement' => 'sebagai Juara 1'])
         ->assertSessionHasNoErrors();
 });
 
 test('guardian sees their child certificates only', function () {
     $s = certSetup();
-    $this->actingAs($s['teacher'])->post('/sertifikat-saya', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id]);
+    $this->actingAs($s['teacher'])->post('/my-certificates', ['student_id' => $s['a']->id, 'class_room_id' => $s['class']->id, 'course_id' => $s['course']->id]);
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($s['a']->id, ['relationship' => 'ayah']);
     $other = userWithRole('guardian');
 
-    $this->actingAs($guardian)->get('/sertifikat-saya')->assertInertia(fn ($p) => $p->where('mode', 'guardian')->has('certificates', 1));
-    $this->actingAs($other)->get('/sertifikat-saya')->assertInertia(fn ($p) => $p->has('certificates', 0));
+    $this->actingAs($guardian)->get('/my-certificates')->assertInertia(fn ($p) => $p->where('mode', 'guardian')->has('certificates', 1));
+    $this->actingAs($other)->get('/my-certificates')->assertInertia(fn ($p) => $p->has('certificates', 0));
 });

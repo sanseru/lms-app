@@ -1,10 +1,10 @@
 <?php
 
 return [
-    // Status kehadiran yang memotong kuota paket siswa.
-    // Izin dan sakit tidak memotong kuota; alpa (tanpa kabar) tetap dihitung.
+    // Attendance statuses that use up a student's package quota.
+    // Excused and sick do not; absent (no notice) still counts.
     'quota_statuses' => ['present', 'absent'],
 
-    // Berapa minggu ke depan sesi dibuat otomatis dari jadwal mingguan kelas.
+    // How many weeks ahead sessions are generated from the weekly class schedule.
     'generate_weeks_ahead' => 4,
 ];

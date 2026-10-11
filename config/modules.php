@@ -10,6 +10,7 @@ use Modules\Forum\Providers\ForumServiceProvider;
 use Modules\Gamification\Providers\GamificationServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Kanban\Providers\KanbanServiceProvider;
+use Modules\Lab\Providers\LabServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\Leads\Providers\LeadsServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
@@ -20,13 +21,13 @@ use Modules\Sessions\Providers\SessionsServiceProvider;
 
 /*
 |--------------------------------------------------------------------------
-| Modul aktif
+| Enabled modules
 |--------------------------------------------------------------------------
 |
-| Setiap modul berada di folder Modules/<Nama> dan memiliki service
-| provider sendiri yang mendaftarkan route, migration, permission, dan
-| menu navigasi. Untuk menambah modul baru, buat foldernya lalu daftarkan
-| provider-nya di sini. Hapus dari daftar untuk menonaktifkan modul.
+| Every module lives in Modules/<Name> and has its own service provider
+| that registers routes, migrations, permissions and navigation items.
+| To add a module, create its folder and register its provider here.
+| Remove it from the list to disable the module.
 |
 */
 
@@ -42,6 +43,7 @@ return [
         CodingServiceProvider::class,
         ForumServiceProvider::class,
         KanbanServiceProvider::class,
+        LabServiceProvider::class,
         GamificationServiceProvider::class,
         CertificatesServiceProvider::class,
         FinanceServiceProvider::class,

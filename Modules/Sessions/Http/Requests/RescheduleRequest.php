@@ -23,6 +23,6 @@ class RescheduleRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['date' => 'tanggal', 'start_time' => 'jam mulai', 'end_time' => 'jam selesai', 'reason' => 'alasan'];
+        return ['date' => 'date', 'start_time' => 'start time', 'end_time' => 'end time', 'reason' => 'reason'];
     }
 }

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignId('trial_teacher_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('trial_zoom_url')->nullable();
             $table->text('trial_result')->nullable();
-            $table->unsignedTinyInteger('trial_interest')->nullable(); // 1-5, antusiasme anak
+            $table->unsignedTinyInteger('trial_interest')->nullable(); // 1-5, child's enthusiasm
             $table->foreignId('recommended_class_id')->nullable()->constrained('class_rooms')->nullOnDelete();
 
             $table->foreignId('student_id')->nullable()->constrained('users')->nullOnDelete();

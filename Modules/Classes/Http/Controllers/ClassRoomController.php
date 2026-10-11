@@ -108,7 +108,7 @@ class ClassRoomController extends Controller
             'code' => ClassRoom::nextCode($request->input('subject')),
         ]);
 
-        return to_route('classes.show', $class)->with('success', "Kelas {$class->name} berhasil dibuat. Tambahkan siswa ke kelas ini.");
+        return to_route('classes.show', $class)->with('success', "Class {$class->name} created. Now add students to it.");
     }
 
     public function edit(ClassRoom $class): Response
@@ -122,7 +122,7 @@ class ClassRoomController extends Controller
     {
         $class->update($request->validated());
 
-        return to_route('classes.show', $class)->with('success', 'Kelas berhasil diperbarui.');
+        return to_route('classes.show', $class)->with('success', 'Class updated.');
     }
 
     public function destroy(ClassRoom $class): RedirectResponse
@@ -130,7 +130,7 @@ class ClassRoomController extends Controller
         Gate::authorize('delete', $class);
         $class->delete();
 
-        return to_route('classes.index')->with('success', "Kelas {$class->name} dihapus.");
+        return to_route('classes.index')->with('success', "Class {$class->name} deleted.");
     }
 
     public function enroll(Request $request, ClassRoom $class): RedirectResponse
@@ -140,16 +140,16 @@ class ClassRoomController extends Controller
         $data = $request->validate([
             'student_ids' => ['required', 'array', 'min:1'],
             'student_ids.*' => ['integer', Rule::exists('student_profiles', 'user_id')],
-        ], [], ['student_ids' => 'siswa']);
+        ], [], ['student_ids' => 'students']);
 
         $current = $class->students()->count();
         $new = collect($data['student_ids'])->diff($class->students()->pluck('users.id'));
 
         if ($class->capacity && $current + $new->count() > $class->capacity) {
-            return back()->with('error', "Kapasitas kelas {$class->capacity} siswa akan terlampaui.");
+            return back()->with('error', "This would exceed the class capacity of {$class->capacity} students.");
         }
 
-        // Cek bentrok jadwal siswa dengan kelas lain yang diikutinya.
+        // Check for schedule clashes with other classes the students attend.
         $clashes = ClassRoom::query()
             ->whereKeyNot($class->id)
             ->whereIn('status', ['active', 'upcoming'])
@@ -161,14 +161,14 @@ class ClassRoomController extends Controller
             ->flatMap(fn (ClassRoom $other) => $other->students->map(fn ($s) => "{$s->name} ({$other->name})"));
 
         if ($clashes->isNotEmpty()) {
-            return back()->with('error', 'Jadwal bentrok: '.$clashes->unique()->implode(', ').'.');
+            return back()->with('error', 'Schedule clash: '.$clashes->unique()->implode(', ').'.');
         }
 
         $class->students()->syncWithoutDetaching(
             $new->mapWithKeys(fn ($id) => [$id => ['status' => 'active', 'joined_at' => now()]])->all()
         );
 
-        return back()->with('success', "{$new->count()} siswa ditambahkan ke kelas.");
+        return back()->with('success', "{$new->count()} student(s) added to the class.");
     }
 
     public function unenroll(ClassRoom $class, User $student): RedirectResponse
@@ -176,7 +176,7 @@ class ClassRoomController extends Controller
         Gate::authorize('update', $class);
         $class->students()->detach($student->id);
 
-        return back()->with('success', "{$student->name} dikeluarkan dari kelas.");
+        return back()->with('success', "{$student->name} removed from the class.");
     }
 
     private function formProps(?ClassRoom $class): array
@@ -197,7 +197,7 @@ class ClassRoomController extends Controller
                 'statuses' => ClassRoom::STATUSES,
                 'colors' => ClassRoom::COLORS,
                 'subjects' => ClassRoom::query()->distinct()->orderBy('subject')->pluck('subject')
-                    ->merge(['Python', 'Scratch', 'Web Development', 'Roblox', 'Minecraft Education', 'Artificial Intelligence', 'Robotika'])
+                    ->merge(['Python', 'Scratch', 'Web Development', 'Roblox', 'Minecraft Education', 'Artificial Intelligence', 'Robotics'])
                     ->unique()->values(),
             ],
         ];

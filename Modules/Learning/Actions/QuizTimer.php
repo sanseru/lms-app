@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Cache;
 use Modules\Learning\Models\Lesson;
 
 /**
- * Waktu mulai kuis berbatas waktu disimpan di server (bukan di browser),
- * jadi memuat ulang halaman atau pindah perangkat tidak mengulang hitungan mundur.
+ * The start time of a timed quiz is stored on the server (not in the browser),
+ * so reloading the page or switching devices does not restart the countdown.
  */
 class QuizTimer
 {
-    /** Toleransi jaringan sebelum kiriman dianggap terlambat. */
+    /** Network grace period before a submission counts as late. */
     public const GRACE_SECONDS = 30;
 
     public function start(Lesson $lesson, int $studentId): CarbonImmutable
@@ -34,7 +34,7 @@ class QuizTimer
         return $ts ? CarbonImmutable::createFromTimestamp($ts) : null;
     }
 
-    /** Sisa detik (bisa negatif kalau waktu sudah habis), null kalau belum mulai. */
+    /** Seconds left (negative once time is up), or null if the quiz has not started. */
     public function remaining(Lesson $lesson, int $studentId): ?int
     {
         $started = $this->startedAt($lesson, $studentId);

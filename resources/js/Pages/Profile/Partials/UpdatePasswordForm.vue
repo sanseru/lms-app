@@ -37,7 +37,7 @@ const updatePassword = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-ink">
-                Ubah kata sandi
+                Change password
             </h2>
 
             <p class="mt-1 text-sm text-muted">
@@ -48,7 +48,7 @@ const updatePassword = () => {
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Kata sandi saat ini" />
+                <InputLabel for="current_password" value="Current password" />
 
                 <TextInput
                     id="current_password"
@@ -66,7 +66,7 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <InputLabel for="password" value="Kata sandi baru" />
+                <InputLabel for="password" value="New password" />
 
                 <TextInput
                     id="password"
@@ -83,7 +83,7 @@ const updatePassword = () => {
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Konfirmasi kata sandi"
+                    value="Confirm password"
                 />
 
                 <TextInput
@@ -101,7 +101,7 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Simpan</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"

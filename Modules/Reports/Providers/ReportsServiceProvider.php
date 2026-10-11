@@ -8,9 +8,9 @@ use App\Support\Navigation\NavItem;
 use Modules\Reports\Console\SendMonthlyReportsCommand;
 
 /**
- * Laporan belajar bulanan untuk orang tua: dirangkum dari absensi, materi,
- * nilai, proyek, dan prestasi, ditambah catatan guru per kelas. Bisa dicetak
- * atau disimpan sebagai PDF dari browser.
+ * Monthly learning reports for parents: summarised from attendance, lessons,
+ * scores, projects and achievements, plus teacher notes per class. Can be
+ * printed or saved as a PDF from the browser.
  */
 class ReportsServiceProvider extends ModuleServiceProvider
 {
@@ -39,9 +39,9 @@ class ReportsServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Laporan Bulanan', 'reports.index', 'file-text', 'Akademik', 40, roles: ['admin', 'teacher'], active: 'reports.*'),
-            new NavItem('Laporan Bulanan', 'reports.index', 'file-text', 'Utama', 20, roles: ['guardian'], active: 'reports.*'),
-            new NavItem('Laporan Bulananku', 'reports.index', 'file-text', 'Belajar', 60, roles: ['student'], active: 'reports.*'),
+            new NavItem('Monthly reports', 'reports.index', 'file-text', 'Academic', 40, roles: ['admin', 'teacher'], active: 'reports.*'),
+            new NavItem('Monthly reports', 'reports.index', 'file-text', 'Main', 20, roles: ['guardian'], active: 'reports.*'),
+            new NavItem('My monthly reports', 'reports.index', 'file-text', 'Learning', 60, roles: ['student'], active: 'reports.*'),
         );
     }
 }

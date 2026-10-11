@@ -29,7 +29,7 @@ const form = useForm({
 });
 
 const isQuiz = computed(() => form.type === 'quiz');
-const bodyLabel = computed(() => ({ material: 'Isi materi', quiz: 'Petunjuk kuis', assignment: 'Instruksi tugas' })[form.type]);
+const bodyLabel = computed(() => ({ material: 'Lesson content', quiz: 'Quiz instructions', assignment: 'Assignment instructions' })[form.type]);
 
 const toggleCorrect = (q, i) => {
     if (q.type === 'single' || q.type === 'true_false') q.options.forEach((o, j) => (o.correct = i === j));
@@ -39,7 +39,7 @@ const isChoice = (type) => type === 'single' || type === 'multiple';
 const setType = (q, type) => {
     const from = q.type;
     if (from === type) return;
-    // Pilihan ganda disimpan sementara agar tidak hilang saat guru mencoba jenis lain.
+    // Keep the multiple-choice options aside so they are not lost while the teacher tries another type.
     if (isChoice(from)) q._choices = q.options;
     q.type = type;
     if (type === 'true_false') {
@@ -77,14 +77,14 @@ const err = (key) => form.errors[key];
 </script>
 
 <template>
-    <Head :title="lesson ? 'Ubah ' + types[form.type].toLowerCase() : types[form.type] + ' baru'" />
+    <Head :title="lesson ? 'Edit ' + types[form.type].toLowerCase() : 'New ' + types[form.type].toLowerCase()" />
 
-    <PageHeader :eyebrow="course.title" :title="lesson ? `Ubah ${types[form.type].toLowerCase()}` : `${types[form.type]} baru`">
+    <PageHeader :eyebrow="course.title" :title="lesson ? `Edit ${types[form.type].toLowerCase()}` : `New ${types[form.type].toLowerCase()}`">
         <template #back>
             <Link :href="route('learning.courses.show', course.id)" class="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600"><Icon name="arrow-left" :size="16" /> {{ course.title }}</Link>
         </template>
         <template v-if="lesson" #actions>
-            <button type="button" class="btn-ghost text-rose-600" @click="confirm.ask({ title: 'Hapus?', message: 'Nilai dan pengumpulan siswa untuk bagian ini ikut terhapus.', url: route('learning.lessons.destroy', lesson.id) })"><Icon name="trash" :size="16" /> Hapus</button>
+            <button type="button" class="btn-ghost text-rose-600" @click="confirm.ask({ title: 'Delete?', message: 'Student scores and submissions for this item will be deleted too.', url: route('learning.lessons.destroy', lesson.id) })"><Icon name="trash" :size="16" /> Delete</button>
         </template>
     </PageHeader>
 
@@ -109,23 +109,23 @@ const err = (key) => form.errors[key];
                     </Link>
                 </div>
 
-                <Field id="title" label="Judul" :error="err('title')" required>
-                    <input id="title" v-model="form.title" type="text" class="field" :placeholder="isQuiz ? 'mis. Kuis: Variabel dan tipe data' : 'mis. Mengenal variabel'" />
+                <Field id="title" label="Title" :error="err('title')" required>
+                    <input id="title" v-model="form.title" type="text" class="field" :placeholder="isQuiz ? 'e.g. Quiz: Variables and data types' : 'e.g. Meet variables'" />
                 </Field>
 
-                <Field id="body" :label="bodyLabel" :error="err('body')" hint="Mendukung Markdown: **tebal**, # judul, - daftar, `kode`, dan blok kode dengan ```.">
+                <Field id="body" :label="bodyLabel" :error="err('body')" hint="Supports Markdown: **bold**, # heading, - list, `code`, and code blocks with ```.">
                     <textarea id="body" v-model="form.body" :rows="form.type === 'material' ? 14 : 5" class="field font-mono text-sm" />
                 </Field>
 
-                <Field v-if="form.type === 'material'" id="video_url" label="Link video (YouTube/Vimeo)" :error="err('video_url')">
+                <Field v-if="form.type === 'material'" id="video_url" label="Video link (YouTube/Vimeo)" :error="err('video_url')">
                     <input id="video_url" v-model="form.video_url" type="url" class="field" placeholder="https://youtu.be/…" />
                 </Field>
             </div>
 
-            <!-- Pembuat soal kuis -->
+            <!-- Quiz question builder -->
             <div v-if="isQuiz" class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="font-display text-lg font-bold text-ink">Soal ({{ form.questions.length }})</h2>
+                    <h2 class="font-display text-lg font-bold text-ink">Questions ({{ form.questions.length }})</h2>
                     <p v-if="err('questions')" class="text-sm font-medium text-rose-600">{{ err('questions') }}</p>
                 </div>
 
@@ -135,13 +135,13 @@ const err = (key) => form.errors[key];
                         <div class="flex flex-wrap gap-1">
                             <button v-for="(label, key) in questionTypes" :key="key" type="button" :class="q.type === key ? 'bg-ink text-white' : 'bg-chip text-muted hover:text-ink'" class="rounded-lg px-2.5 py-1 text-xs font-semibold" @click="setType(q, key)">{{ label }}</button>
                         </div>
-                        <label class="ml-auto flex items-center gap-1.5 text-xs text-muted">Poin <input v-model.number="q.points" type="number" min="1" max="20" class="field w-16 px-2 py-1 text-xs" /></label>
-                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-chip disabled:opacity-30" :disabled="qi === 0" aria-label="Naikkan soal" @click="moveQuestion(qi, -1)"><Icon name="arrow-up" :size="14" /></button>
-                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-chip disabled:opacity-30" :disabled="qi === form.questions.length - 1" aria-label="Turunkan soal" @click="moveQuestion(qi, 1)"><Icon name="arrow-down" :size="14" /></button>
-                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30" :disabled="form.questions.length === 1" aria-label="Hapus soal" @click="form.questions.splice(qi, 1)"><Icon name="trash" :size="14" /></button>
+                        <label class="ml-auto flex items-center gap-1.5 text-xs text-muted">Points <input v-model.number="q.points" type="number" min="1" max="20" class="field w-16 px-2 py-1 text-xs" /></label>
+                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-chip disabled:opacity-30" :disabled="qi === 0" aria-label="Move question up" @click="moveQuestion(qi, -1)"><Icon name="arrow-up" :size="14" /></button>
+                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-chip disabled:opacity-30" :disabled="qi === form.questions.length - 1" aria-label="Move question down" @click="moveQuestion(qi, 1)"><Icon name="arrow-down" :size="14" /></button>
+                        <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30" :disabled="form.questions.length === 1" aria-label="Delete question" @click="form.questions.splice(qi, 1)"><Icon name="trash" :size="14" /></button>
                     </div>
 
-                    <textarea v-model="q.prompt" rows="2" class="field" placeholder="Tulis pertanyaan…" :aria-label="`Pertanyaan ${qi + 1}`" />
+                    <textarea v-model="q.prompt" rows="2" class="field" placeholder="Write the question…" :aria-label="`Question ${qi + 1}`" />
                     <p v-if="err(`questions.${qi}.prompt`)" class="mt-1 text-sm text-rose-600">{{ err(`questions.${qi}.prompt`) }}</p>
 
                     <template v-if="q.type === 'short'">
@@ -156,7 +156,7 @@ const err = (key) => form.errors[key];
                         <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: true })">+ Add accepted answer</button>
                     </template>
                     <template v-else-if="q.type === 'true_false'">
-                        <p class="mt-4 mb-2 text-xs font-semibold text-muted">Click the circle next to the right answer. You can rename the labels, e.g. Benar / Salah.</p>
+                        <p class="mt-4 mb-2 text-xs font-semibold text-muted">Click the circle next to the right answer. You can rename the labels, e.g. Yes / No.</p>
                         <ul class="grid gap-2 sm:grid-cols-2">
                             <li v-for="(o, oi) in q.options" :key="oi" class="flex items-center gap-2">
                                 <button
@@ -174,73 +174,73 @@ const err = (key) => form.errors[key];
                         </ul>
                     </template>
                     <template v-else>
-                    <p class="mt-4 mb-2 text-xs font-semibold text-muted">Pilihan jawaban. Klik lingkaran untuk menandai jawaban benar.</p>
+                    <p class="mt-4 mb-2 text-xs font-semibold text-muted">Answer options. Click the circle to mark the correct answer.</p>
                     <ul class="space-y-2">
                         <li v-for="(o, oi) in q.options" :key="oi" class="flex items-center gap-2">
                             <button
                                 type="button"
                                 :class="[o.correct ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-line text-transparent hover:border-emerald-300', q.type === 'single' ? 'rounded-full' : 'rounded-md']"
                                 class="grid size-6 shrink-0 place-items-center border-2 transition"
-                                :aria-label="`Tandai pilihan ${oi + 1} benar`"
+                                :aria-label="`Mark option ${oi + 1} as correct`"
                                 :aria-pressed="o.correct"
                                 @click="toggleCorrect(q, oi)"
                             >
                                 <Icon name="check" :size="13" />
                             </button>
-                            <input v-model="o.text" type="text" class="field py-2" :placeholder="`Pilihan ${String.fromCharCode(65 + oi)}`" />
-                            <button type="button" class="rounded-lg p-1.5 text-muted hover:text-rose-600 disabled:opacity-30" :disabled="q.options.length <= 2" aria-label="Hapus pilihan" @click="q.options.splice(oi, 1)"><Icon name="x" :size="14" /></button>
+                            <input v-model="o.text" type="text" class="field py-2" :placeholder="`Option ${String.fromCharCode(65 + oi)}`" />
+                            <button type="button" class="rounded-lg p-1.5 text-muted hover:text-rose-600 disabled:opacity-30" :disabled="q.options.length <= 2" aria-label="Delete option" @click="q.options.splice(oi, 1)"><Icon name="x" :size="14" /></button>
                         </li>
                     </ul>
                     <p v-if="err(`questions.${qi}.options`)" class="mt-1 text-sm text-rose-600">{{ err(`questions.${qi}.options`) }}</p>
-                    <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: false })">+ Tambah pilihan</button>
+                    <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: false })">+ Add option</button>
                     </template>
                     <div class="mt-4 grid gap-2 sm:grid-cols-3">
-                        <input v-model="q.explanation" type="text" class="field text-sm sm:col-span-2" placeholder="Pembahasan (opsional, tampil setelah siswa lulus)" />
-                        <input v-model="q.concept" type="text" class="field text-sm" placeholder="Konsep, mis. perulangan" :aria-label="`Konsep soal ${qi + 1}`" />
+                        <input v-model="q.explanation" type="text" class="field text-sm sm:col-span-2" placeholder="Explanation (optional, shown after the student passes)" />
+                        <input v-model="q.concept" type="text" class="field text-sm" placeholder="Concept, e.g. loops" :aria-label="`Concept for question ${qi + 1}`" />
                     </div>
                 </div>
 
                 <button type="button" class="w-full rounded-2xl border-2 border-dashed border-line py-4 text-sm font-semibold text-muted transition hover:border-brand-300 hover:text-brand-600" @click="form.questions.push(blankQuestion())">
-                    <Icon name="plus" :size="16" class="inline" /> Tambah soal
+                    <Icon name="plus" :size="16" class="inline" /> Add question
                 </button>
             </div>
         </div>
 
-        <!-- Pengaturan -->
+        <!-- Settings -->
         <div class="space-y-6">
             <div class="card space-y-4 p-5 lg:sticky lg:top-24">
-                <h2 class="font-display font-bold text-ink">Pengaturan</h2>
-                <Field id="duration" label="Perkiraan durasi (menit)" :error="err('duration_minutes')">
+                <h2 class="font-display font-bold text-ink">Settings</h2>
+                <Field id="duration" label="Estimated duration (minutes)" :error="err('duration_minutes')">
                     <input id="duration" v-model="form.duration_minutes" type="number" min="1" class="field" />
                 </Field>
                 <template v-if="isQuiz">
-                    <Field id="pass_score" label="Nilai lulus (0–100)" :error="err('pass_score')">
+                    <Field id="pass_score" label="Pass score (0–100)" :error="err('pass_score')">
                         <input id="pass_score" v-model.number="form.pass_score" type="number" min="0" max="100" class="field" />
                     </Field>
-                    <Field id="max_attempts" label="Batas percobaan" :error="err('max_attempts')" hint="Kosongkan agar siswa bisa mencoba berkali-kali.">
+                    <Field id="max_attempts" label="Attempt limit" :error="err('max_attempts')" hint="Leave empty to allow unlimited attempts.">
                         <input id="max_attempts" v-model="form.max_attempts" type="number" min="1" class="field" />
                     </Field>
                     <Field id="time_limit" label="Time limit (minutes)" :error="err('time_limit_minutes')" hint="Leave empty for no timer. Answers are sent automatically when time runs out.">
                         <input id="time_limit" v-model="form.time_limit_minutes" type="number" min="1" max="180" class="field" />
                     </Field>
-                    <Field id="assessment" label="Jadikan misi" :error="err('assessment')" hint="Misi Pemanasan (awal kursus) dan Misi Akhir dibandingkan untuk laporan kenaikan per konsep. Pakai soal berbeda dengan konsep yang sama.">
+                    <Field id="assessment" label="Make it a mission" :error="err('assessment')" hint="The Warm-up Mission (start of the course) and the Final Mission are compared for the per-concept growth report. Use different questions covering the same concepts.">
                         <select id="assessment" v-model="form.assessment" class="field">
-                            <option value="">Kuis biasa</option>
+                            <option value="">Regular quiz</option>
                             <option v-for="(label, key) in assessments" :key="key" :value="key">{{ label }}</option>
                         </select>
                     </Field>
                 </template>
-                <Field v-if="form.type === 'assignment'" id="max_score" label="Nilai maksimal" :error="err('max_score')">
+                <Field v-if="form.type === 'assignment'" id="max_score" label="Maximum score" :error="err('max_score')">
                     <input id="max_score" v-model.number="form.max_score" type="number" min="1" class="field" />
                 </Field>
                 <label class="flex items-start gap-3 rounded-xl border border-line p-3">
                     <input v-model="form.is_published" type="checkbox" class="mt-0.5 rounded border-line text-brand-600 focus:ring-brand-300" />
                     <span>
-                        <span class="block text-sm font-semibold text-ink">Tampilkan ke siswa</span>
-                        <span class="text-xs text-muted">Matikan untuk menyimpan sebagai draf.</span>
+                        <span class="block text-sm font-semibold text-ink">Show to students</span>
+                        <span class="text-xs text-muted">Turn off to save as a draft.</span>
                     </span>
                 </label>
-                <button type="submit" class="btn-primary w-full" :disabled="form.processing"><Icon name="check" :size="18" /> Simpan</button>
+                <button type="submit" class="btn-primary w-full" :disabled="form.processing"><Icon name="check" :size="18" /> Save</button>
             </div>
         </div>
     </form>

@@ -9,8 +9,8 @@ use Modules\Audit\Support\AuditTrail;
 use Modules\Leads\Models\Lead;
 
 /**
- * Calon siswa: formulir coba gratis di website, pipeline admin dari baru
- * masuk sampai jadi siswa, jadwal kelas trial, dan catatan hasil trial guru.
+ * Leads: the free trial form on the website, the admin pipeline from new
+ * sign-up to enrolled student, trial class scheduling and teachers' trial notes.
  */
 class LeadsServiceProvider extends ModuleServiceProvider
 {
@@ -33,7 +33,7 @@ class LeadsServiceProvider extends ModuleServiceProvider
 
         if (class_exists(AuditTrail::class) && $this->app->bound(AuditTrail::class)) {
             $this->callAfterResolving(AuditTrail::class, fn (AuditTrail $trail) => $trail->watch(
-                Lead::class, 'Calon siswa', ['status', 'trial_at', 'trial_teacher_id', 'lost_reason'],
+                Lead::class, 'Lead', ['status', 'trial_at', 'trial_teacher_id', 'lost_reason'],
                 fn (Lead $l) => "{$l->child_name} · {$l->parent_name}", ['updated', 'deleted'], ['status' => Lead::STATUSES],
             ));
         }
@@ -42,8 +42,8 @@ class LeadsServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Calon Siswa', 'leads.index', 'user-plus', 'Pengguna', 5, permission: 'leads.manage', active: 'leads.*'),
-            new NavItem('Kelas Trial', 'leads.trials', 'calendar-days', 'Akademik', 45, roles: ['teacher'], active: 'leads.trials'),
+            new NavItem('Leads', 'leads.index', 'user-plus', 'People', 5, permission: 'leads.manage', active: 'leads.*'),
+            new NavItem('Trial classes', 'leads.trials', 'calendar-days', 'Academic', 45, roles: ['teacher'], active: 'leads.trials'),
         );
     }
 }

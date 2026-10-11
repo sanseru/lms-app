@@ -14,7 +14,7 @@ const copyCalendar = async () => {
         copied.value = true;
         setTimeout(() => (copied.value = false), 2000);
     } catch {
-        /* clipboard tidak tersedia */
+        /* clipboard not available */
     }
 };
 const makeCalendar = () => router.post(route('calendar.regenerate'), {}, { preserveScroll: true });
@@ -22,20 +22,20 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
 </script>
 
 <template>
-    <Head title="Jadwal" />
+    <Head title="Schedule" />
 
-    <PageHeader eyebrow="Akademik" title="Jadwal mingguan" :description="`${total} sesi kelas minggu ini. Semua waktu dalam WIB.`">
+    <PageHeader eyebrow="Academic" title="Weekly schedule" :description="`${total} class sessions this week. All times in WIB.`">
         <template #actions>
             <div class="flex items-center gap-1 rounded-xl border border-line bg-white p-1">
-                <Link :href="route('schedule.index', { week: week.prev })" class="rounded-lg p-2 text-muted hover:bg-chip hover:text-ink" preserve-scroll aria-label="Minggu sebelumnya">
+                <Link :href="route('schedule.index', { week: week.prev })" class="rounded-lg p-2 text-muted hover:bg-chip hover:text-ink" preserve-scroll aria-label="Previous week">
                     <Icon name="chevron-left" />
                 </Link>
                 <span class="px-2 text-sm font-semibold text-ink">{{ week.label }}</span>
-                <Link :href="route('schedule.index', { week: week.next })" class="rounded-lg p-2 text-muted hover:bg-chip hover:text-ink" preserve-scroll aria-label="Minggu berikutnya">
+                <Link :href="route('schedule.index', { week: week.next })" class="rounded-lg p-2 text-muted hover:bg-chip hover:text-ink" preserve-scroll aria-label="Next week">
                     <Icon name="chevron-right" />
                 </Link>
             </div>
-            <Link :href="route('schedule.index')" class="btn-ghost">Minggu ini</Link>
+            <Link :href="route('schedule.index')" class="btn-ghost">This week</Link>
         </template>
     </PageHeader>
 
@@ -49,7 +49,7 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
             <header class="flex flex-wrap items-baseline justify-between gap-x-2 border-b border-line px-4 py-3">
                 <p :class="day.is_today ? 'text-brand-600' : 'text-ink'" class="font-display font-bold">{{ day.day }}</p>
                 <p class="text-xs text-muted">{{ day.label }}</p>
-                <p v-if="day.is_today" class="w-full text-xs font-extrabold tracking-wider text-accent-600 uppercase">Hari ini</p>
+                <p v-if="day.is_today" class="w-full text-xs font-extrabold tracking-wider text-accent-600 uppercase">Today</p>
             </header>
             <div class="flex flex-1 flex-col gap-2 p-3">
                 <Link
@@ -63,13 +63,13 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
                 >
                     <div class="flex items-center justify-between gap-1">
                         <p :class="classColors[s.class.color]?.text" class="font-mono text-xs font-medium">{{ s.start_time }}–{{ s.end_time }}</p>
-                        <span v-if="s.status === 'completed'" class="text-emerald-700" title="Selesai"><Icon name="check" :size="14" /></span>
-                        <span v-else-if="s.needs_report" class="size-2 rounded-full bg-amber-500" title="Absensi belum diisi" />
+                        <span v-if="s.status === 'completed'" class="text-emerald-700" title="Completed"><Icon name="check" :size="14" /></span>
+                        <span v-else-if="s.needs_report" class="size-2 rounded-full bg-amber-500" title="Attendance not filled in yet" />
                     </div>
                     <p class="mt-0.5 text-sm leading-snug font-bold text-ink" :class="['cancelled', 'rescheduled'].includes(s.status) && 'line-through'">{{ s.class.name }}</p>
                     <p v-if="s.teacher" class="mt-1 truncate text-xs text-muted">{{ s.teacher.name }}</p>
                 </Link>
-                <p v-if="!day.sessions.length" class="m-auto text-xs text-muted">Tidak ada kelas</p>
+                <p v-if="!day.sessions.length" class="m-auto text-xs text-muted">No classes</p>
             </div>
         </section>
     </div>
@@ -77,18 +77,18 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
     <div class="card mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
         <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"><Icon name="calendar-days" /></span>
         <div class="min-w-0 flex-1">
-            <h2 class="font-display font-bold text-ink">Tampilkan jadwal di kalender HP</h2>
+            <h2 class="font-display font-bold text-ink">Show the schedule in your phone calendar</h2>
             <p class="text-sm text-muted">
-                Langganan tautan ini di Google Calendar (Tambah kalender → Dari URL), Apple Calendar, atau Outlook. Jadwal dan link Zoom ikut diperbarui otomatis.
+                Subscribe to this link in Google Calendar (Add calendar → From URL), Apple Calendar or Outlook. The schedule and Zoom links update automatically.
             </p>
             <p v-if="calendarUrl" class="mt-2 truncate rounded-lg bg-chip px-3 py-1.5 font-mono text-xs text-ink">{{ calendarUrl }}</p>
         </div>
         <div class="flex shrink-0 flex-wrap gap-2">
             <template v-if="calendarUrl">
-                <button class="btn-primary" @click="copyCalendar"><Icon name="link" :size="16" /> {{ copied ? 'Tersalin' : 'Salin tautan' }}</button>
-                <button class="btn-ghost" title="Tautan lama tidak berlaku lagi" @click="makeCalendar">Buat ulang</button>
+                <button class="btn-primary" @click="copyCalendar"><Icon name="link" :size="16" /> {{ copied ? 'Copied' : 'Copy link' }}</button>
+                <button class="btn-ghost" title="The old link will stop working" @click="makeCalendar">Regenerate</button>
             </template>
-            <button v-else class="btn-primary" @click="makeCalendar"><Icon name="plus" :size="16" /> Buat tautan kalender</button>
+            <button v-else class="btn-primary" @click="makeCalendar"><Icon name="plus" :size="16" /> Create calendar link</button>
         </div>
     </div>
 </template>

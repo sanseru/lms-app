@@ -6,10 +6,10 @@ use Modules\Learning\Models\QuizQuestion;
 
 function mixedQuiz($course, array $attributes = [])
 {
-    $quiz = $course->lessons()->create($attributes + ['title' => 'Kuis campuran', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70, 'is_published' => true]);
-    $quiz->questions()->create(['position' => 1, 'prompt' => 'Python membedakan huruf besar?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'True', 'correct' => true], ['text' => 'False', 'correct' => false]]]);
-    $quiz->questions()->create(['position' => 2, 'prompt' => 'Perintah untuk input?', 'type' => 'short', 'points' => 1, 'options' => [['text' => 'input', 'correct' => true], ['text' => 'input()', 'correct' => true]]]);
-    $quiz->questions()->create(['position' => 3, 'prompt' => 'Setengah dari 5?', 'type' => 'short', 'points' => 1, 'options' => [['text' => '2.5', 'correct' => true]]]);
+    $quiz = $course->lessons()->create($attributes + ['title' => 'Mixed quiz', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70, 'is_published' => true]);
+    $quiz->questions()->create(['position' => 1, 'prompt' => 'Is Python case-sensitive?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'True', 'correct' => true], ['text' => 'False', 'correct' => false]]]);
+    $quiz->questions()->create(['position' => 2, 'prompt' => 'Command for input?', 'type' => 'short', 'points' => 1, 'options' => [['text' => 'input', 'correct' => true], ['text' => 'input()', 'correct' => true]]]);
+    $quiz->questions()->create(['position' => 3, 'prompt' => 'Half of 5?', 'type' => 'short', 'points' => 1, 'options' => [['text' => '2.5', 'correct' => true]]]);
 
     return $quiz->fresh('questions');
 }
@@ -58,10 +58,10 @@ test('teachers save true/false and short answer questions with a time limit', fu
     [$teacher, , $course] = learningSetup();
 
     $this->actingAs($teacher)->post("/courses/{$course->id}/lessons", [
-        'title' => 'Kuis kilat', 'type' => 'quiz', 'time_limit_minutes' => 5, 'is_published' => true,
+        'title' => 'Quick quiz', 'type' => 'quiz', 'time_limit_minutes' => 5, 'is_published' => true,
         'questions' => [
-            ['prompt' => 'Bumi bulat?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'Benar', 'correct' => true], ['text' => 'Salah', 'correct' => false]]],
-            ['prompt' => 'Ibu kota Indonesia?', 'type' => 'short', 'points' => 2, 'options' => [['text' => ' Jakarta ', 'correct' => false]]],
+            ['prompt' => 'Is the Earth round?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'True', 'correct' => true], ['text' => 'False', 'correct' => false]]],
+            ['prompt' => 'Capital of Indonesia?', 'type' => 'short', 'points' => 2, 'options' => [['text' => ' Jakarta ', 'correct' => false]]],
         ],
     ])->assertSessionHasNoErrors();
 
@@ -70,7 +70,7 @@ test('teachers save true/false and short answer questions with a time limit', fu
         ->and($lesson->questions[1]->options)->toBe([['text' => 'Jakarta', 'correct' => true]]);
 
     $this->actingAs($teacher)->post("/courses/{$course->id}/lessons", [
-        'title' => 'Salah', 'type' => 'quiz',
+        'title' => 'Invalid', 'type' => 'quiz',
         'questions' => [
             ['prompt' => 'A?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'True', 'correct' => true], ['text' => 'False', 'correct' => true]]],
             ['prompt' => 'B?', 'type' => 'true_false', 'points' => 1, 'options' => [['text' => 'True', 'correct' => true]]],
@@ -92,7 +92,7 @@ test('timed quiz must be started and records how long it took', function () {
     $this->travelTo(now()->startOfMinute());
     $this->actingAs($student)->post("/lessons/{$quiz->id}/quiz/start")->assertRedirect();
     $this->travel(2)->minutes();
-    // Memulai lagi tidak mengulang jam.
+    // Starting again does not reset the clock.
     $this->actingAs($student)->post("/lessons/{$quiz->id}/quiz/start");
     $this->actingAs($student)->get("/lessons/{$quiz->id}")->assertInertia(fn ($page) => $page->where('timer.limit', 5)->where('timer.remaining', 180));
 

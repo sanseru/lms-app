@@ -65,8 +65,8 @@ class ExerciseController extends Controller
     }
 
     /**
-     * "Uji solusi": solusi tutor harus lulus semua tes sebelum soal boleh terbit.
-     * Pada driver browser, solusi dijalankan di browser tutor lalu outputnya dikirim ke sini.
+     * "Test solution": the teacher's solution must pass every test before the exercise can be published.
+     * With the browser driver, the solution runs in the teacher's browser and its output is sent here.
      */
     public function verify(Request $request, Lesson $lesson, Grader $grader): RedirectResponse
     {
@@ -79,7 +79,7 @@ class ExerciseController extends Controller
         if ($result['status'] !== 'passed') {
             $exercise->update(['verified_hash' => null, 'verified_at' => null]);
 
-            return back()->with('error', "Solusi hanya lulus {$result['passed_tests']} dari {$result['total_tests']} tes. Periksa tes atau solusinya.")
+            return back()->with('error', "The solution only passed {$result['passed_tests']} of {$result['total_tests']} tests. Check the tests or the solution.")
                 ->with('verification', $result);
         }
 
@@ -88,11 +88,11 @@ class ExerciseController extends Controller
             $lesson->update(['is_published' => true]);
         }
 
-        return back()->with('success', 'Solusi lulus semua tes. '.($lesson->fresh()->is_published ? 'Soal sudah terbit.' : 'Soal siap diterbitkan.'))
+        return back()->with('success', 'The solution passed every test. '.($lesson->fresh()->is_published ? 'The exercise is now published.' : 'The exercise is ready to publish.'))
             ->with('verification', $result);
     }
 
-    /** Siswa mengumpulkan jawaban. */
+    /** A student submits an answer. */
     public function submit(Request $request, Lesson $lesson, Grader $grader): RedirectResponse
     {
         Gate::authorize('learn', $lesson);
@@ -103,7 +103,7 @@ class ExerciseController extends Controller
             'outputs' => ['nullable', 'array'],
             'styles' => ['nullable', 'array'],
             'hints_used' => ['nullable', 'integer', 'min:0', 'max:5'],
-        ], [], ['code' => 'kode']);
+        ], [], ['code' => 'code']);
 
         $result = $grader->grade($exercise, $data['code'], $data['outputs'] ?? [], $data['styles'] ?? []);
 
@@ -121,9 +121,9 @@ class ExerciseController extends Controller
         }
 
         return back()->with($result['status'] === 'passed' ? 'success' : 'error', match ($result['status']) {
-            'passed' => 'Semua tes lulus. Keren! 🎉',
-            'error' => 'Ada error saat kode dijalankan. Lihat pesannya di bawah.',
-            default => "Lulus {$result['passed_tests']} dari {$result['total_tests']} tes. Sedikit lagi!",
+            'passed' => 'All tests passed. Awesome!',
+            'error' => 'Your code hit an error while running. Check the message below.',
+            default => "Passed {$result['passed_tests']} of {$result['total_tests']} tests. Almost there!",
         });
     }
 
@@ -170,8 +170,8 @@ class ExerciseController extends Controller
     }
 
     /**
-     * Versi soal: bila isi yang dinilai berubah setelah ada siswa yang mengumpulkan,
-     * buat versi baru. Nilai lama tetap tercatat pada versi lama.
+     * Exercise versions: if the graded content changes after a student has submitted,
+     * create a new version. Old scores stay recorded against the old version.
      */
     private function recordVersion(CodeExercise $exercise, ?string $oldHash, ?array $oldSnapshot, int $userId): void
     {
@@ -187,7 +187,7 @@ class ExerciseController extends Controller
 
         $used = CodeSubmission::where('lesson_id', $exercise->lesson_id)->where('exercise_version', $exercise->version)->exists();
         if ($used) {
-            // Soal lama (dibuat sebelum ada riwayat versi) disimpan dulu salinannya.
+            // Save a copy of the old exercise first (it may predate version history).
             $exercise->versions()->firstOrCreate(['version' => $exercise->version], ['snapshot' => $oldSnapshot, 'created_by' => $userId]);
             $exercise->increment('version');
         }
@@ -195,20 +195,20 @@ class ExerciseController extends Controller
         $exercise->versions()->updateOrCreate(['version' => $exercise->version], ['snapshot' => $exercise->snapshot(), 'created_by' => $userId]);
     }
 
-    /** Soal yang belum lulus "Uji solusi" disimpan sebagai draf, lalu tutor diarahkan untuk mengujinya. */
+    /** An exercise that has not passed "Test solution" is saved as a draft, and the teacher is sent to test it. */
     private function afterSave(Lesson $lesson, ExerciseRequest $request): RedirectResponse
     {
         $exercise = CodeExercise::where('lesson_id', $lesson->id)->first();
 
         if ($exercise->isVerified()) {
-            return to_route('learning.lessons.show', $lesson)->with('success', 'Soal coding disimpan.');
+            return to_route('learning.lessons.show', $lesson)->with('success', 'Coding exercise saved.');
         }
 
         $wantsPublish = $request->boolean('is_published');
         $lesson->update(['is_published' => false]);
 
         return redirect()->route('coding.exercises.edit', ['lesson' => $lesson, 'verify' => 1, 'publish' => $wantsPublish ? 1 : 0])
-            ->with('success', 'Soal disimpan sebagai draf. Menjalankan Uji solusi…');
+            ->with('success', 'Exercise saved as a draft. Running Test solution…');
     }
 
     private function lessonData(ExerciseRequest $request): array

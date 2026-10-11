@@ -14,8 +14,8 @@ class CodeTest extends Model
     }
 
     /**
-     * Bentuk untuk browser siswa. Tes tersembunyi hanya membawa input
-     * (supaya kode bisa dijalankan), tanpa jawaban yang diharapkan.
+     * Shape sent to the student's browser. Hidden tests only carry the input
+     * (so the code can run), without the expected answer.
      */
     public function toPublic(): array
     {

@@ -56,19 +56,19 @@ class CardController extends Controller
         return back();
     }
 
-    /** Guru menyetujui kartu (ke Selesai) atau mengembalikannya dengan catatan. */
+    /** The teacher approves a card (moves it to Done) or sends it back with a note. */
     public function review(Request $request, Card $card, MoveCard $move): RedirectResponse
     {
         Gate::authorize('review', $card->board);
         $data = $request->validate([
             'decision' => ['required', Rule::in(['approve', 'return'])],
             'feedback' => ['nullable', 'required_if:decision,return', 'string', 'max:2000'],
-        ], ['feedback.required_if' => 'Tulis catatan agar siswa tahu apa yang perlu diperbaiki.']);
+        ], ['feedback.required_if' => 'Write a note so the student knows what to fix.']);
 
         $approve = $data['decision'] === 'approve';
         $card->update(['feedback' => $data['feedback'] ?? null, 'reviewed_by' => $request->user()->id, 'reviewed_at' => now()]);
         $move->handle($card, $approve ? 'done' : 'doing', $approve ? PHP_INT_MAX : 0, $request->user());
 
-        return back()->with('success', $approve ? 'Kartu disetujui. 🎉' : 'Kartu dikembalikan dengan catatan.');
+        return back()->with('success', $approve ? 'Card approved.' : 'Card sent back with a note.');
     }
 }

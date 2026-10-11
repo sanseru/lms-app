@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use LogicException;
 
-/** Satu baris jejak audit. Append-only: tidak bisa diubah atau dihapus lewat model. */
+/** One audit log row. Append-only: cannot be updated or deleted through the model. */
 class Activity extends Model
 {
     public const UPDATED_AT = null;
@@ -17,11 +17,11 @@ class Activity extends Model
     protected $guarded = [];
 
     public const EVENTS = [
-        'created' => 'Dibuat',
-        'updated' => 'Diubah',
-        'deleted' => 'Dihapus',
-        'login' => 'Masuk',
-        'login_failed' => 'Gagal masuk',
+        'created' => 'Created',
+        'updated' => 'Updated',
+        'deleted' => 'Deleted',
+        'login' => 'Signed in',
+        'login_failed' => 'Failed sign-in',
     ];
 
     protected function casts(): array
@@ -31,8 +31,8 @@ class Activity extends Model
 
     protected static function booted(): void
     {
-        static::updating(fn () => throw new LogicException('Jejak audit tidak boleh diubah.'));
-        static::deleting(fn () => throw new LogicException('Jejak audit tidak boleh dihapus.'));
+        static::updating(fn () => throw new LogicException('Audit log entries cannot be changed.'));
+        static::deleting(fn () => throw new LogicException('Audit log entries cannot be deleted.'));
     }
 
     public function causer(): BelongsTo

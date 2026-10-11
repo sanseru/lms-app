@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Catatan guru per siswa, per kelas, per bulan untuk laporan orang tua. */
+/** Teacher note per student, per class, per month for the parent report. */
 class MonthlyReportNote extends Model
 {
     protected $fillable = ['student_id', 'class_room_id', 'month', 'author_id', 'highlights', 'focus'];

@@ -5,7 +5,7 @@ namespace Modules\Forum\Actions;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-/** Tambah atau batalkan dukungan, lalu hitung ulang votes_count. */
+/** Add or remove an upvote, then recount votes_count. */
 class ToggleVote
 {
     public function handle(Model $votable, User $user): bool

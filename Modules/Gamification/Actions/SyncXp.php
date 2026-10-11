@@ -9,8 +9,8 @@ use Modules\Gamification\Models\XpEvent;
 use Modules\Gamification\Support\XpRules;
 
 /**
- * Samakan riwayat XP siswa dengan data sumber: kejadian baru ditambahkan,
- * kejadian yang sumbernya hilang (mis. jawaban dihapus) dicabut. Aman diulang.
+ * Sync a student's XP history with the source data: new events are added,
+ * events whose source is gone (e.g. a deleted answer) are removed. Safe to repeat.
  */
 class SyncXp
 {

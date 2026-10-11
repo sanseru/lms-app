@@ -10,9 +10,9 @@ use Modules\Leads\Models\Lead;
 use Modules\People\Actions\SavePerson;
 
 /**
- * Calon siswa jadi siswa: buat akun anak, pakai akun orang tua yang sudah
- * ada (nomor HP sama, mis. kakaknya sudah les) atau buat baru, lalu
- * daftarkan ke kelas bila dipilih.
+ * Turn a lead into a student: create the child's account, reuse an existing
+ * parent account (same phone number, e.g. an older sibling already studies here)
+ * or create a new one, then enrol in a class if one was chosen.
  */
 class ConvertLead
 {
@@ -40,7 +40,7 @@ class ConvertLead
                 'password' => $data['password'],
                 'grade' => $lead->child_grade,
                 'joined_at' => today(),
-                'notes' => $lead->interest ? "Minat awal: {$lead->interest}" : null,
+                'notes' => $lead->interest ? "Initial interest: {$lead->interest}" : null,
             ]);
             $guardian->children()->syncWithoutDetaching([$student->id => ['relationship' => $data['relationship'] ?? 'wali']]);
 
@@ -49,7 +49,7 @@ class ConvertLead
             }
 
             $lead->update(['status' => 'won', 'student_id' => $student->id, 'closed_at' => now()]);
-            $lead->notes()->create(['user_id' => $by->id, 'type' => 'status', 'body' => "Jadi siswa. Akun {$student->username} dibuat, orang tua {$guardian->name}."]);
+            $lead->notes()->create(['user_id' => $by->id, 'type' => 'status', 'body' => "Enrolled as a student. Account {$student->username} created, parent {$guardian->name}."]);
 
             return $student;
         });

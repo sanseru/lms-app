@@ -7,12 +7,12 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\QuizAttempt;
 
-/** Menilai jawaban kuis secara otomatis dan mencatat percobaannya. */
+/** Auto-grades quiz answers and records the attempt. */
 class GradeQuiz
 {
     /**
-     * @param  array<int|string, mixed>  $answers  question_id => indeks opsi, atau teks untuk soal isian
-     * @param  bool  $late  dikumpulkan lewat batas waktu: nilai tetap dicatat, tapi tidak lulus
+     * @param  array<int|string, mixed>  $answers  question_id => option index, or text for short-answer questions
+     * @param  bool  $late  submitted after the time limit: the score is still recorded, but it does not pass
      */
     public function handle(Lesson $lesson, User $student, array $answers, ?int $duration = null, bool $late = false): QuizAttempt
     {

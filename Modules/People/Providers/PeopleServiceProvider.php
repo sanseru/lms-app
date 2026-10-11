@@ -25,9 +25,9 @@ class PeopleServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Siswa', 'people.students.index', 'graduation-cap', 'Pengguna', 10, permission: 'people.students.manage', active: 'people.students.*'),
-            new NavItem('Guru', 'people.teachers.index', 'presentation', 'Pengguna', 20, permission: 'people.teachers.manage', active: 'people.teachers.*'),
-            new NavItem('Orang Tua', 'people.guardians.index', 'users', 'Pengguna', 30, permission: 'people.guardians.manage', active: 'people.guardians.*'),
+            new NavItem('Students', 'people.students.index', 'graduation-cap', 'People', 10, permission: 'people.students.manage', active: 'people.students.*'),
+            new NavItem('Teachers', 'people.teachers.index', 'presentation', 'People', 20, permission: 'people.teachers.manage', active: 'people.teachers.*'),
+            new NavItem('Parents', 'people.guardians.index', 'users', 'People', 30, permission: 'people.guardians.manage', active: 'people.guardians.*'),
         );
     }
 }

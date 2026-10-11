@@ -7,12 +7,12 @@ use Illuminate\Console\Command;
 use Modules\Identity\Enums\Role;
 use Modules\Notifications\Support\Notify;
 
-/** Beri tahu orang tua bahwa laporan bulan lalu anaknya sudah bisa dibaca. */
+/** Let parents know their child's report for last month is ready to read. */
 class SendMonthlyReportsCommand extends Command
 {
-    protected $signature = 'reports:monthly {--month= : Bulan laporan (YYYY-MM), bawaan bulan lalu}';
+    protected $signature = 'reports:monthly {--month= : Report month (YYYY-MM), defaults to last month}';
 
-    protected $description = 'Kirim notifikasi laporan bulanan ke orang tua';
+    protected $description = 'Send monthly report notifications to parents';
 
     public function handle(): int
     {
@@ -26,8 +26,8 @@ class SendMonthlyReportsCommand extends Command
             ->each(function (User $student) use ($month, $label, &$sent) {
                 Notify::send(
                     $student->guardians,
-                    "Laporan belajar {$student->name} bulan {$label}",
-                    'Kehadiran, catatan guru, nilai, dan prestasi bulan ini sudah bisa dibaca dan disimpan sebagai PDF.',
+                    "{$student->name}'s learning report for {$label}",
+                    'This month\'s attendance, teacher notes, scores and achievements are ready to read and save as a PDF.',
                     route('reports.show', [$student, $month]),
                     'file-text',
                     "monthly-report:{$student->id}:{$month}",
@@ -35,7 +35,7 @@ class SendMonthlyReportsCommand extends Command
                 $sent += $student->guardians->count();
             });
 
-        $this->info("{$sent} notifikasi laporan {$label} diproses.");
+        $this->info("{$sent} report notifications for {$label} processed.");
 
         return self::SUCCESS;
     }

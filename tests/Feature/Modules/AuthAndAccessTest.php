@@ -21,6 +21,17 @@ test('inactive accounts cannot log in', function () {
     $this->assertGuest();
 });
 
+test('validation and login errors are in English', function () {
+    expect(app()->getLocale())->toBe('en');
+
+    $this->post('/login', ['login' => 'aldi'])
+        ->assertSessionHasErrors(['password' => 'The password field is required.']);
+
+    userWithRole('student', ['username' => 'aldi']);
+    $this->post('/login', ['login' => 'aldi', 'password' => 'wrong'])
+        ->assertSessionHasErrors(['login' => 'Incorrect username/email or password.']);
+});
+
 test('public registration is disabled', function () {
     $this->get('/register')->assertNotFound();
 });
@@ -37,14 +48,21 @@ test('each role sees its own dashboard', function (string $role, string $compone
     ['guardian', 'Dashboard::Guardian'],
 ]);
 
+test('navigation groups are English and ordered', function () {
+    $groups = collect($this->actingAs(userWithRole('admin'))->get('/dashboard')->viewData('page')['props']['navigation'])->pluck('label')->all();
+
+    expect($groups[0])->toBe('Main')
+        ->and(array_values(array_intersect(['Main', 'Academic', 'Learning', 'People', 'Finance', 'Other'], $groups)))->toBe($groups);
+});
+
 test('navigation only contains menus allowed for the role', function () {
     $labels = fn (User $user) => collect($this->actingAs($user)->get('/dashboard')->viewData('page')['props']['navigation'])
         ->flatMap(fn ($group) => collect($group['items'])->pluck('label'))
         ->all();
 
-    expect($labels(userWithRole('admin')))->toContain('Siswa', 'Guru', 'Orang Tua', 'Kelas', 'Tagihan', 'Laporan Bulanan', 'Jejak Audit');
-    expect($labels(userWithRole('student')))->toBe(['Beranda', 'Kelas', 'Jadwal', 'Materi Saya', 'Proyekku', 'Tanya Jawab', 'Prestasiku', 'Sertifikatku', 'Laporan Bulananku']);
-    expect($labels(userWithRole('guardian')))->toContain('Tagihan Anak', 'Laporan Bulanan')->not->toContain('Siswa', 'Jejak Audit');
+    expect($labels(userWithRole('admin')))->toContain('Students', 'Teachers', 'Parents', 'Classes', 'Invoices', 'Monthly reports', 'Audit log');
+    expect($labels(userWithRole('student')))->toBe(['Home', 'Classes', 'Schedule', 'Course', 'Community', 'Laboratory', 'My projects', 'Q&A', 'My achievements', 'My certificates', 'My monthly reports']);
+    expect($labels(userWithRole('guardian')))->toContain("Child's invoices", 'Monthly reports')->not->toContain('Students', 'Audit log');
 });
 
 test('non admins cannot open management pages', function (string $role) {

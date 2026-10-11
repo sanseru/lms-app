@@ -18,14 +18,14 @@ class AnswerController extends Controller
     {
         $post->handle($question, $request->user(), $request->validated());
 
-        return back()->with('success', 'Jawaban terkirim. Terima kasih sudah membantu!');
+        return back()->with('success', 'Answer sent. Thanks for helping out!');
     }
 
     public function update(AnswerRequest $request, Answer $answer): RedirectResponse
     {
         $answer->update($request->validated());
 
-        return back()->with('success', 'Jawaban diperbarui.');
+        return back()->with('success', 'Answer updated.');
     }
 
     public function destroy(Answer $answer): RedirectResponse
@@ -43,10 +43,10 @@ class AnswerController extends Controller
             'staff_answered_at' => $question->answers()->where('by_staff', true)->min('created_at'),
         ])->saveQuietly();
 
-        return back()->with('success', 'Jawaban dihapus.');
+        return back()->with('success', 'Answer deleted.');
     }
 
-    /** Pilih (atau batalkan) jawaban terbaik; memilih juga menandai pertanyaan terjawab. */
+    /** Pick (or undo) the best answer; picking one also marks the question as answered. */
     public function accept(Answer $answer): RedirectResponse
     {
         $question = $answer->question;
@@ -58,7 +58,7 @@ class AnswerController extends Controller
             'resolved_at' => $undo ? null : now(),
         ]);
 
-        return back()->with('success', $undo ? 'Pilihan jawaban terbaik dibatalkan.' : 'Jawaban terbaik dipilih. Pertanyaan terjawab!');
+        return back()->with('success', $undo ? 'Best answer removed.' : 'Best answer picked. Question answered!');
     }
 
     public function vote(Request $request, Answer $answer, ToggleVote $toggle): RedirectResponse

@@ -8,14 +8,14 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Sesi kelas selalu tersedia beberapa minggu ke depan.
+// Keep class sessions generated a few weeks ahead.
 Schedule::command('sessions:generate')->dailyAt('01:00');
 
-// XP dihitung ulang setiap malam (juga otomatis saat siswa membuka halaman prestasi).
+// Recalculate XP nightly (also done when a student opens their achievements page).
 Schedule::command('xp:sync')->dailyAt('01:30');
 
-// Guru yang belum mengisi laporan sesi diingatkan lewat notifikasi.
+// Remind teachers who have not filled in session reports.
 Schedule::command('sessions:remind-reports')->hourly();
 
-// Tanggal 1 pagi: orang tua diberi tahu laporan bulan lalu sudah siap.
+// On the 1st, early morning: tell parents last month's report is ready.
 Schedule::command('reports:monthly')->monthlyOn(1, '08:00');

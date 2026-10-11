@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lessons', function (Blueprint $table) {
-            $table->unsignedSmallInteger('time_limit_minutes')->nullable()->after('max_attempts'); // kuis, null = tanpa batas waktu
+            $table->unsignedSmallInteger('time_limit_minutes')->nullable()->after('max_attempts'); // quizzes only, null = no time limit
         });
 
         Schema::table('quiz_attempts', function (Blueprint $table) {

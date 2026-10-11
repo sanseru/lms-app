@@ -3,7 +3,7 @@
 namespace App\Support\Modules;
 
 /**
- * Menyimpan daftar modul aktif agar bisa dibaca seeder dan halaman admin.
+ * Keeps the list of enabled modules for seeders and admin pages.
  */
 class ModuleManager
 {
@@ -22,7 +22,7 @@ class ModuleManager
     }
 
     /**
-     * Gabungan permission semua modul.
+     * Permissions of every module combined.
      *
      * @return array<string, array<int, string>>
      */

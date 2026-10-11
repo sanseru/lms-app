@@ -11,8 +11,8 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Profil" />
-    <PageHeader eyebrow="Akun" title="Profil saya" description="Perbarui nama, email, dan kata sandi akun Anda." />
+    <Head title="Profile" />
+    <PageHeader eyebrow="Account" title="My profile" description="Update your name, email and password." />
 
     <div class="grid gap-6 lg:grid-cols-2">
         <div class="card p-6 sm:p-8">

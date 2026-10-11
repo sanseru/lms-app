@@ -13,13 +13,13 @@ enum Role: string
     {
         return match ($this) {
             self::Admin => 'Admin',
-            self::Teacher => 'Guru',
-            self::Student => 'Siswa',
-            self::Guardian => 'Orang Tua',
+            self::Teacher => 'Teacher',
+            self::Student => 'Student',
+            self::Guardian => 'Parent',
         };
     }
 
-    /** Urutan prioritas untuk menentukan dashboard utama user dengan banyak role. */
+    /** Priority order that decides the main dashboard for users with several roles. */
     public static function priority(): array
     {
         return [self::Admin, self::Teacher, self::Guardian, self::Student];

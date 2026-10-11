@@ -2,14 +2,14 @@ import { router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
 
 /**
- * State dialog konfirmasi untuk aksi destruktif.
+ * Confirm dialog state for destructive actions.
  *   const confirm = useConfirm();
  *   confirm.ask({ title, message, url, method: 'delete' })
  */
 export function useConfirm() {
-    const state = reactive({ show: false, title: '', message: '', url: null, method: 'delete', confirmText: 'Ya, hapus', processing: false });
+    const state = reactive({ show: false, title: '', message: '', url: null, method: 'delete', confirmText: 'Yes, delete', processing: false });
 
-    const ask = (options) => Object.assign(state, { confirmText: 'Ya, hapus', method: 'delete', ...options, show: true });
+    const ask = (options) => Object.assign(state, { confirmText: 'Yes, delete', method: 'delete', ...options, show: true });
     const close = () => (state.show = false);
     const run = () => {
         state.processing = true;

@@ -7,13 +7,13 @@ const shown = computed(() => (age.value === 'all' ? programs : programs.filter((
 </script>
 
 <template>
-    <section id="program" class="border-y border-line bg-white" aria-labelledby="h-program">
+    <section id="programs" class="border-y border-line bg-white" aria-labelledby="h-program">
         <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <h2 id="h-program" class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">Mulai sesuai usia, naik sesuai kemampuan</h2>
+                    <h2 id="h-program" class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">Start at the right age, grow at their own pace</h2>
                 </div>
-                <div class="flex flex-wrap gap-2" role="group" aria-label="Filter usia">
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Filter by age">
                     <button
                         v-for="g in ageGroups"
                         :key="g.key"
@@ -39,7 +39,7 @@ const shown = computed(() => (age.value === 'all' ? programs : programs.filter((
                     <p class="mt-4 text-sm font-semibold">{{ p.meta }}</p>
                 </article>
             </div>
-            <p class="mt-6 text-sm text-muted">Belum yakin level yang pas? Tutor akan menilai kemampuan anak di kelas coba gratis.</p>
+            <p class="mt-6 text-sm text-muted">Not sure which level fits? The teacher will assess your child’s skills in the free trial class.</p>
         </div>
     </section>
 </template>

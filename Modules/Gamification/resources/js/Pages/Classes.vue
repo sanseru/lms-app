@@ -11,9 +11,9 @@ const pick = (id) => router.get(route('gamification.classes'), { class: id }, { 
 </script>
 
 <template>
-    <Head title="Prestasi Siswa" />
+    <Head title="Student achievements" />
 
-    <PageHeader eyebrow="Belajar" title="Prestasi siswa" description="Level, XP, dan lencana siswa per kelas. XP dihitung otomatis dari kehadiran, materi, kuis, tugas, soal coding, proyek, dan tanya jawab." />
+    <PageHeader eyebrow="Learning" title="Student achievements" description="Student levels, XP and badges per class. XP is worked out automatically from attendance, lessons, quizzes, assignments, coding exercises, projects and Q&A." />
 
     <div v-if="classes.length" class="mb-5 flex flex-wrap gap-2">
         <button
@@ -30,7 +30,7 @@ const pick = (id) => router.get(route('gamification.classes'), { class: id }, { 
     <div v-if="rows.length" class="card overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-chip/60 text-left text-xs text-muted uppercase">
-                <tr><th class="px-5 py-3">#</th><th class="px-3 py-3">Siswa</th><th class="hidden px-3 py-3 sm:table-cell">Level</th><th class="px-3 py-3 text-right">XP</th><th class="hidden px-3 py-3 text-right md:table-cell">Bulan ini</th><th class="hidden px-5 py-3 lg:table-cell">Lencana</th></tr>
+                <tr><th class="px-5 py-3">#</th><th class="px-3 py-3">Student</th><th class="hidden px-3 py-3 sm:table-cell">Level</th><th class="px-3 py-3 text-right">XP</th><th class="hidden px-3 py-3 text-right md:table-cell">This month</th><th class="hidden px-5 py-3 lg:table-cell">Badges</th></tr>
             </thead>
             <tbody class="divide-y divide-line">
                 <tr v-for="(r, i) in rows" :key="r.id" class="hover:bg-chip/30">
@@ -51,5 +51,5 @@ const pick = (id) => router.get(route('gamification.classes'), { class: id }, { 
             </tbody>
         </table>
     </div>
-    <div v-else class="card"><EmptyState icon="trophy" title="Belum ada siswa" description="Siswa yang terdaftar di kelas akan muncul di sini." /></div>
+    <div v-else class="card"><EmptyState icon="trophy" title="No students yet" description="Students enrolled in the class will show up here." /></div>
 </template>

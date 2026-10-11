@@ -13,7 +13,7 @@ class QuestionPolicy
         return Question::query()->visibleTo($user)->whereKey($question->id)->exists();
     }
 
-    /** Siswa aktif di kelas, guru kelas, atau admin. */
+    /** Active students in the class, the class teacher, or an admin. */
     public function askIn(User $user, ClassRoom $class): bool
     {
         if ($user->hasRole('admin') || $class->teacher_id === $user->id) {
@@ -24,7 +24,7 @@ class QuestionPolicy
             && $user->enrolledClasses()->whereKey($class->id)->wherePivot('status', 'active')->exists();
     }
 
-    /** Orang tua hanya membaca; siswa dan guru kelas boleh menjawab. */
+    /** Parents can only read; students and the class teacher can answer. */
     public function answer(User $user, Question $question): bool
     {
         return $this->view($user, $question)
@@ -36,13 +36,13 @@ class QuestionPolicy
         return $question->author_id === $user->id;
     }
 
-    /** Penanya boleh menghapus selama belum ada jawaban; guru dan admin boleh kapan saja. */
+    /** The asker can delete while there are no answers; teachers and admins can delete any time. */
     public function delete(User $user, Question $question): bool
     {
         return $question->isStaff($user) || ($question->author_id === $user->id && $question->answers_count === 0);
     }
 
-    /** Memilih jawaban terbaik atau menandai selesai. */
+    /** Pick the best answer or mark as resolved. */
     public function resolve(User $user, Question $question): bool
     {
         return $question->author_id === $user->id || $question->isStaff($user);

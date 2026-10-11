@@ -11,13 +11,13 @@ use Modules\Learning\Support\LessonTypes;
 
 class Lesson extends Model
 {
-    public const TYPES = ['material' => 'Materi', 'quiz' => 'Kuis', 'assignment' => 'Tugas'];
+    public const TYPES = ['material' => 'Lesson', 'quiz' => 'Quiz', 'assignment' => 'Assignment'];
 
     public const ICONS = ['material' => 'book-open', 'quiz' => 'list-checks', 'assignment' => 'file-pen'];
 
-    public const ASSESSMENTS = ['pre' => 'Misi Pemanasan', 'post' => 'Misi Akhir'];
+    public const ASSESSMENTS = ['pre' => 'Warm-up Mission', 'post' => 'Final Mission'];
 
-    /** Semua jenis isi: bawaan + yang didaftarkan modul lain. */
+    /** All content types: built-in plus those registered by other modules. */
     public static function types(): array
     {
         return self::TYPES + collect(app(LessonTypes::class)->all())->map->label()->all();
@@ -78,13 +78,13 @@ class Lesson extends Model
         return $this->max_score ?? 100;
     }
 
-    /** Markdown materi menjadi HTML aman (HTML mentah di-escape). */
+    /** Lesson markdown as safe HTML (raw HTML is escaped). */
     public function bodyHtml(): ?string
     {
         return $this->body ? Str::markdown($this->body, ['html_input' => 'escape', 'allow_unsafe_links' => false]) : null;
     }
 
-    /** Ubah link YouTube/Vimeo biasa menjadi URL embed. */
+    /** Turn a regular YouTube/Vimeo link into an embed URL. */
     public function videoEmbedUrl(): ?string
     {
         $url = $this->video_url;

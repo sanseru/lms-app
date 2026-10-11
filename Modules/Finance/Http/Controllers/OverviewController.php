@@ -26,7 +26,7 @@ class OverviewController extends Controller
             ];
         });
 
-        // Paket aktif yang sisa kuotanya ≤ 2 sesi atau kedaluwarsa dalam 14 hari: saatnya menagih perpanjangan.
+        // Active packages with ≤ 2 sessions left or expiring within 14 days: time to bill a renewal.
         $lowQuota = StudentPackage::query()
             ->where('status', 'active')
             ->withCount('usages')

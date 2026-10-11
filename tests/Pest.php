@@ -56,7 +56,7 @@ function something()
     // ..
 }
 
-/** Buat user dengan role tertentu. */
+/** Create a user with the given role. */
 function userWithRole(string $role, array $attributes = []): User
 {
     return User::factory()->withRole($role)->create($attributes);
@@ -64,7 +64,7 @@ function userWithRole(string $role, array $attributes = []): User
 
 /*
 |--------------------------------------------------------------------------
-| Coding: kelas + kursus + soal siap pakai (dipakai beberapa file tes)
+| Coding: ready-made class + course + exercise (shared by several test files)
 |--------------------------------------------------------------------------
 */
 
@@ -83,15 +83,15 @@ function codingSetup(): array
     return [$teacher, $student, $course];
 }
 
-/** Soal input→output yang sudah lulus Uji solusi. */
+/** An input→output exercise that has already passed Test solution. */
 function ioExercise(Course $course, array $overrides = []): Lesson
 {
-    $lesson = $course->lessons()->create(['title' => 'Luas persegi', 'type' => 'code', 'position' => 1, 'is_published' => true]);
+    $lesson = $course->lessons()->create(['title' => 'Square area', 'type' => 'code', 'position' => 1, 'is_published' => true]);
     $exercise = CodeExercise::create($overrides + [
         'lesson_id' => $lesson->id, 'language' => 'python', 'mode' => 'io', 'solution_code' => "s = int(input())\nprint(s * s)", 'starter_code' => 's = int(input())',
     ]);
     $exercise->tests()->create(['position' => 1, 'kind' => 'io', 'input' => '4', 'expected' => '16']);
-    $exercise->tests()->create(['position' => 2, 'kind' => 'io', 'input' => '1.5', 'expected' => '2.25', 'is_hidden' => true, 'fail_message' => 'Sisi bisa desimal']);
+    $exercise->tests()->create(['position' => 2, 'kind' => 'io', 'input' => '1.5', 'expected' => '2.25', 'is_hidden' => true, 'fail_message' => 'The side can be a decimal']);
     $exercise->update(['verified_hash' => $exercise->contentHash(), 'verified_at' => now()]);
 
     return $lesson;
@@ -102,7 +102,7 @@ function testIds(Lesson $lesson): array
     return CodeExercise::where('lesson_id', $lesson->id)->first()->tests()->pluck('id')->all();
 }
 
-/** Kelas + kursus terbit + siswa terdaftar. */
+/** Class + published course + enrolled student. */
 function learningSetup(array $course = []): array
 {
     $teacher = userWithRole('teacher');
@@ -120,9 +120,9 @@ function learningSetup(array $course = []): array
 
 function makeQuiz(Course $course, array $attributes = []): Lesson
 {
-    $quiz = $course->lessons()->create($attributes + ['title' => 'Kuis 1', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70]);
+    $quiz = $course->lessons()->create($attributes + ['title' => 'Quiz 1', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70]);
     $quiz->questions()->create(['position' => 1, 'prompt' => '1 + 1?', 'type' => 'single', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false]]]);
-    $quiz->questions()->create(['position' => 2, 'prompt' => 'Bilangan genap?', 'type' => 'multiple', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false], ['text' => '4', 'correct' => true]]]);
+    $quiz->questions()->create(['position' => 2, 'prompt' => 'Even numbers?', 'type' => 'multiple', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false], ['text' => '4', 'correct' => true]]]);
 
     return $quiz->fresh('questions');
 }

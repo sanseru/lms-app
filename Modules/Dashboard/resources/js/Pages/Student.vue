@@ -17,20 +17,20 @@ const user = usePage().props.auth.user;
 </script>
 
 <template>
-    <Head title="Beranda" />
+    <Head title="Home" />
 
     <div class="panel-brand p-6 sm:p-8">
         <div class="relative flex items-center gap-4">
             <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-accent-500 !text-ink ring-4 ring-brand-600" />
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Hai, {{ user.name.split(' ')[0] }}!</h1>
-                <p class="text-brand-100">Siap ngoding hari ini?</p>
+                <h1 class="text-3xl font-extrabold tracking-tight">Hi, {{ user.name.split(' ')[0] }}!</h1>
+                <p class="text-brand-100">Ready to code today?</p>
             </div>
         </div>
         <div class="relative mt-6 flex flex-wrap gap-3">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="school" :size="16" class="text-accent-300" /> {{ classes.length }} kelas</span>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="circle-check" :size="16" class="text-accent-300" /> {{ stats.present }} sesi dihadiri</span>
-            <span v-if="stats.rate !== null" class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="target" :size="16" class="text-accent-300" /> Kehadiran {{ stats.rate }}%</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="school" :size="16" class="text-accent-300" /> {{ classes.length }} {{ classes.length === 1 ? 'class' : 'classes' }}</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="circle-check" :size="16" class="text-accent-300" /> {{ stats.present }} {{ stats.present === 1 ? 'session' : 'sessions' }} attended</span>
+            <span v-if="stats.rate !== null" class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="target" :size="16" class="text-accent-300" /> Attendance {{ stats.rate }}%</span>
             <span v-if="profile.code" class="rounded-full bg-brand-800 px-3 py-1 font-mono text-sm ring-1 ring-white/10">{{ profile.code }}</span>
         </div>
     </div>
@@ -38,16 +38,16 @@ const user = usePage().props.auth.user;
     <div v-if="achievements" class="mt-6 grid gap-4 lg:grid-cols-3">
         <Link :href="route('gamification.me')" class="lg:col-span-2"><LevelCard :level="achievements.level" compact class="h-full transition hover:shadow-lg" /></Link>
         <Link :href="route('gamification.me')" class="card flex flex-col justify-center p-5 transition hover:shadow-md">
-            <p class="font-display font-bold text-ink">Lencana <span class="tabular-nums text-muted">{{ achievements.badges_earned }}/{{ achievements.badges_total }}</span></p>
+            <p class="font-display font-bold text-ink">Badges <span class="tabular-nums text-muted">{{ achievements.badges_earned }}/{{ achievements.badges_total }}</span></p>
             <p v-if="achievements.badges.length" class="mt-2 flex flex-wrap gap-1 text-3xl"><span v-for="b in achievements.badges" :key="b.name" :title="b.name" role="img" :aria-label="b.name">{{ b.emoji }}</span></p>
-            <p v-else class="mt-2 text-sm text-muted">Selesaikan pelajaran pertamamu untuk dapat lencana pertama.</p>
+            <p v-else class="mt-2 text-sm text-muted">Finish your first lesson to earn your first badge.</p>
         </Link>
     </div>
 
     <div v-if="learning.length" class="mt-6">
         <div class="mb-3 flex items-center justify-between">
-            <h2 class="font-display text-lg font-bold text-ink">Lanjutkan belajar</h2>
-            <Link :href="route('learning.courses.index')" class="text-sm font-semibold text-brand-600 hover:underline">Semua materi →</Link>
+            <h2 class="font-display text-lg font-bold text-ink">Keep learning</h2>
+            <Link :href="route('learning.courses.index')" class="text-sm font-semibold text-brand-600 hover:underline">All courses →</Link>
         </div>
         <div class="grid gap-4 md:grid-cols-2">
             <LearningCard v-for="c in learning" :key="c.id" :course="c" />
@@ -56,15 +56,15 @@ const user = usePage().props.auth.user;
 
     <div v-if="projects.length" class="mt-6">
         <div class="mb-3 flex items-center justify-between">
-            <h2 class="font-display text-lg font-bold text-ink">Proyekku</h2>
-            <Link :href="route('kanban.projects.index')" class="text-sm font-semibold text-brand-600 hover:underline">Semua proyek →</Link>
+            <h2 class="font-display text-lg font-bold text-ink">My projects</h2>
+            <Link :href="route('kanban.projects.index')" class="text-sm font-semibold text-brand-600 hover:underline">All projects →</Link>
         </div>
         <div class="grid gap-4 md:grid-cols-2">
             <Link v-for="p in projects" :key="p.board.id" :href="route('kanban.boards.show', p.board.id)" class="card flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-md">
                 <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-50 text-3xl">{{ p.emoji }}</span>
                 <span class="min-w-0 flex-1">
                     <span class="block truncate font-display font-bold text-ink">{{ p.title }}</span>
-                    <span class="mb-2 block text-xs text-muted">{{ p.board.progress.done }} dari {{ p.board.progress.total }} langkah<template v-if="p.due_date"> · tenggat {{ p.due_date }}</template></span>
+                    <span class="mb-2 block text-xs text-muted">{{ p.board.progress.done }} of {{ p.board.progress.total }} steps<template v-if="p.due_date"> · due {{ p.due_date }}</template></span>
                     <ProgressBar :value="p.board.progress.percent" size="sm" :tone="p.board.completed ? 'green' : 'brand'" />
                 </span>
             </Link>
@@ -74,33 +74,33 @@ const user = usePage().props.auth.user;
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="card p-5 lg:col-span-2">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="font-display text-lg font-bold text-ink">Sesi berikutnya</h2>
-                <Link :href="route('schedule.index')" class="text-sm font-semibold text-brand-600 hover:underline">Jadwalku →</Link>
+                <h2 class="font-display text-lg font-bold text-ink">Next sessions</h2>
+                <Link :href="route('schedule.index')" class="text-sm font-semibold text-brand-600 hover:underline">My schedule →</Link>
             </div>
             <div v-if="upcoming.length" class="space-y-2">
                 <SessionItem v-for="s in upcoming" :key="s.id" :session="s" show-date />
             </div>
             <div v-else class="flex items-center gap-4 rounded-xl bg-sky-soft p-4">
                 <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-sky-ink"><Icon name="calendar-days" /></span>
-                <p class="text-sm text-ink">Belum ada sesi terjadwal. Istirahat dulu atau ulangi materi kemarin, ya!</p>
+                <p class="text-sm text-ink">No sessions scheduled yet. Take a break or review your last lesson!</p>
             </div>
         </div>
         <div class="space-y-4">
             <div v-if="lastSession">
-                <h2 class="mb-2 font-display font-bold text-ink">Pertemuan terakhir</h2>
+                <h2 class="mb-2 font-display font-bold text-ink">Last session</h2>
                 <LastSessionCard :session="lastSession" />
             </div>
             <div v-if="packages.length">
-                <h2 class="mb-2 font-display font-bold text-ink">Kuota belajar</h2>
+                <h2 class="mb-2 font-display font-bold text-ink">Learning quota</h2>
                 <div class="space-y-3"><QuotaCard v-for="p in packages" :key="p.id" :pkg="p" /></div>
             </div>
         </div>
     </div>
 
-    <h2 class="mt-8 mb-4 font-display text-lg font-bold text-ink">Kelasku</h2>
+    <h2 class="mt-8 mb-4 font-display text-lg font-bold text-ink">My classes</h2>
     <div v-if="classes.length" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <ClassCard v-for="c in classes" :key="c.id" :class-room="c" />
     </div>
-    <div v-else class="card"><EmptyState icon="school" title="Kamu belum punya kelas" description="Admin akan segera mendaftarkanmu ke kelas." /></div>
+    <div v-else class="card"><EmptyState icon="school" title="You don't have any classes yet" description="Your admin will add you to a class soon." /></div>
 
 </template>

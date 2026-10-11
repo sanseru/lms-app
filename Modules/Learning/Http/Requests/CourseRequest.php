@@ -28,6 +28,6 @@ class CourseRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['title' => 'judul', 'subject' => 'mata pelajaran', 'level' => 'level', 'description' => 'deskripsi', 'color' => 'warna'];
+        return ['title' => 'title', 'subject' => 'subject', 'level' => 'level', 'description' => 'description', 'color' => 'color'];
     }
 }

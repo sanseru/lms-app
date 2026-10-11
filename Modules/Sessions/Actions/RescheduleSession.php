@@ -8,31 +8,31 @@ use Illuminate\Validation\ValidationException;
 use Modules\Sessions\Models\ClassSession;
 
 /**
- * Pindahkan sesi ke waktu lain, atau buat sesi pengganti untuk sesi yang dibatalkan.
+ * Move a session to another time, or create a replacement for a cancelled session.
  *
- * Sesi asal tetap tersimpan (status "Dipindah" atau tetap "Batal") supaya slot jadwal
- * mingguannya tidak dibuat ulang oleh generator; sesi baru menunjuk ke sesi asal.
+ * The original session is kept (status "Rescheduled" or still "Cancelled") so its weekly
+ * slot is not recreated by the generator; the new session points to the original.
  */
 class RescheduleSession
 {
     public function handle(ClassSession $session, Carbon $startsAt, Carbon $endsAt, string $reason): ClassSession
     {
         if (! $session->canBeRescheduled()) {
-            throw ValidationException::withMessages(['date' => 'Sesi ini tidak bisa dipindah atau sudah punya sesi pengganti.']);
+            throw ValidationException::withMessages(['date' => 'This session cannot be rescheduled or already has a replacement.']);
         }
 
         if ($startsAt->isPast()) {
-            throw ValidationException::withMessages(['start_time' => 'Waktu sesi pengganti sudah lewat.']);
+            throw ValidationException::withMessages(['start_time' => 'The replacement session time has already passed.']);
         }
 
         if ($clash = ClassSession::clashFor($session->teacher_id, $startsAt, $endsAt, $session->id)) {
             throw ValidationException::withMessages([
-                'start_time' => "Guru sudah ada sesi {$clash->classRoom?->name} pada ".$clash->starts_at->format('H:i').'–'.$clash->ends_at->format('H:i').'.',
+                'start_time' => "The teacher already has a {$clash->classRoom?->name} session at ".$clash->starts_at->format('H:i').'–'.$clash->ends_at->format('H:i').'.',
             ]);
         }
 
         if (ClassSession::where('class_room_id', $session->class_room_id)->where('starts_at', $startsAt)->exists()) {
-            throw ValidationException::withMessages(['start_time' => 'Kelas ini sudah punya sesi pada waktu tersebut.']);
+            throw ValidationException::withMessages(['start_time' => 'This class already has a session at that time.']);
         }
 
         return DB::transaction(function () use ($session, $startsAt, $endsAt, $reason) {
@@ -48,7 +48,7 @@ class RescheduleSession
                 'ends_at' => $endsAt,
                 'zoom_url' => $session->zoom_url,
                 'status' => 'scheduled',
-                'internal_note' => "Pengganti sesi {$session->starts_at->translatedFormat('d M Y H:i')}: {$reason}",
+                'internal_note' => "Replaces the {$session->starts_at->translatedFormat('d M Y H:i')} session: {$reason}",
             ]);
         });
     }

@@ -3,9 +3,9 @@
 namespace Modules\Coding\Grading;
 
 /**
- * Membandingkan output siswa dengan yang diharapkan secara ramah anak:
- * spasi di akhir baris dan baris kosong di akhir diabaikan, huruf besar/kecil
- * diabaikan (kecuali diminta), dan angka desimal diberi toleransi.
+ * Compares student output with the expected output in a kid-friendly way:
+ * trailing spaces and trailing blank lines are ignored, letter case is ignored
+ * (unless required), and decimal numbers get a tolerance.
  */
 class OutputComparator
 {
@@ -38,7 +38,7 @@ class OutputComparator
         return true;
     }
 
-    /** Nilai balik fungsi (JSON) dibandingkan secara struktural. */
+    /** Function return values (JSON) are compared structurally. */
     public function json(?string $expected, ?string $actual): bool
     {
         try {

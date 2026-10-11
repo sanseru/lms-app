@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class QuizQuestion extends Model
 {
     public const TYPES = [
-        'single' => 'Satu jawaban',
-        'multiple' => 'Beberapa jawaban',
+        'single' => 'One answer',
+        'multiple' => 'Several answers',
         'true_false' => 'True / false',
         'short' => 'Short answer',
     ];
@@ -31,13 +31,13 @@ class QuizQuestion extends Model
         return $this->type === 'short';
     }
 
-    /** Indeks opsi yang benar, terurut. */
+    /** Indexes of the correct options, sorted. */
     public function correctIndexes(): array
     {
         return collect($this->options)->keys()->filter(fn ($i) => (bool) ($this->options[$i]['correct'] ?? false))->values()->all();
     }
 
-    /** Kunci jawaban: indeks opsi, atau daftar jawaban yang diterima untuk soal isian. */
+    /** Answer key: option indexes, or the list of accepted answers for short-answer questions. */
     public function answerKey(): array
     {
         return $this->isShort()
@@ -45,7 +45,7 @@ class QuizQuestion extends Model
             : $this->correctIndexes();
     }
 
-    /** Jawaban siswa dalam bentuk yang disimpan: teks untuk isian, indeks untuk pilihan. */
+    /** The student's answer in stored form: text for short answers, indexes for choices. */
     public function normalizeGiven(mixed $answer): string|array
     {
         if ($this->isShort()) {
@@ -66,7 +66,7 @@ class QuizQuestion extends Model
         return $given !== [] && $given === $this->correctIndexes();
     }
 
-    /** Membandingkan jawaban isian: abaikan huruf besar, spasi berlebih, titik di akhir; angka dibandingkan nilainya. */
+    /** Compares short answers: ignores case, extra spaces and a trailing period; numbers are compared by value. */
     public static function sameText(string $a, string $b): bool
     {
         $clean = fn (string $s) => rtrim(preg_replace('/\s+/u', ' ', mb_strtolower(trim($s))), '. ');
@@ -80,7 +80,7 @@ class QuizQuestion extends Model
         return $a === $b;
     }
 
-    /** Bentuk untuk siswa: tanpa kunci jawaban. */
+    /** Student-facing shape: no answer key. */
     public function toPublic(): array
     {
         return [

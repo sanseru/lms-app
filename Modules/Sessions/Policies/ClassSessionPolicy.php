@@ -12,7 +12,7 @@ class ClassSessionPolicy
         return $session->teacher_id === $user->id || $user->can('view', $session->classRoom);
     }
 
-    /** Mengisi absensi dan catatan sesi. */
+    /** Fill in session attendance and notes. */
     public function report(User $user, ClassSession $session): bool
     {
         return $session->teacher_id === $user->id && $session->isReportable();
@@ -23,7 +23,7 @@ class ClassSessionPolicy
         return $user->can('classes.manage');
     }
 
-    /** Memindah sesi atau membuat sesi pengganti: admin atau guru sesi itu. */
+    /** Reschedule or create a replacement session: admin or that session's teacher. */
     public function reschedule(User $user, ClassSession $session): bool
     {
         return $user->can('classes.manage') || $session->teacher_id === $user->id;

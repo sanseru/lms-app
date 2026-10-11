@@ -80,7 +80,7 @@ class ProjectController extends Controller
 
         $this->sync->handle($project->load('templateTasks'));
 
-        return to_route('kanban.projects.show', $project)->with('success', 'Proyek dibuat. Setiap siswa sudah punya papan sendiri.');
+        return to_route('kanban.projects.show', $project)->with('success', 'Project created. Every student now has their own board.');
     }
 
     public function show(Request $request, Project $project): Response|RedirectResponse
@@ -133,7 +133,7 @@ class ProjectController extends Controller
                 $task->fill(['title' => $data['title'], 'description' => $data['description'] ?? null, 'position' => $i + 1])->save();
                 $keep[] = $task->id;
 
-                // Perubahan judul ikut ke kartu siswa yang belum selesai.
+                // Title changes carry over to students' cards that are not done yet.
                 Card::where('template_task_id', $task->id)->where('column', '!=', 'done')
                     ->update(['title' => $task->title, 'description' => $task->description]);
             }
@@ -146,7 +146,7 @@ class ProjectController extends Controller
         $this->sync->handle($project->fresh('templateTasks'));
         $project->boards->each->refreshCompletion();
 
-        return to_route('kanban.projects.show', $project)->with('success', 'Proyek diperbarui.');
+        return to_route('kanban.projects.show', $project)->with('success', 'Project updated.');
     }
 
     public function destroy(Project $project): RedirectResponse
@@ -154,7 +154,7 @@ class ProjectController extends Controller
         Gate::authorize('manage', $project);
         $project->delete();
 
-        return to_route('kanban.projects.index')->with('success', 'Proyek dihapus.');
+        return to_route('kanban.projects.index')->with('success', 'Project deleted.');
     }
 
     private function classOptions(User $user)

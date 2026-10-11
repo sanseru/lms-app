@@ -8,8 +8,8 @@ use Modules\Classes\Models\ClassRoom;
 use Modules\Sessions\Models\ClassSession;
 
 /**
- * Membuat sesi dari jadwal mingguan kelas untuk rentang tanggal.
- * Sesi yang sudah ada (tanggal+jam sama) dilewati.
+ * Creates sessions from a class's weekly schedule for a date range.
+ * Existing sessions (same date + time) are skipped.
  */
 class GenerateSessions
 {
@@ -54,7 +54,7 @@ class GenerateSessions
         return $created;
     }
 
-    /** Hapus sesi mendatang yang belum berjalan, lalu buat ulang (dipakai saat jadwal kelas diubah). Sesi pengganti dipertahankan. */
+    /** Delete upcoming sessions that have not run yet, then recreate them (used when a class schedule changes). Replacement sessions are kept. */
     public function regenerateUpcoming(ClassRoom $class): int
     {
         $class->sessions()->where('status', 'scheduled')->whereNull('replaces_session_id')->where('starts_at', '>', now())->delete();

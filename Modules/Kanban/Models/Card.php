@@ -16,10 +16,10 @@ class Card extends Model
     ];
 
     public const COLUMNS = [
-        'todo' => 'Mau dikerjakan',
-        'doing' => 'Sedang dikerjakan',
-        'review' => 'Minta dicek guru',
-        'done' => 'Selesai',
+        'todo' => 'To do',
+        'doing' => 'Doing',
+        'review' => 'Ready for review',
+        'done' => 'Done',
     ];
 
     protected function casts(): array

@@ -197,6 +197,17 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'login' => 'username or email',
+        'email' => 'email',
+        'password' => 'password',
+        'name' => 'name',
+        'birth_date' => 'date of birth',
+        'joined_at' => 'join date',
+        'start_date' => 'start date',
+        'end_date' => 'end date',
+        'capacity' => 'capacity',
+        'reason' => 'reason',
+    ],
 
 ];

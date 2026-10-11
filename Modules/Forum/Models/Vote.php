@@ -5,7 +5,7 @@ namespace Modules\Forum\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-/** "Aku juga bingung" pada pertanyaan, "Membantu" pada jawaban. */
+/** "Me too" on questions, "Helpful" on answers. */
 class Vote extends Model
 {
     protected $table = 'forum_votes';

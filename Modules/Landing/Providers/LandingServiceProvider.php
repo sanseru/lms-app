@@ -5,7 +5,7 @@ namespace Modules\Landing\Providers;
 use App\Support\Modules\ModuleServiceProvider;
 
 /**
- * Halaman publik (landing page) di "/".
+ * Public landing page at "/".
  */
 class LandingServiceProvider extends ModuleServiceProvider
 {

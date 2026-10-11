@@ -4,6 +4,7 @@ import Avatar from '@/Components/ui/Avatar.vue';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import LastSessionCard from '@/Components/ui/LastSessionCard.vue';
+import LearningCard from '@/Components/ui/LearningCard.vue';
 import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import { greeting, rupiah } from '@/lib/format';
@@ -79,6 +80,16 @@ const user = usePage().props.auth.user;
                     <p class="eyebrow mb-2">Catatan pertemuan terakhir</p>
                     <LastSessionCard v-if="child.lastSession" :session="child.lastSession" for-parent />
                     <p v-else class="text-sm text-muted">Belum ada sesi yang selesai.</p>
+                </div>
+            </div>
+
+            <div v-if="child.learning.length" class="mt-5 border-t border-line pt-5">
+                <div class="mb-3 flex items-center justify-between">
+                    <p class="eyebrow">Progres materi</p>
+                    <Link :href="route('learning.progress.show', child.id)" class="text-sm font-semibold text-brand-600 hover:underline">Lihat rapor →</Link>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <LearningCard v-for="c in child.learning" :key="c.id" :course="c" :link-next="false" />
                 </div>
             </div>
         </div>

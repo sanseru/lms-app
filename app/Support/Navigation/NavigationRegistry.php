@@ -14,7 +14,7 @@ class NavigationRegistry
     protected array $items = [];
 
     /** Urutan grup menu di sidebar. */
-    protected array $groupOrder = ['Utama', 'Akademik', 'Pengguna', 'Keuangan', 'Lainnya'];
+    protected array $groupOrder = ['Utama', 'Akademik', 'Belajar', 'Pengguna', 'Keuangan', 'Lainnya'];
 
     public function add(NavItem ...$items): static
     {

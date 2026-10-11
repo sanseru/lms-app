@@ -28,6 +28,15 @@ const user = usePage().props.auth.user;
         <StatCard label="Honor belum direkap" :value="rupiah(stats.fee_pending)" icon="hand-coins" tone="green" />
     </div>
 
+    <Link v-if="stats.to_grade" :href="route('learning.grading.index')" class="mt-6 flex items-center gap-4 rounded-2xl border border-violet-200 bg-violet-50 p-5 transition hover:shadow-md">
+        <span class="grid size-11 place-items-center rounded-xl bg-violet-100 text-violet-700"><Icon name="file-pen" /></span>
+        <span class="flex-1">
+            <span class="block font-display font-bold text-ink">{{ stats.to_grade }} tugas menunggu dinilai</span>
+            <span class="text-sm text-muted">Beri nilai atau minta revisi agar siswa dan orang tua bisa melihat hasilnya.</span>
+        </span>
+        <Icon name="arrow-right" class="text-violet-700" />
+    </Link>
+
     <div v-if="needsReport.length" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
         <div class="mb-3 flex items-center gap-2">
             <Icon name="clipboard-check" class="text-amber-600" />

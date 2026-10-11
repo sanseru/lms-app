@@ -13,6 +13,8 @@ use Modules\Finance\Models\Payment;
 use Modules\Finance\Models\PayrollItem;
 use Modules\Finance\Models\StudentPackage;
 use Modules\Identity\Enums\Role;
+use Modules\Learning\Actions\StudentProgress;
+use Modules\Learning\Models\AssignmentSubmission;
 use Modules\Sessions\Models\ClassSession;
 use Modules\Sessions\Models\SessionAttendance;
 
@@ -73,6 +75,7 @@ class DashboardController extends Controller
                 'students' => $classes->where('status', 'active')->sum('students_count'),
                 'sessions_month' => $mine()->where('status', 'completed')->whereBetween('starts_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
                 'fee_pending' => (int) PayrollItem::where('teacher_id', $user->id)->whereNull('teacher_payout_id')->sum('amount'),
+                'to_grade' => AssignmentSubmission::query()->gradableBy($user)->where('status', 'submitted')->count(),
             ],
             'today' => $this->sessions($mine()->whereDate('starts_at', today())),
             'needsReport' => $this->sessions($mine()->needsReport()->orderBy('starts_at')->take(10)),
@@ -93,6 +96,7 @@ class DashboardController extends Controller
             'classes' => $classes->map->toCard(),
             'packages' => $this->packagesFor($user),
             'stats' => $this->attendanceStats($user),
+            'learning' => $this->learningSummary($user),
             'profile' => [
                 'code' => $user->studentProfile?->student_code,
                 'grade' => $user->studentProfile?->grade,
@@ -113,6 +117,7 @@ class DashboardController extends Controller
                 'grade' => $child->studentProfile?->grade,
                 'packages' => $this->packagesFor($child),
                 'stats' => $this->attendanceStats($child),
+                'learning' => $this->learningSummary($child),
                 'next' => $this->sessions(ClassSession::query()
                     ->whereIn('class_room_id', $child->enrolledClasses->pluck('id'))
                     ->where('status', 'scheduled')->where('ends_at', '>=', now())
@@ -190,5 +195,25 @@ class DashboardController extends Controller
         return StudentPackage::where('status', 'active')->withCount('usages')->get()
             ->filter(fn (StudentPackage $p) => $p->sessions_total - $p->usages_count <= 2)
             ->count();
+    }
+
+    /** Ringkas progres kursus untuk kartu dashboard. */
+    private function learningSummary(User $student): array
+    {
+        return app(StudentProgress::class)->forStudent($student)
+            ->map(fn (array $c) => [
+                'id' => $c['id'],
+                'title' => $c['title'],
+                'subject' => $c['subject'],
+                'color' => $c['color'],
+                'percent' => $c['percent'],
+                'completed' => $c['completed'],
+                'total' => $c['total'],
+                'quiz_avg' => $c['quiz_avg'],
+                'pending_assignments' => $c['pending_assignments'],
+                'next' => $c['next'] ? ['id' => $c['next']['id'], 'title' => $c['next']['title'], 'type' => $c['next']['type'], 'type_label' => $c['next']['type_label']] : null,
+            ])
+            ->values()
+            ->all();
     }
 }

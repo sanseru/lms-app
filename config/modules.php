@@ -5,6 +5,7 @@ use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
+use Modules\Learning\Providers\LearningServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
 use Modules\Sessions\Providers\SessionsServiceProvider;
 
@@ -28,6 +29,7 @@ return [
         PeopleServiceProvider::class,
         ClassesServiceProvider::class,
         SessionsServiceProvider::class,
+        LearningServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

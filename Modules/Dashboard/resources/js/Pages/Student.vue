@@ -6,8 +6,9 @@ import EmptyState from '@/Components/ui/EmptyState.vue';
 import LastSessionCard from '@/Components/ui/LastSessionCard.vue';
 import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
+import LearningCard from '@/Components/ui/LearningCard.vue';
 
-defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object });
+defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array });
 const user = usePage().props.auth.user;
 
 const soon = [
@@ -34,6 +35,16 @@ const soon = [
             <span class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">✅ {{ stats.present }} sesi dihadiri</span>
             <span v-if="stats.rate !== null" class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">🔥 Kehadiran {{ stats.rate }}%</span>
             <span v-if="profile.code" class="rounded-full bg-white/20 px-3 py-1 font-mono text-sm backdrop-blur-sm">{{ profile.code }}</span>
+        </div>
+    </div>
+
+    <div v-if="learning.length" class="mt-6">
+        <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-display text-lg font-bold text-ink">Lanjutkan belajar</h2>
+            <Link :href="route('learning.courses.index')" class="text-sm font-semibold text-brand-600 hover:underline">Semua materi →</Link>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+            <LearningCard v-for="c in learning" :key="c.id" :course="c" />
         </div>
     </div>
 

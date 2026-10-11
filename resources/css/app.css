@@ -27,6 +27,7 @@
     /* Aksen coral #F58464 */
     --color-accent-50: #fff1eb;
     --color-accent-100: #ffe0d4;
+    --color-accent-200: #fcc9b6;
     --color-accent-300: #f9ae96;
     --color-accent-500: #f58464;
     --color-accent-600: #e5683f;
@@ -79,3 +80,24 @@
 @utility label {
     @apply mb-1.5 block text-sm font-semibold text-ink;
 }
+
+/* Isi materi (HTML hasil Markdown) */
+.lesson-prose {
+    @apply leading-relaxed text-ink;
+}
+.lesson-prose > * + * { margin-top: 1em; }
+.lesson-prose h1, .lesson-prose h2, .lesson-prose h3 { @apply font-display font-extrabold tracking-tight text-ink; margin-top: 1.6em; }
+.lesson-prose h1 { @apply text-2xl; }
+.lesson-prose h2 { @apply text-xl; }
+.lesson-prose h3 { @apply text-lg; }
+.lesson-prose > :first-child { margin-top: 0; }
+.lesson-prose a { @apply font-semibold text-brand-600 underline underline-offset-2; }
+.lesson-prose ul { @apply list-disc pl-6; }
+.lesson-prose ol { @apply list-decimal pl-6; }
+.lesson-prose li + li { margin-top: 0.35em; }
+.lesson-prose blockquote { @apply rounded-r-xl border-l-4 border-accent-300 bg-accent-50 px-4 py-3; }
+.lesson-prose :not(pre) > code { @apply rounded-md bg-brand-50 px-1.5 py-0.5 font-mono text-[0.9em] text-brand-700; }
+.lesson-prose pre { @apply overflow-x-auto rounded-2xl bg-[#241a35] p-4 font-mono text-sm leading-relaxed text-[#f3eefb]; }
+.lesson-prose img { @apply rounded-2xl; }
+.lesson-prose table { @apply w-full text-sm; }
+.lesson-prose th, .lesson-prose td { @apply border-b border-line px-3 py-2 text-left; }

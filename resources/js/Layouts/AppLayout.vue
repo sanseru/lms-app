@@ -13,7 +13,7 @@ const sidebarOpen = ref(false);
 
 router.on('navigate', () => (sidebarOpen.value = false));
 
-const isActive = (pattern) => route().current(pattern);
+const isActive = (pattern) => pattern.split('|').some((p) => route().current(p));
 
 // Toast dari flash message server.
 const toast = ref(null);

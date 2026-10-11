@@ -78,6 +78,11 @@ Lihat `Modules/Forum` sebagai contoh modul lengkap yang kecil.
 3. Buat halaman di `Modules/Map/resources/js/Pages/`.
 4. Daftarkan provider di `config/modules.php`, jalankan migrate dan seeder permission.
 
+## Dokumentasi
+
+- [Panduan pengguna per peran](docs/panduan-pengguna/README.md) (admin, guru, siswa, orang tua)
+- [Dokumentasi production](docs/production.md) (instalasi server, `.env`, cron, backup, keamanan, deploy)
+
 ## Test
 
 ```bash

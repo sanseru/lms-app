@@ -231,3 +231,9 @@ test('dashboards include learning summaries', function () {
     $this->actingAs($guardian)->get('/dashboard')->assertInertia(fn ($page) => $page->where('children.0.learning.0.title', 'Python Start'));
     $this->actingAs($teacher)->get('/dashboard')->assertInertia(fn ($page) => $page->where('stats.to_grade', 1));
 });
+
+test('class room resolves its attached course', function () {
+    [, , $course, $class] = learningSetup();
+
+    expect($class->fresh()->course->id)->toBe($course->id);
+});

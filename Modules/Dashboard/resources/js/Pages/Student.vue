@@ -14,7 +14,6 @@ const user = usePage().props.auth.user;
 const soon = [
     { icon: '🗺️', title: 'Peta belajar', text: 'Jalur pelajaran ala game, buka level satu per satu.' },
     { icon: '🏆', title: 'XP & lencana', text: 'Kumpulkan poin dari tugas dan proyek.' },
-    { icon: '💬', title: 'Tanya jawab', text: 'Tanya guru langsung di setiap pelajaran.' },
 ];
 </script>
 
@@ -81,7 +80,7 @@ const soon = [
     <div v-else class="card"><EmptyState icon="school" title="Kamu belum punya kelas" description="Admin akan segera mendaftarkanmu ke kelas." /></div>
 
     <h2 class="mt-8 mb-4 font-display text-lg font-bold text-ink">Segera hadir</h2>
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2">
         <div v-for="item in soon" :key="item.title" class="rounded-2xl border border-dashed border-brand-200 bg-brand-50/50 p-5">
             <p class="text-3xl">{{ item.icon }}</p>
             <p class="mt-3 font-display font-bold text-ink">{{ item.title }}</p>

@@ -37,6 +37,15 @@ const user = usePage().props.auth.user;
         <Icon name="arrow-right" class="text-violet-700" />
     </Link>
 
+    <Link v-if="stats.questions_waiting" :href="route('forum.questions.index', { tab: 'unanswered' })" class="mt-4 flex items-center gap-4 rounded-2xl border border-accent-200 bg-accent-50 p-5 transition hover:shadow-md">
+        <span class="grid size-11 place-items-center rounded-xl bg-accent-100 text-accent-700"><Icon name="message-question" /></span>
+        <span class="flex-1">
+            <span class="block font-display font-bold text-ink">{{ stats.questions_waiting }} pertanyaan siswa belum dijawab</span>
+            <span class="text-sm text-muted">Jawab di Tanya Jawab. Jawaban guru tampil paling atas dan bisa disematkan untuk seluruh kelas.</span>
+        </span>
+        <Icon name="arrow-right" class="text-accent-700" />
+    </Link>
+
     <div v-if="needsReport.length" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
         <div class="mb-3 flex items-center gap-2">
             <Icon name="clipboard-check" class="text-amber-600" />

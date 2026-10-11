@@ -43,7 +43,7 @@ test('navigation only contains menus allowed for the role', function () {
         ->all();
 
     expect($labels(userWithRole('admin')))->toContain('Siswa', 'Guru', 'Orang Tua', 'Kelas', 'Tagihan');
-    expect($labels(userWithRole('student')))->toBe(['Beranda', 'Kelas', 'Jadwal', 'Materi Saya']);
+    expect($labels(userWithRole('student')))->toBe(['Beranda', 'Kelas', 'Jadwal', 'Materi Saya', 'Tanya Jawab']);
     expect($labels(userWithRole('guardian')))->toContain('Tagihan Anak')->not->toContain('Siswa');
 });
 

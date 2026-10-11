@@ -5,6 +5,7 @@ import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Field from '@/Components/ui/Field.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import GradeForm from '../../Components/GradeForm.vue';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 import SubmissionContent from '../../Components/SubmissionContent.vue';
@@ -263,6 +264,8 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                 </ul>
                 <p v-else class="px-5 py-8 text-center text-sm text-muted">Belum ada pengumpulan dari siswa kelasmu.</p>
             </div>
+
+            <LessonQuestions :lesson-id="lesson.id" />
 
             <!-- Navigasi -->
             <nav class="flex items-center justify-between gap-3 border-t border-line pt-5">

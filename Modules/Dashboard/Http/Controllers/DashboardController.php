@@ -5,6 +5,7 @@ namespace Modules\Dashboard\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Classes\Models\ClassRoom;
@@ -12,6 +13,7 @@ use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
 use Modules\Finance\Models\PayrollItem;
 use Modules\Finance\Models\StudentPackage;
+use Modules\Forum\Models\Question;
 use Modules\Identity\Enums\Role;
 use Modules\Learning\Actions\StudentProgress;
 use Modules\Learning\Models\AssignmentSubmission;
@@ -76,6 +78,9 @@ class DashboardController extends Controller
                 'sessions_month' => $mine()->where('status', 'completed')->whereBetween('starts_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
                 'fee_pending' => (int) PayrollItem::where('teacher_id', $user->id)->whereNull('teacher_payout_id')->sum('amount'),
                 'to_grade' => AssignmentSubmission::query()->gradableBy($user)->where('status', 'submitted')->count(),
+                'questions_waiting' => Route::has('forum.questions.index')
+                    ? Question::query()->whereIn('class_room_id', $classes->pluck('id'))->status('unanswered')->count()
+                    : 0,
             ],
             'today' => $this->sessions($mine()->whereDate('starts_at', today())),
             'needsReport' => $this->sessions($mine()->needsReport()->orderBy('starts_at')->take(10)),

@@ -46,7 +46,7 @@ class LearningServiceProvider extends ModuleServiceProvider
         Gate::policy(Lesson::class, LessonPolicy::class);
         Gate::policy(AssignmentSubmission::class, AssignmentSubmissionPolicy::class);
 
-        ClassRoom::resolveRelationUsing('course', fn (ClassRoom $class) => $class->belongsTo(Course::class));
+        ClassRoom::resolveRelationUsing('course', fn (ClassRoom $class) => $class->belongsTo(Course::class, 'course_id'));
     }
 
     public function navigation(NavigationRegistry $nav): void

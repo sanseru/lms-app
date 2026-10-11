@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import CodeEditor from '../../Components/CodeEditor.vue';
 import ParsonsBoard from '../../Components/ParsonsBoard.vue';
 import TestResultList from '../../Components/TestResultList.vue';
@@ -340,6 +341,8 @@ const user = usePage().props.auth.user;
         </details>
         <p v-if="!classroom.length" class="card px-5 py-8 text-center text-sm text-muted">Belum ada siswa yang mengumpulkan.</p>
     </div>
+
+    <LessonQuestions :lesson-id="lesson.id" class="mt-8" />
 
     <nav class="mt-8 flex items-center justify-between gap-3 border-t border-line pt-5">
         <Link v-if="prev" :href="route('learning.lessons.show', prev.id)" class="group flex min-w-0 items-center gap-2 text-sm">

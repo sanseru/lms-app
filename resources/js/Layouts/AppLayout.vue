@@ -83,7 +83,7 @@ const roleTone = {
 
             <div class="m-4 rounded-2xl bg-gradient-to-br from-brand-600 via-violet-500 to-accent-500 p-4 text-white">
                 <p class="font-display text-sm font-bold">Learn. Create. Grow.</p>
-                <p class="mt-1 text-xs text-white/80">Modul tanya jawab, absensi, dan peta belajar akan hadir di sini.</p>
+                <p class="mt-1 text-xs text-white/80">Belajar, bertanya, dan berkarya bersama teman sekelas.</p>
             </div>
         </aside>
 

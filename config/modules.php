@@ -4,6 +4,7 @@ use Modules\Classes\Providers\ClassesServiceProvider;
 use Modules\Coding\Providers\CodingServiceProvider;
 use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
+use Modules\Forum\Providers\ForumServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
@@ -32,6 +33,7 @@ return [
         SessionsServiceProvider::class,
         LearningServiceProvider::class,
         CodingServiceProvider::class,
+        ForumServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

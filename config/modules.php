@@ -1,6 +1,7 @@
 <?php
 
 use Modules\Classes\Providers\ClassesServiceProvider;
+use Modules\Coding\Providers\CodingServiceProvider;
 use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
@@ -30,6 +31,7 @@ return [
         ClassesServiceProvider::class,
         SessionsServiceProvider::class,
         LearningServiceProvider::class,
+        CodingServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

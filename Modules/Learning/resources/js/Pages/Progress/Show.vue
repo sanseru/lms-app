@@ -9,6 +9,7 @@ import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 
 defineProps({ student: Object, courses: Array, siblings: Array });
 
+const gainLabel = (g) => (g === null ? null : g >= 0.7 ? 'Tinggi' : g >= 0.3 ? 'Sedang' : 'Rendah');
 const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80 ? 'text-emerald-600' : v >= 60 ? 'text-amber-600' : 'text-rose-600');
 </script>
 
@@ -52,6 +53,29 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
                     <div><dt class="text-xs text-muted">Rata-rata tugas</dt><dd :class="scoreTone(c.assignment_avg)" class="font-display text-2xl font-extrabold">{{ c.assignment_avg ?? '–' }}</dd></div>
                 </dl>
             </div>
+            <div v-if="c.missions" class="border-b border-line bg-gradient-to-br from-brand-50 to-accent-50/60 p-5">
+                <div class="flex flex-wrap items-center gap-x-8 gap-y-3">
+                    <p class="flex items-center gap-2 font-display font-bold text-ink"><Icon name="rocket" :size="18" class="text-accent-600" /> Kenaikan kemampuan</p>
+                    <div class="text-center"><p class="text-xs text-muted">Misi Pemanasan</p><p class="font-display text-xl font-extrabold text-ink">{{ c.missions.pre ?? '–' }}</p></div>
+                    <Icon name="arrow-right" :size="18" class="text-muted" />
+                    <div class="text-center"><p class="text-xs text-muted">Misi Akhir</p><p class="font-display text-xl font-extrabold text-ink">{{ c.missions.post ?? '–' }}</p></div>
+                    <div v-if="c.missions.gain !== null" class="rounded-2xl bg-white px-4 py-2 text-center shadow-sm">
+                        <p class="text-xs text-muted">Kenaikan (gain)</p>
+                        <p class="font-display text-xl font-extrabold text-brand-600">{{ Math.round(c.missions.gain * 100) }}% <span class="text-xs font-semibold text-muted">{{ gainLabel(c.missions.gain) }}</span></p>
+                    </div>
+                    <p v-else class="text-sm text-muted">{{ c.missions.pre === null ? 'Misi Pemanasan belum dikerjakan.' : 'Misi Akhir belum dikerjakan.' }}</p>
+                </div>
+                <ul v-if="c.missions.concepts.length" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <li v-for="k in c.missions.concepts" :key="k.concept" class="rounded-xl bg-white/80 p-3">
+                        <p class="text-sm font-semibold text-ink capitalize">{{ k.concept }}</p>
+                        <div class="mt-1.5 space-y-1 text-xs text-muted">
+                            <div class="flex items-center gap-2"><span class="w-10">Awal</span><div class="h-1.5 flex-1 rounded-full bg-chip"><div class="h-full rounded-full bg-slate-400" :style="{ width: `${k.pre ?? 0}%` }" /></div><span class="w-9 text-right">{{ k.pre ?? '–' }}%</span></div>
+                            <div class="flex items-center gap-2"><span class="w-10">Akhir</span><div class="h-1.5 flex-1 rounded-full bg-chip"><div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500" :style="{ width: `${k.post ?? 0}%` }" /></div><span class="w-9 text-right">{{ k.post ?? '–' }}%</span></div>
+                        </div>
+                    </li>
+                </ul>
+                <p class="mt-3 text-xs text-muted">Kenaikan dihitung dari sisa ruang naik: (akhir − awal) ÷ (100 − awal). Misi Pemanasan tidak memengaruhi nilai.</p>
+            </div>
             <ol class="divide-y divide-line">
                 <li v-for="l in c.lessons" :key="l.id" class="flex items-center gap-3 px-5 py-3">
                     <LessonTypeIcon :type="l.type" :done="l.done" size="sm" />
@@ -59,7 +83,7 @@ const scoreTone = (v) => (v === null || v === undefined ? 'text-muted' : v >= 80
                         <span class="block truncate text-sm font-semibold text-ink">{{ l.title }}</span>
                         <span class="text-xs text-muted">{{ l.type_label }}</span>
                     </span>
-                    <span v-if="l.type === 'quiz'" class="text-right text-sm">
+                    <span v-if="l.type === 'quiz' || l.type === 'code'" class="text-right text-sm">
                         <span v-if="l.quiz_best !== null" :class="scoreTone(l.quiz_best)" class="font-bold">{{ l.quiz_best }}</span>
                         <span v-else class="text-muted">Belum dikerjakan</span>
                         <span v-if="l.quiz_tries" class="block text-xs text-muted">{{ l.quiz_tries }}× mencoba</span>

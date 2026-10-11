@@ -7,8 +7,9 @@ const styles = {
     material: 'bg-sky-50 text-sky-600 ring-sky-100',
     quiz: 'bg-amber-50 text-amber-600 ring-amber-100',
     assignment: 'bg-violet-50 text-violet-600 ring-violet-100',
+    code: 'bg-ink text-white ring-ink',
 };
-const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pen' };
+const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pen', code: 'code' };
 </script>
 
 <template>

@@ -61,6 +61,47 @@ class LearningDemoSeeder
         }
 
         $this->simulateProgress($classes->filter(fn ($c) => isset($map[$c->name])), $map);
+        $this->missions($python, $classes->firstWhere('name', 'Python Start 1'));
+    }
+
+    /** Misi Pemanasan (awal) dan Misi Akhir untuk kursus Python, dengan konsep per soal. */
+    private function missions(Course $course, ClassRoom $class): void
+    {
+        $make = function (string $role, string $title, array $questions, int $position) use ($course) {
+            $lesson = $course->lessons()->create([
+                'title' => $title, 'type' => 'quiz', 'assessment' => $role, 'position' => $position, 'pass_score' => 0, 'duration_minutes' => 10,
+                'body' => $role === 'pre' ? 'Misi singkat untuk melihat titik awalmu. Tidak memengaruhi nilai.' : 'Misi penutup untuk melihat seberapa jauh kemajuanmu.',
+            ]);
+            foreach ($questions as $i => [$prompt, $concept, $options]) {
+                $lesson->questions()->create(['position' => $i + 1, 'prompt' => $prompt, 'type' => 'single', 'points' => 1, 'concept' => $concept,
+                    'options' => array_map(fn ($o) => ['text' => $o[0], 'correct' => $o[1]], $options)]);
+            }
+
+            return $lesson->load('questions');
+        };
+
+        // Misi pemanasan di posisi paling awal.
+        $course->lessons()->increment('position');
+        $pre = $make('pre', 'Misi Pemanasan', [
+            ['Apa output dari `print(2 + 3)`?', 'variabel', [['5', true], ['23', false], ['2 + 3', false]]],
+            ['Untuk menyimpan nama pemain, kita memakai…', 'variabel', [['variabel', true], ['perulangan', false], ['komentar', false]]],
+            ['`if nilai > 70:` artinya…', 'percabangan', [['jika nilai lebih dari 70', true], ['ulangi 70 kali', false], ['nilai sama dengan 70', false]]],
+            ['Berapa kali `for i in range(3):` berulang?', 'perulangan', [['3', true], ['2', false], ['4', false]]],
+        ], 1);
+        $post = $make('post', 'Misi Akhir', [
+            ['Apa output dari `print(4 * 2)`?', 'variabel', [['8', true], ['42', false], ['4 * 2', false]]],
+            ['Nilai `True` dan `False` bertipe…', 'variabel', [['bool', true], ['int', false], ['str', false]]],
+            ['Kapan blok `else` dijalankan?', 'percabangan', [['saat kondisi if salah', true], ['selalu', false], ['saat kondisi if benar', false]]],
+            ['Berapa kali `for i in range(1, 5):` berulang?', 'perulangan', [['4', true], ['5', false], ['1', false]]],
+        ], $course->nextPosition());
+
+        $grade = app(GradeQuiz::class);
+        foreach ($class->students()->get() as $i => $student) {
+            // Pemanasan: hanya soal pertama benar (dan soal kedua untuk sebagian siswa).
+            $grade->handle($pre, $student, $pre->questions->mapWithKeys(fn ($q, $j) => [$q->id => $j === 0 || ($j === 1 && $i % 2 === 0) ? 0 : 1])->all());
+            // Misi akhir: sebagian besar benar.
+            $grade->handle($post, $student, $post->questions->mapWithKeys(fn ($q, $j) => [$q->id => $j === 3 && $i % 2 ? 1 : 0])->all());
+        }
     }
 
     private function course(User $author, string $title, string $subject, string $level, string $color, string $description, array $lessons): Course

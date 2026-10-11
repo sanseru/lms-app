@@ -15,11 +15,16 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
+use Modules\Learning\Support\LessonTypes;
 
 class LessonController extends Controller
 {
-    public function create(Request $request, Course $course): Response
+    public function create(Request $request, Course $course, LessonTypes $extra): Response|RedirectResponse
     {
+        if ($handler = $extra->get($request->query('type'))) {
+            return redirect($handler->createUrl($course));
+        }
+
         $type = in_array($request->query('type'), array_keys(Lesson::TYPES), true) ? $request->query('type') : 'material';
 
         return Inertia::render('Learning::Lessons/Form', [
@@ -27,6 +32,8 @@ class LessonController extends Controller
             'lesson' => null,
             'defaultType' => $type,
             'types' => Lesson::TYPES,
+            'extraTypes' => $this->extraTypes($extra, $course),
+            'assessments' => Lesson::ASSESSMENTS,
             'questionTypes' => QuizQuestion::TYPES,
         ]);
     }
@@ -40,7 +47,7 @@ class LessonController extends Controller
             return $lesson;
         });
 
-        return to_route('learning.lessons.show', $lesson)->with('success', Lesson::TYPES[$lesson->type].' ditambahkan.');
+        return to_route('learning.lessons.show', $lesson)->with('success', Lesson::types()[$lesson->type].' ditambahkan.');
     }
 
     public function show(Request $request, Lesson $lesson): Response
@@ -64,7 +71,7 @@ class LessonController extends Controller
                 'max_attempts' => $lesson->max_attempts,
                 'max_score' => $lesson->type === 'assignment' ? $lesson->maxScore() : null,
             ],
-            'outline' => $siblings->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::ICONS[$l->type]]),
+            'outline' => $siblings->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
             'done' => $learn ? LessonProgress::where('lesson_id', $lesson->id)->where('student_id', $user->id)->pluck('lesson_id') : [],
             'prev' => $index > 0 ? $siblings[$index - 1]->only('id', 'title') : null,
             'next' => $index !== false && $index < $siblings->count() - 1 ? $siblings[$index + 1]->only('id', 'title') : null,
@@ -73,6 +80,10 @@ class LessonController extends Controller
 
         if ($learn) {
             $data['done'] = LessonProgress::where('student_id', $user->id)->whereIn('lesson_id', $siblings->pluck('id'))->pluck('lesson_id');
+        }
+
+        if ($handler = $lesson->handler()) {
+            return Inertia::render($handler->showPage(), $data + $handler->showData($lesson, $user, $manage, $learn));
         }
 
         if ($lesson->type === 'quiz') {
@@ -89,15 +100,21 @@ class LessonController extends Controller
         return Inertia::render('Learning::Lessons/Show', $data);
     }
 
-    public function edit(Lesson $lesson): Response
+    public function edit(Lesson $lesson): Response|RedirectResponse
     {
+        if ($handler = $lesson->handler()) {
+            return redirect($handler->editUrl($lesson));
+        }
+
         return Inertia::render('Learning::Lessons/Form', [
             'course' => $lesson->course->only('id', 'title'),
-            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'max_score') + [
-                'questions' => $lesson->questions->map->only('id', 'prompt', 'type', 'options', 'explanation', 'points'),
+            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'max_score', 'assessment') + [
+                'questions' => $lesson->questions->map->only('id', 'prompt', 'type', 'options', 'explanation', 'points', 'concept'),
             ],
             'defaultType' => $lesson->type,
             'types' => Lesson::TYPES,
+            'extraTypes' => [],
+            'assessments' => Lesson::ASSESSMENTS,
             'questionTypes' => QuizQuestion::TYPES,
         ]);
     }
@@ -151,6 +168,12 @@ class LessonController extends Controller
         return back()->with('success', 'Materi ditandai selesai.');
     }
 
+    /** Jenis tambahan dari modul lain untuk pilihan di form. */
+    private function extraTypes(LessonTypes $extra, Course $course): array
+    {
+        return collect($extra->all())->map(fn ($h) => ['label' => $h->label(), 'icon' => $h->icon(), 'url' => $h->createUrl($course)])->all();
+    }
+
     private function lessonData(LessonRequest $request): array
     {
         $data = collect($request->validated())->except('questions')->all();
@@ -158,7 +181,7 @@ class LessonController extends Controller
 
         // Kolom khusus jenis lain dikosongkan agar data tetap bersih.
         if ($data['type'] !== 'quiz') {
-            $data['pass_score'] = $data['max_attempts'] = null;
+            $data['pass_score'] = $data['max_attempts'] = $data['assessment'] = null;
         }
         if ($data['type'] !== 'assignment') {
             $data['max_score'] = null;
@@ -183,6 +206,7 @@ class LessonController extends Controller
                 'type' => $q['type'],
                 'points' => $q['points'],
                 'explanation' => $q['explanation'] ?? null,
+                'concept' => isset($q['concept']) ? mb_strtolower(trim($q['concept'])) ?: null : null,
                 'options' => collect($q['options'])->map(fn ($o) => ['text' => $o['text'], 'correct' => (bool) ($o['correct'] ?? false)])->values()->all(),
             ];
 

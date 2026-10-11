@@ -8,7 +8,7 @@ import ProgressBar from './ProgressBar.vue';
 /** Kartu progres kursus untuk dashboard siswa dan orang tua. */
 const props = defineProps({ course: Object, linkNext: { type: Boolean, default: true } });
 const color = computed(() => classColors[props.course.color] ?? classColors.violet);
-const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pen' };
+const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pen', code: 'code' };
 </script>
 
 <template>

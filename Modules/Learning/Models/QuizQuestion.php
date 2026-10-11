@@ -9,7 +9,7 @@ class QuizQuestion extends Model
 {
     public const TYPES = ['single' => 'Satu jawaban', 'multiple' => 'Beberapa jawaban'];
 
-    protected $fillable = ['lesson_id', 'position', 'prompt', 'type', 'options', 'explanation', 'points'];
+    protected $fillable = ['lesson_id', 'position', 'prompt', 'type', 'options', 'explanation', 'points', 'concept'];
 
     protected function casts(): array
     {

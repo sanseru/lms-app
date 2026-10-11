@@ -21,6 +21,7 @@ const move = (lesson, direction) => router.post(route('learning.lessons.move', l
 
 const counts = computed(() => ({
     material: props.lessons.filter((l) => l.type === 'material').length,
+    code: props.lessons.filter((l) => l.type === 'code').length,
     quiz: props.lessons.filter((l) => l.type === 'quiz').length,
     assignment: props.lessons.filter((l) => l.type === 'assignment').length,
 }));
@@ -41,7 +42,7 @@ const counts = computed(() => ({
                 <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ course.title }}</h1>
                 <p v-if="course.description" class="mt-2 text-white/90">{{ course.description }}</p>
                 <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-white/90">
-                    <span>{{ counts.material }} materi</span><span>{{ counts.quiz }} kuis</span><span>{{ counts.assignment }} tugas</span>
+                    <span>{{ counts.material }} materi</span><span>{{ counts.quiz }} kuis</span><span>{{ counts.assignment }} tugas</span><span v-if="counts.code">{{ counts.code }} soal coding</span>
                 </p>
             </div>
             <div v-if="can.manage" class="flex flex-wrap gap-2">
@@ -68,6 +69,7 @@ const counts = computed(() => ({
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'material' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="book-open" :size="14" /> Materi</Link>
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'quiz' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="list-checks" :size="14" /> Kuis</Link>
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'assignment' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="file-pen" :size="14" /> Tugas</Link>
+                    <Link :href="route('learning.lessons.create', { course: course.id, type: 'code' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="code" :size="14" /> Coding</Link>
                 </div>
             </div>
 
@@ -81,6 +83,7 @@ const counts = computed(() => ({
                             <span>{{ lesson.type_label }}</span>
                             <span v-if="lesson.duration_minutes">{{ lesson.duration_minutes }} menit</span>
                             <span v-if="lesson.type === 'quiz' && lesson.questions_count !== null">{{ lesson.questions_count }} soal</span>
+                            <span v-if="lesson.assessment_label" class="font-semibold text-accent-600">{{ lesson.assessment_label }}</span>
                             <span v-if="lesson.quiz_best !== null && lesson.quiz_best !== undefined" class="font-semibold text-ink">Nilai terbaik {{ lesson.quiz_best }}</span>
                             <span v-if="lesson.submission_label" class="font-semibold" :class="lesson.submission_status === 'revision' ? 'text-accent-600' : 'text-ink'">
                                 {{ lesson.submission_label }}<template v-if="lesson.submission_score !== null"> · {{ lesson.submission_score }}/{{ lesson.max_score }}</template>

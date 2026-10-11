@@ -5,7 +5,7 @@ import {
     ChevronLeft, ChevronRight, CircleDollarSign, Clock, Download, Eye, FileText, GraduationCap, Inbox,
     LayoutDashboard, LogOut, Mail, Menu, Pencil, Phone, Plus, Presentation, Receipt, School, Search,
     Sparkles, Trash2, Upload, User, UserPlus, Users, Video, Wallet, X,
-    ListChecks, FilePen, ArrowUp, ArrowDown, Link2, Paperclip, CircleCheck, Lock, Play, Trophy, RotateCcw, Target,
+    ListChecks, FilePen, ArrowUp, ArrowDown, Link2, Paperclip, CircleCheck, Lock, Play, Trophy, RotateCcw, Target, Code, FlaskConical, Rocket,
 } from 'lucide-vue-next';
 
 const icons = {
@@ -17,7 +17,7 @@ const icons = {
     receipt: Receipt, school: School, search: Search, sparkles: Sparkles, trash: Trash2, upload: Upload, user: User,
     'user-plus': UserPlus, users: Users, video: Video, wallet: Wallet, x: X,
     'list-checks': ListChecks, 'file-pen': FilePen, 'arrow-up': ArrowUp, 'arrow-down': ArrowDown, link: Link2, paperclip: Paperclip,
-    'circle-check': CircleCheck, lock: Lock, play: Play, trophy: Trophy, 'rotate-ccw': RotateCcw, target: Target,
+    'circle-check': CircleCheck, lock: Lock, play: Play, trophy: Trophy, 'rotate-ccw': RotateCcw, target: Target, code: Code, flask: FlaskConical, rocket: Rocket,
 };
 
 const props = defineProps({

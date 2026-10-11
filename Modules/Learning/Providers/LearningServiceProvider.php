@@ -13,6 +13,7 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Policies\AssignmentSubmissionPolicy;
 use Modules\Learning\Policies\CoursePolicy;
 use Modules\Learning\Policies\LessonPolicy;
+use Modules\Learning\Support\LessonTypes;
 
 /**
  * Modul Belajar: kursus berisi materi, kuis (dinilai otomatis), dan tugas
@@ -30,6 +31,11 @@ class LearningServiceProvider extends ModuleServiceProvider
         return [
             'learning.manage' => ['admin', 'teacher'],
         ];
+    }
+
+    public function register(): void
+    {
+        $this->app->singleton(LessonTypes::class);
     }
 
     public function boot(): void

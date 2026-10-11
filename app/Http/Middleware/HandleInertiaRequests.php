@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
             'navigation' => fn () => app(NavigationRegistry::class)->forUser($user),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
+                'verification' => fn () => $request->session()->get('verification'),
                 'error' => fn () => $request->session()->get('error'),
             ],
         ];

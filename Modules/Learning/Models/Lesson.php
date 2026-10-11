@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Modules\Learning\Contracts\LessonTypeHandler;
+use Modules\Learning\Support\LessonTypes;
 
 class Lesson extends Model
 {
@@ -13,9 +15,27 @@ class Lesson extends Model
 
     public const ICONS = ['material' => 'book-open', 'quiz' => 'list-checks', 'assignment' => 'file-pen'];
 
+    public const ASSESSMENTS = ['pre' => 'Misi Pemanasan', 'post' => 'Misi Akhir'];
+
+    /** Semua jenis isi: bawaan + yang didaftarkan modul lain. */
+    public static function types(): array
+    {
+        return self::TYPES + collect(app(LessonTypes::class)->all())->map->label()->all();
+    }
+
+    public static function iconFor(string $type): string
+    {
+        return self::ICONS[$type] ?? app(LessonTypes::class)->get($type)?->icon() ?? 'book-open';
+    }
+
+    public function handler(): ?LessonTypeHandler
+    {
+        return app(LessonTypes::class)->get($this->type);
+    }
+
     protected $fillable = [
         'course_id', 'position', 'title', 'type', 'body', 'video_url', 'duration_minutes',
-        'pass_score', 'max_attempts', 'max_score', 'is_published',
+        'pass_score', 'max_attempts', 'max_score', 'is_published', 'assessment',
     ];
 
     protected function casts(): array
@@ -90,8 +110,10 @@ class Lesson extends Model
             'id' => $this->id,
             'title' => $this->title,
             'type' => $this->type,
-            'type_label' => self::TYPES[$this->type] ?? $this->type,
-            'icon' => self::ICONS[$this->type] ?? 'book-open',
+            'type_label' => self::types()[$this->type] ?? $this->type,
+            'icon' => self::iconFor($this->type),
+            'assessment' => $this->assessment,
+            'assessment_label' => self::ASSESSMENTS[$this->assessment] ?? null,
             'position' => $this->position,
             'duration_minutes' => $this->duration_minutes,
             'is_published' => $this->is_published,

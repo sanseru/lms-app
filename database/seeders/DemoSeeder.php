@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Modules\Classes\Models\ClassRoom;
+use Modules\Coding\Database\Seeders\CodingDemoSeeder;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Package;
 use Modules\Finance\Models\PayrollItem;
@@ -112,6 +113,7 @@ class DemoSeeder extends Seeder
         $this->sessionsPackagesAndPayroll($admin, $students, $classes);
 
         (new LearningDemoSeeder)->run($admin, $classes);
+        (new CodingDemoSeeder)->run();
     }
 
     private function sessionsPackagesAndPayroll(User $admin, $students, $classes): void

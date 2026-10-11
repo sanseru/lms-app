@@ -8,10 +8,10 @@ import PageHeader from '@/Components/ui/PageHeader.vue';
 import { useConfirm } from '@/composables/useConfirm';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 
-const props = defineProps({ course: Object, lesson: Object, defaultType: String, types: Object, questionTypes: Object });
+const props = defineProps({ course: Object, lesson: Object, defaultType: String, types: Object, extraTypes: Object, assessments: Object, questionTypes: Object });
 const l = props.lesson ?? {};
 
-const blankQuestion = () => ({ id: null, prompt: '', type: 'single', points: 1, explanation: '', options: [{ text: '', correct: true }, { text: '', correct: false }, { text: '', correct: false }] });
+const blankQuestion = () => ({ id: null, prompt: '', type: 'single', points: 1, explanation: '', concept: '', options: [{ text: '', correct: true }, { text: '', correct: false }, { text: '', correct: false }] });
 
 const form = useForm({
     title: l.title ?? '',
@@ -23,6 +23,7 @@ const form = useForm({
     pass_score: l.pass_score ?? 70,
     max_attempts: l.max_attempts ?? '',
     max_score: l.max_score ?? 100,
+    assessment: l.assessment ?? '',
     questions: l.questions?.length ? JSON.parse(JSON.stringify(l.questions)) : [blankQuestion()],
 });
 
@@ -51,6 +52,7 @@ const submit = () => {
         ...data,
         duration_minutes: data.duration_minutes || null,
         max_attempts: data.max_attempts || null,
+        assessment: data.assessment || null,
         questions: data.type === 'quiz' ? data.questions : [],
     }));
     props.lesson ? form.put(route('learning.lessons.update', props.lesson.id)) : form.post(route('learning.lessons.store', props.course.id));
@@ -75,7 +77,7 @@ const err = (key) => form.errors[key];
     <form class="grid gap-6 lg:grid-cols-3" @submit.prevent="submit">
         <div class="space-y-6 lg:col-span-2">
             <div class="card space-y-5 p-6">
-                <div v-if="!lesson" class="grid grid-cols-3 gap-2">
+                <div v-if="!lesson" class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <button
                         v-for="(label, key) in types"
                         :key="key"
@@ -87,6 +89,10 @@ const err = (key) => form.errors[key];
                         <LessonTypeIcon :type="key" size="sm" />
                         <span class="font-semibold text-ink">{{ label }}</span>
                     </button>
+                    <Link v-for="(t, key) in extraTypes" :key="key" :href="t.url" class="flex items-center gap-3 rounded-2xl border border-line p-3 text-left transition hover:border-brand-200">
+                        <LessonTypeIcon :type="key" size="sm" />
+                        <span class="font-semibold text-ink">{{ t.label }}</span>
+                    </Link>
                 </div>
 
                 <Field id="title" label="Judul" :error="err('title')" required>
@@ -144,7 +150,10 @@ const err = (key) => form.errors[key];
                     <p v-if="err(`questions.${qi}.options`)" class="mt-1 text-sm text-rose-600">{{ err(`questions.${qi}.options`) }}</p>
                     <button v-if="q.options.length < 6" type="button" class="mt-2 text-sm font-semibold text-brand-600 hover:underline" @click="q.options.push({ text: '', correct: false })">+ Tambah pilihan</button>
 
-                    <input v-model="q.explanation" type="text" class="field mt-4 text-sm" placeholder="Pembahasan (opsional, tampil setelah siswa lulus)" />
+                    <div class="mt-4 grid gap-2 sm:grid-cols-3">
+                        <input v-model="q.explanation" type="text" class="field text-sm sm:col-span-2" placeholder="Pembahasan (opsional, tampil setelah siswa lulus)" />
+                        <input v-model="q.concept" type="text" class="field text-sm" placeholder="Konsep, mis. perulangan" :aria-label="`Konsep soal ${qi + 1}`" />
+                    </div>
                 </div>
 
                 <button type="button" class="w-full rounded-2xl border-2 border-dashed border-line py-4 text-sm font-semibold text-muted transition hover:border-brand-300 hover:text-brand-600" @click="form.questions.push(blankQuestion())">
@@ -166,6 +175,12 @@ const err = (key) => form.errors[key];
                     </Field>
                     <Field id="max_attempts" label="Batas percobaan" :error="err('max_attempts')" hint="Kosongkan agar siswa bisa mencoba berkali-kali.">
                         <input id="max_attempts" v-model="form.max_attempts" type="number" min="1" class="field" />
+                    </Field>
+                    <Field id="assessment" label="Jadikan misi" :error="err('assessment')" hint="Misi Pemanasan (awal kursus) dan Misi Akhir dibandingkan untuk laporan kenaikan per konsep. Pakai soal berbeda dengan konsep yang sama.">
+                        <select id="assessment" v-model="form.assessment" class="field">
+                            <option value="">Kuis biasa</option>
+                            <option v-for="(label, key) in assessments" :key="key" :value="key">{{ label }}</option>
+                        </select>
                     </Field>
                 </template>
                 <Field v-if="form.type === 'assignment'" id="max_score" label="Nilai maksimal" :error="err('max_score')">

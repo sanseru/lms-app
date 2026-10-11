@@ -12,7 +12,7 @@ npm install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed      # role, permission, dan data demo
-npm run build                   # atau: npm run dev
+npm run build                   # atau: npm run dev (keduanya juga menyalin Pyodide ke public/vendor)
 php artisan serve
 php artisan schedule:work         # produksi: cron `schedule:run` tiap menit (membuat sesi 4 minggu ke depan)
 ```
@@ -40,7 +40,8 @@ Login memakai username **atau** email, jadi anak tidak wajib punya email. Pendaf
 | **Classes** | CRUD kelas dengan link Zoom, jadwal mingguan, kapasitas, cek bentrok jadwal guru; daftarkan siswa; halaman jadwal mingguan |
 | **Landing** | Halaman promosi di `/` dengan tombol Masuk ke login bersama. Data kontak, harga, dan testimoni ada di `Modules/Landing/resources/js/site.js` |
 | **Sessions** | Sesi dibuat otomatis dari jadwal kelas (`sessions:generate`), link Zoom per sesi; guru mengisi absensi + materi, PR, catatan ortu dalam satu layar; tandai untuk admin; batal sesi |
-| **Learning** | Kursus (kurikulum) yang dipasang ke kelas, berisi materi Markdown + video, kuis pilihan ganda yang dinilai otomatis (nilai lulus, batas percobaan, kunci dibuka setelah lulus), dan tugas (teks/tautan/berkas) yang dinilai guru atau diminta revisi. Rapor progres per siswa untuk siswa, orang tua, dan guru |
+| **Learning** | Kursus (kurikulum) yang dipasang ke kelas, berisi materi Markdown + video, kuis pilihan ganda yang dinilai otomatis (nilai lulus, batas percobaan, kunci dibuka setelah lulus), dan tugas (teks/tautan/berkas) yang dinilai guru atau diminta revisi. Rapor progres per siswa untuk siswa, orang tua, dan guru. **Misi Pemanasan/Akhir** (pre/post-test) dengan laporan kenaikan (normalized gain) per konsep |
+| **Coding** | Soal coding sebagai isi kursus: Python, JavaScript, HTML/CSS, dan susun baris (Parsons). Mode input→output, fungsi, dan cek HTML/CSS. Kode dijalankan di browser siswa (Pyodide/Web Worker/iframe sandbox), lalu server membandingkan dengan jawaban yang hanya disimpan di server (tes tersembunyi tidak pernah dikirim). Tutor membuat soal lewat form dengan **Uji solusi** wajib sebelum terbit, petunjuk bertingkat, dan solusi yang terbuka setelah N kali gagal. Driver `judge0` tersedia untuk penilaian di server terpisah (`CODING_DRIVER=judge0`, `JUDGE0_URL`) |
 | **Finance** | Tagihan per siswa atau massal per kelas; orang tua unggah bukti transfer; admin verifikasi/tolak; status lunas/sebagian otomatis; ringkasan 6 bulan. **Paket kuota** (mis. 8/16/24 sesi) yang aktif saat tagihan lunas dan terpotong otomatis saat sesi selesai (hadir/alpa memotong, izin/sakit tidak). **Honor tutor** tercatat otomatis per sesi selesai sesuai tarif guru, direkap jadi slip bulanan, ditandai dibayar dengan bukti transfer |
 
 Hak akses ditegakkan di backend (middleware `can:` dan Policy), bukan hanya menyembunyikan menu.
@@ -78,4 +79,4 @@ php artisan test
 
 ## Rencana modul berikutnya
 
-Tanya jawab per materi, kanban proyek, modul coding di browser, XP/lencana dan sertifikat, reschedule/makeup sesi, tanya jawab per pelajaran, peta belajar ala game dengan XP/lencana, kanban proyek siswa, notifikasi WhatsApp/email.
+Tanya jawab per materi, kanban proyek, XP/lencana dan sertifikat, Judge0 untuk C++/Java, soal blok (Blockly), reschedule/makeup sesi, tanya jawab per pelajaran, peta belajar ala game dengan XP/lencana, kanban proyek siswa, notifikasi WhatsApp/email.

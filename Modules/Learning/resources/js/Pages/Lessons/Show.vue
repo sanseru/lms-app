@@ -82,7 +82,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
             <div class="flex flex-wrap items-start gap-4">
                 <LessonTypeIcon :type="lesson.type" :done="isDone" />
                 <div class="min-w-0 flex-1">
-                    <p class="eyebrow">{{ lesson.type_label }}<template v-if="lesson.duration_minutes"> · {{ lesson.duration_minutes }} menit</template></p>
+                    <p class="eyebrow">{{ lesson.assessment_label ?? lesson.type_label }}<template v-if="lesson.duration_minutes"> · {{ lesson.duration_minutes }} menit</template></p>
                     <h1 class="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{{ lesson.title }}</h1>
                 </div>
                 <Badge v-if="can.manage && !lesson.is_published" tone="gray">Draf</Badge>
@@ -105,6 +105,11 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
 
             <!-- ========== KUIS (siswa) ========== -->
             <template v-if="lesson.type === 'quiz' && can.learn">
+                <div v-if="lesson.assessment && !result" class="flex items-start gap-3 rounded-2xl bg-brand-50 p-4 text-sm text-ink">
+                    <Icon name="rocket" :size="20" class="mt-0.5 shrink-0 text-brand-600" />
+                    <p v-if="lesson.assessment === 'pre'"><b>Ini misi pemanasan, bukan ujian.</b> Jawab sebisamu, tidak apa-apa kalau belum tahu. Hasilnya membantu gurumu tahu harus mulai dari mana.</p>
+                    <p v-else><b>Misi akhir!</b> Tunjukkan apa yang sudah kamu pelajari. Hasilnya dibandingkan dengan misi pemanasan untuk melihat kemajuanmu.</p>
+                </div>
                 <div v-if="result && !taking" :class="result.passed ? 'from-emerald-500 to-teal-400' : 'from-amber-400 to-orange-500'" class="relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white">
                     <div class="flex flex-wrap items-center gap-5">
                         <div class="grid size-24 place-items-center rounded-full bg-white/20 ring-4 ring-white/40">

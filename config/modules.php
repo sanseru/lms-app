@@ -14,6 +14,7 @@ use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
 use Modules\Notifications\Providers\NotificationsServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
+use Modules\Reports\Providers\ReportsServiceProvider;
 use Modules\Sessions\Providers\SessionsServiceProvider;
 
 /*
@@ -44,6 +45,7 @@ return [
         CertificatesServiceProvider::class,
         FinanceServiceProvider::class,
         NotificationsServiceProvider::class,
+        ReportsServiceProvider::class,
         AuditServiceProvider::class,
     ],
 ];

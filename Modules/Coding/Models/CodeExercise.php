@@ -59,7 +59,7 @@ class CodeExercise extends Model
         $tests = $this->tests()->get()->map->only('kind', 'input', 'expected', 'property', 'weight')->all();
         $parts = [$this->language, $this->mode, $this->solution_code, $this->function_name, $this->case_sensitive, $tests];
 
-        // Aturan kode ikut sidik hanya bila ada, supaya soal lama tidak perlu diuji ulang.
+        // Code rules join the fingerprint only when present, so older exercises don't need re-verifying.
         if ($this->activeRules()) {
             $parts[] = $this->activeRules();
         }
@@ -67,7 +67,7 @@ class CodeExercise extends Model
         return sha1(json_encode($parts));
     }
 
-    /** Aturan kode hanya berlaku untuk soal yang kodenya dijalankan. */
+    /** Code rules only apply to exercises whose code is run. */
     public function activeRules(): array
     {
         return in_array($this->mode, ['io', 'function'], true) ? array_values($this->rules ?? []) : [];
@@ -78,7 +78,7 @@ class CodeExercise extends Model
         return $this->hasMany(CodeExerciseVersion::class)->orderByDesc('version');
     }
 
-    /** Isi soal yang menentukan nilai, disimpan per versi. */
+    /** The exercise content that determines the score, stored per version. */
     public function snapshot(): array
     {
         return [

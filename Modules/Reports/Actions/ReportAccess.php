@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\Identity\Enums\Role;
 
 /**
- * Siapa boleh membaca laporan siapa: admin semua, siswa dirinya sendiri,
- * orang tua anaknya, guru siswa di kelas yang ia ajar.
+ * Who may read whose report: admins everyone, students themselves,
+ * parents their children, teachers the students in classes they teach.
  */
 class ReportAccess
 {
@@ -25,7 +25,7 @@ class ReportAccess
     }
 
     /**
-     * Kelas siswa yang catatannya boleh ditulis viewer.
+     * The student's classes the viewer may write notes for.
      *
      * @return array<int, int>
      */
@@ -42,7 +42,7 @@ class ReportAccess
             ->pluck('class_rooms.id')->map(fn ($id) => (int) $id)->all();
     }
 
-    /** Siswa yang laporannya muncul di daftar untuk viewer. */
+    /** Students whose reports appear in the viewer's list. */
     public function students(User $viewer): Builder
     {
         $query = User::role(Role::Student->value);

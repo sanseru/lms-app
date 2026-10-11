@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('code_exercises', function (Blueprint $table) {
-            $table->json('rules')->nullable()->after('case_sensitive');   // aturan kode: wajib/dilarang/maks. baris
+            $table->json('rules')->nullable()->after('case_sensitive');   // code rules: require/forbid/max lines
             $table->unsignedSmallInteger('version')->default(1)->after('rules');
         });
 
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('exercise_version')->default(1)->after('tests_hash');
         });
 
-        // Salinan isi soal yang dinilai per versi, supaya nilai lama tetap bisa dijelaskan.
+        // A copy of the graded exercise content per version, so old scores can still be explained.
         Schema::create('code_exercise_versions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('code_exercise_id')->constrained()->cascadeOnDelete();

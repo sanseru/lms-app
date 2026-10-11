@@ -1,4 +1,5 @@
 <script setup>
+import { Lightbulb } from 'lucide-vue-next';
 import Icon from '@/Components/ui/Icon.vue';
 
 /** Test result list. Same format for every mode (local results and server results). */
@@ -27,7 +28,7 @@ const short = (v) => (v == null || v === '' ? '(empty)' : String(v).length > 300
                 <span v-if="r.weight > 1" class="ml-auto text-xs text-muted">weight {{ r.weight }}</span>
             </div>
             <p v-if="r.error" class="mt-2 rounded-lg bg-rose-100/70 px-3 py-2 font-mono text-xs whitespace-pre-wrap text-rose-800">{{ r.error }}</p>
-            <p v-if="r.message && r.passed === false" class="mt-2 text-amber-800">💡 {{ r.message }}</p>
+            <p v-if="r.message && r.passed === false" class="mt-2 flex gap-1.5 text-amber-800"><Lightbulb :size="15" class="mt-0.5 shrink-0" aria-hidden="true" /><span>{{ r.message }}</span></p>
             <dl v-if="!r.hidden && (r.input != null || r.expected != null) && r.passed !== true && mode !== 'html'" class="mt-2 grid gap-2 sm:grid-cols-3">
                 <div v-if="r.input != null && r.input !== ''"><dt class="text-xs text-muted">{{ mode === 'function' ? 'Arguments' : 'Input' }}</dt><dd class="font-mono text-xs whitespace-pre-wrap text-ink">{{ short(r.input) }}</dd></div>
                 <div><dt class="text-xs text-muted">Expected</dt><dd class="font-mono text-xs whitespace-pre-wrap text-ink">{{ short(r.expected) }}</dd></div>

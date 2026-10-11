@@ -121,7 +121,7 @@ class ExerciseController extends Controller
         }
 
         return back()->with($result['status'] === 'passed' ? 'success' : 'error', match ($result['status']) {
-            'passed' => 'All tests passed. Awesome! 🎉',
+            'passed' => 'All tests passed. Awesome!',
             'error' => 'Your code hit an error while running. Check the message below.',
             default => "Passed {$result['passed_tests']} of {$result['total_tests']} tests. Almost there!",
         });
@@ -170,8 +170,8 @@ class ExerciseController extends Controller
     }
 
     /**
-     * Versi soal: bila isi yang dinilai berubah setelah ada siswa yang mengumpulkan,
-     * buat versi baru. Nilai lama tetap tercatat pada versi lama.
+     * Exercise versions: if the graded content changes after a student has submitted,
+     * create a new version. Old scores stay recorded against the old version.
      */
     private function recordVersion(CodeExercise $exercise, ?string $oldHash, ?array $oldSnapshot, int $userId): void
     {
@@ -187,7 +187,7 @@ class ExerciseController extends Controller
 
         $used = CodeSubmission::where('lesson_id', $exercise->lesson_id)->where('exercise_version', $exercise->version)->exists();
         if ($used) {
-            // Soal lama (dibuat sebelum ada riwayat versi) disimpan dulu salinannya.
+            // Save a copy of the old exercise first (it may predate version history).
             $exercise->versions()->firstOrCreate(['version' => $exercise->version], ['snapshot' => $oldSnapshot, 'created_by' => $userId]);
             $exercise->increment('version');
         }

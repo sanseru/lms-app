@@ -5,8 +5,8 @@ import Modal from '@/Components/Modal.vue';
 import Icon from './Icon.vue';
 
 /**
- * Siswa: tombol "Report a problem" untuk soal/pelajaran yang terasa salah.
- * Guru: pengingat jumlah laporan yang belum ditangani.
+ * Students: a "Report a problem" button for exercises/lessons that seem wrong.
+ * Teachers: a reminder of how many reports are still open.
  */
 const props = defineProps({ lessonId: { type: Number, required: true }, can: Object, reports: Object });
 

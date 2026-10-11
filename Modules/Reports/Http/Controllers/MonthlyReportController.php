@@ -23,7 +23,7 @@ class MonthlyReportController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $month = $this->month($request->query('bulan') ?? self::defaultMonth());
+        $month = $this->month($request->query('month') ?? self::defaultMonth());
         $filters = $request->only('search', 'class');
         $staff = $user->hasAnyRole([Role::Admin->value, Role::Teacher->value]);
 
@@ -98,7 +98,7 @@ class MonthlyReportController extends Controller
             'class_room_id' => ['required', 'integer'],
             'highlights' => ['nullable', 'string', 'max:2000'],
             'focus' => ['nullable', 'string', 'max:2000'],
-        ], [], ['highlights' => 'yang sudah bagus', 'focus' => 'fokus bulan depan']);
+        ], [], ['highlights' => 'going well', 'focus' => 'focus for next month']);
 
         abort_unless(in_array((int) $data['class_room_id'], $this->access->noteableClassIds($request->user(), $student), true), 403);
 
@@ -108,10 +108,10 @@ class MonthlyReportController extends Controller
             ?? new MonthlyReportNote(['student_id' => $student->id, 'class_room_id' => $data['class_room_id'], 'month' => $month]);
         $note->fill(['highlights' => $data['highlights'], 'focus' => $data['focus'], 'author_id' => $request->user()->id])->save();
 
-        return back()->with('success', 'Catatan bulanan disimpan.');
+        return back()->with('success', 'Monthly note saved.');
     }
 
-    /** Minggu pertama bulan baru masih menampilkan laporan bulan lalu. */
+    /** During the first week of a new month, show last month's report. */
     public static function defaultMonth(): string
     {
         return (now()->day <= 7 ? now()->subMonthNoOverflow() : now())->format('Y-m');

@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Lightbulb } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
@@ -228,7 +229,7 @@ const user = usePage().props.auth.user;
                     <button v-if="hintsOpen < ex.hints.length" class="text-sm font-semibold text-brand-600 hover:underline" @click="hintsOpen++">Show hint {{ hintsOpen + 1 }}</button>
                 </div>
                 <ol class="mt-3 space-y-2">
-                    <li v-for="(h, i) in ex.hints.slice(0, hintsOpen)" :key="i" class="rounded-xl bg-amber-50 p-3 text-sm text-ink">💡 {{ h }}</li>
+                    <li v-for="(h, i) in ex.hints.slice(0, hintsOpen)" :key="i" class="flex gap-2 rounded-xl bg-amber-50 p-3 text-sm text-ink"><Lightbulb :size="16" class="mt-0.5 shrink-0 text-amber-600" aria-hidden="true" /><span>{{ h }}</span></li>
                 </ol>
                 <p v-if="!hintsOpen" class="mt-1 text-sm text-muted">Give it a go yourself first. Hints open one at a time.</p>
             </div>

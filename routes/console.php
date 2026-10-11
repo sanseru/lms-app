@@ -17,5 +17,5 @@ Schedule::command('xp:sync')->dailyAt('01:30');
 // Remind teachers who have not filled in session reports.
 Schedule::command('sessions:remind-reports')->hourly();
 
-// Tanggal 1 pagi: orang tua diberi tahu laporan bulan lalu sudah siap.
+// On the 1st, early morning: tell parents last month's report is ready.
 Schedule::command('reports:monthly')->monthlyOn(1, '08:00');

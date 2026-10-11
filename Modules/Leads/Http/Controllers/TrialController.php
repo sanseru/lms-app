@@ -13,7 +13,7 @@ use Modules\Identity\Enums\Role;
 use Modules\Leads\Models\Lead;
 use Modules\Notifications\Support\Notify;
 
-/** Guru melihat kelas trial yang ditugaskan dan mencatat hasilnya. */
+/** Teachers see the trial classes assigned to them and record the results. */
 class TrialController extends Controller
 {
     public function index(Request $request): Response
@@ -53,23 +53,23 @@ class TrialController extends Controller
             'trial_result' => ['required', 'string', 'max:2000'],
             'trial_interest' => ['required', 'integer', 'between:1,5'],
             'recommended_class_id' => ['nullable', 'exists:class_rooms,id'],
-        ], [], ['trial_result' => 'hasil trial', 'trial_interest' => 'antusiasme anak', 'recommended_class_id' => 'kelas yang disarankan']);
+        ], [], ['trial_result' => 'trial result', 'trial_interest' => 'child enthusiasm', 'recommended_class_id' => 'recommended class']);
 
         $first = $lead->status === 'trial_scheduled';
         $lead->update($data + ['status' => 'trial_done']);
-        $lead->notes()->create(['user_id' => $user->id, 'type' => 'status', 'body' => "Hasil trial ({$data['trial_interest']}/5): {$data['trial_result']}"]);
+        $lead->notes()->create(['user_id' => $user->id, 'type' => 'status', 'body' => "Trial result ({$data['trial_interest']}/5): {$data['trial_result']}"]);
 
         if ($first) {
             Notify::send(
                 User::role(Role::Admin->value)->get(),
-                "Hasil trial {$lead->child_name} sudah diisi",
-                'Saatnya menawarkan kelas ke orang tua.',
+                "Trial result for {$lead->child_name} is in",
+                'Time to offer a class to the parent.',
                 route('leads.show', $lead),
                 'clipboard-check',
                 "lead-trial-done:{$lead->id}",
             );
         }
 
-        return back()->with('success', 'Hasil trial disimpan.');
+        return back()->with('success', 'Trial result saved.');
     }
 }

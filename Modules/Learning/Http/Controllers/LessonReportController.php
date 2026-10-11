@@ -16,7 +16,7 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonReport;
 use Modules\Notifications\Support\Notify;
 
-/** Tombol "Report a problem" di halaman pelajaran dan antrean perbaikannya untuk guru. */
+/** The "Report a problem" button on lesson pages and the teacher fix queue. */
 class LessonReportController extends Controller
 {
     public function index(Request $request): Response
@@ -99,7 +99,7 @@ class LessonReportController extends Controller
         return back()->with('success', 'Report closed and the student was told.');
     }
 
-    /** Admin, pembuat kursus, dan guru kelas yang memakai kursus ini. */
+    /** Admins, the course creator and teachers of classes using this course. */
     private function reviewers(Lesson $lesson)
     {
         $teacherIds = DB::table('class_rooms')->where('course_id', $lesson->course_id)->whereNotNull('teacher_id')->pluck('teacher_id');

@@ -44,6 +44,8 @@ Login memakai username **atau** email, jadi anak tidak wajib punya email. Pendaf
 | **Coding** | Soal coding sebagai isi kursus: Python, JavaScript, HTML/CSS, dan susun baris (Parsons). Mode input→output, fungsi, dan cek HTML/CSS. Kode dijalankan di browser siswa (Pyodide/Web Worker/iframe sandbox), lalu server membandingkan dengan jawaban yang hanya disimpan di server (tes tersembunyi tidak pernah dikirim). Tutor membuat soal lewat form dengan **Uji solusi** wajib sebelum terbit, petunjuk bertingkat, dan solusi yang terbuka setelah N kali gagal. Driver `judge0` tersedia untuk penilaian di server terpisah (`CODING_DRIVER=judge0`, `JUDGE0_URL`) |
 | **Forum** | **Tanya Jawab** di `/tanya`: siswa bertanya per kelas, opsional terkait pelajaran, dengan kode dan tangkapan layar. Pilihan "hanya guru" (privat) dan "sembunyikan namaku dari teman" (guru dan orang tua tetap tahu). Guru dan teman sekelas menjawab; jawaban guru ditandai dan tampil paling atas; penanya atau guru memilih jawaban terbaik; dukungan "aku juga bingung" dan "membantu"; guru menyematkan pertanyaan penting. Orang tua bisa membaca pertanyaan anaknya. Kartu "Bingung? Tanya guru" muncul di setiap halaman pelajaran, dan dashboard guru menampilkan pertanyaan yang belum dijawab |
 | **Kanban** | **Proyek** di `/proyek`: guru membuat proyek untuk kelas (ikon, tenggat, penjelasan, langkah bawaan, atau pakai contoh Game Scratch/Program Python/Website). Setiap siswa otomatis mendapat papan kanban sendiri dengan kolom Mau dikerjakan → Sedang dikerjakan → Minta dicek guru → Selesai. Siswa menyeret kartu (atau memakai tombol panah di HP), menambah kartu sendiri, dan menempel link hasil karya. Guru menyetujui atau mengembalikan kartu dengan catatan dari antrean "Perlu dicek", dan melihat progres semua siswa. Pengecekan guru bisa dimatikan per proyek; proyek yang diarsipkan mengunci papan siswa. Orang tua melihat papan anaknya |
+| **Gamification** | XP, level (Pemula Koding sampai Legenda), dan 13 lencana yang dihitung otomatis dari aktivitas: menyelesaikan pelajaran, lulus kuis/soal coding, tugas dinilai, hadir di kelas, bertanya dan jawaban terpilih, langkah dan proyek selesai, sertifikat. Halaman **Prestasiku** (siswa), prestasi anak (orang tua), tabel XP per kelas (guru), "Bintang kelas bulan ini" (bisa dimatikan dengan `GAMIFICATION_LEADERBOARD=false`). XP dihitung ulang dari data sumber (`xp:sync`, terjadwal tiap malam), jadi modul lain tidak perlu memanggil apa pun. Modul lain bisa menambah aturan XP lewat `XpRules` |
+| **Certificates** | Sertifikat A4 lanskap dengan nomor, QR, dan kode verifikasi. Daftar siswa yang sudah menyelesaikan semua pelajaran kursus muncul otomatis untuk diterbitkan sekali klik; guru juga bisa menerbitkan manual (mis. juara lomba). Cetak atau simpan PDF dari browser. Halaman publik `/sertifikat/{kode}` untuk memeriksa keaslian (nama belakang disingkat). Sertifikat bisa dicabut |
 | **Finance** | Tagihan per siswa atau massal per kelas; orang tua unggah bukti transfer; admin verifikasi/tolak; status lunas/sebagian otomatis; ringkasan 6 bulan. **Paket kuota** (mis. 8/16/24 sesi) yang aktif saat tagihan lunas dan terpotong otomatis saat sesi selesai (hadir/alpa memotong, izin/sakit tidak). **Honor tutor** tercatat otomatis per sesi selesai sesuai tarif guru, direkap jadi slip bulanan, ditandai dibayar dengan bukti transfer |
 
 Hak akses ditegakkan di backend (middleware `can:` dan Policy), bukan hanya menyembunyikan menu.
@@ -66,13 +68,13 @@ Modules/<Nama>/
 - Permission modul dideklarasikan di `permissions()`, lalu dibuat oleh `php artisan db:seed --class="Modules\Identity\Database\Seeders\RolesAndPermissionsSeeder"`.
 - Komponen UI bersama ada di `resources/js/Components/ui` (Badge, StatCard, ClassCard, EmptyState, ConfirmDialog, dll.). Token warna dan utilitas (`btn-primary`, `card`, `field`, …) ada di `resources/css/app.css`.
 
-### Menambah modul baru (contoh: Sertifikat)
+### Menambah modul baru (contoh: Peta Belajar)
 
 Lihat `Modules/Forum` sebagai contoh modul lengkap yang kecil.
 
-1. Buat `Modules/Certificates/Providers/CertificatesServiceProvider.php` yang meng-extend `App\Support\Modules\ModuleServiceProvider`.
+1. Buat `Modules/Map/Providers/MapServiceProvider.php` yang meng-extend `App\Support\Modules\ModuleServiceProvider`.
 2. Tambahkan migration, model, controller, dan `routes/web.php` di dalam folder modul.
-3. Buat halaman di `Modules/Certificates/resources/js/Pages/`.
+3. Buat halaman di `Modules/Map/resources/js/Pages/`.
 4. Daftarkan provider di `config/modules.php`, jalankan migrate dan seeder permission.
 
 ## Test
@@ -83,4 +85,4 @@ php artisan test
 
 ## Rencana modul berikutnya
 
-XP/lencana dan sertifikat, peta belajar ala game, Judge0 untuk C++/Java, soal blok (Blockly), reschedule/makeup sesi, notifikasi WhatsApp/email (termasuk saat pertanyaan dijawab).
+Peta belajar ala game, Judge0 untuk C++/Java, soal blok (Blockly), reschedule/makeup sesi, notifikasi WhatsApp/email (termasuk saat pertanyaan dijawab).

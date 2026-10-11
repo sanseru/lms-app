@@ -14,6 +14,7 @@ use Modules\Finance\Models\Payment;
 use Modules\Finance\Models\PayrollItem;
 use Modules\Finance\Models\StudentPackage;
 use Modules\Forum\Models\Question;
+use Modules\Gamification\Actions\Achievements;
 use Modules\Identity\Enums\Role;
 use Modules\Kanban\Models\Board;
 use Modules\Kanban\Models\Card;
@@ -108,6 +109,7 @@ class DashboardController extends Controller
             'stats' => $this->attendanceStats($user),
             'learning' => $this->learningSummary($user),
             'projects' => $this->projectsFor($user),
+            'achievements' => $this->achievementsFor($user),
             'profile' => [
                 'code' => $user->studentProfile?->student_code,
                 'grade' => $user->studentProfile?->grade,
@@ -134,6 +136,7 @@ class DashboardController extends Controller
                     ->where('status', 'scheduled')->where('ends_at', '>=', now())
                     ->orderBy('starts_at')->take(2)),
                 'lastSession' => $this->lastSessionFor($child),
+                'achievements' => $this->achievementsFor($child),
             ]),
             'invoices' => Invoice::visibleTo($user)->outstanding()->with('student:id,name')->orderBy('due_date')->take(5)->get()
                 ->map(fn (Invoice $i) => [
@@ -209,6 +212,23 @@ class DashboardController extends Controller
     }
 
     /** Ringkas progres kursus untuk kartu dashboard. */
+    /** Level dan lencana terbaru dari modul Gamifikasi. */
+    private function achievementsFor(User $student): ?array
+    {
+        if (! Route::has('gamification.me')) {
+            return null;
+        }
+
+        $summary = app(Achievements::class)->summary($student);
+
+        return [
+            'level' => $summary['level'],
+            'badges' => collect($summary['badges'])->whereNotNull('earned_at')->take(6)->map(fn ($b) => ['emoji' => $b['emoji'], 'name' => $b['name']])->values(),
+            'badges_total' => count($summary['badges']),
+            'badges_earned' => collect($summary['badges'])->whereNotNull('earned_at')->count(),
+        ];
+    }
+
     /** Papan proyek aktif milik siswa. */
     private function projectsFor(User $student): array
     {

@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Sesi kelas selalu tersedia beberapa minggu ke depan.
 Schedule::command('sessions:generate')->dailyAt('01:00');
+
+// XP dihitung ulang setiap malam (juga otomatis saat siswa membuka halaman prestasi).
+Schedule::command('xp:sync')->dailyAt('01:30');

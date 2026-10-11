@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
+use Modules\Certificates\Database\Seeders\CertificatesDemoSeeder;
 use Modules\Classes\Models\ClassRoom;
 use Modules\Coding\Database\Seeders\CodingDemoSeeder;
 use Modules\Finance\Models\Invoice;
@@ -118,6 +120,8 @@ class DemoSeeder extends Seeder
         (new CodingDemoSeeder)->run();
         (new ForumDemoSeeder)->run();
         (new KanbanDemoSeeder)->run();
+        (new CertificatesDemoSeeder)->run();
+        Artisan::call('xp:sync');
     }
 
     private function sessionsPackagesAndPayroll(User $admin, $students, $classes): void

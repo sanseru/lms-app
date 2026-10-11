@@ -101,3 +101,13 @@
 .lesson-prose img { @apply rounded-2xl; }
 .lesson-prose table { @apply w-full text-sm; }
 .lesson-prose th, .lesson-prose td { @apply border-b border-line px-3 py-2 text-left; }
+
+/* Cetak hanya area .print-area (mis. sertifikat) dalam satu halaman A4 lanskap. */
+@media print {
+    @page { size: A4 landscape; margin: 0; }
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    html, body { background: #fff !important; }
+    .print-area { position: fixed; inset: 0; width: 100vw; max-width: none !important; margin: 0 !important; }
+    .print-area .certificate { box-shadow: none; }
+}

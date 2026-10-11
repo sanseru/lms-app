@@ -57,6 +57,10 @@ const user = usePage().props.auth.user;
                     <p class="font-display text-lg font-bold text-ink">{{ child.name }}</p>
                     <p class="text-sm text-muted"><span class="font-mono">{{ child.code }}</span><template v-if="child.grade"> · Kelas {{ child.grade }}</template></p>
                 </div>
+                <Link v-if="child.achievements" :href="route('gamification.show', child.id)" class="flex items-center gap-2 rounded-2xl bg-brand-50 px-3 py-2 hover:bg-brand-100">
+                    <span class="text-2xl">⭐</span>
+                    <span class="text-sm leading-tight"><b class="block text-ink">Level {{ child.achievements.level.level }}</b><span class="text-xs text-muted">{{ child.achievements.level.xp }} XP · {{ child.achievements.badges_earned }} lencana</span></span>
+                </Link>
                 <div v-if="child.stats.sessions" class="text-right">
                     <p class="font-display text-2xl font-extrabold text-ink">{{ child.stats.rate }}%</p>
                     <p class="text-xs text-muted">kehadiran dari {{ child.stats.sessions }} sesi</p>

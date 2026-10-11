@@ -1,10 +1,12 @@
 <?php
 
+use Modules\Certificates\Providers\CertificatesServiceProvider;
 use Modules\Classes\Providers\ClassesServiceProvider;
 use Modules\Coding\Providers\CodingServiceProvider;
 use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Forum\Providers\ForumServiceProvider;
+use Modules\Gamification\Providers\GamificationServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Kanban\Providers\KanbanServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
@@ -36,6 +38,8 @@ return [
         CodingServiceProvider::class,
         ForumServiceProvider::class,
         KanbanServiceProvider::class,
+        GamificationServiceProvider::class,
+        CertificatesServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

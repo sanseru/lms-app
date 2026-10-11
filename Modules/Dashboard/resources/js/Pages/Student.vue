@@ -8,14 +8,11 @@ import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import LearningCard from '@/Components/ui/LearningCard.vue';
 import ProgressBar from '@/Components/ui/ProgressBar.vue';
+import LevelCard from '@/Components/ui/LevelCard.vue';
 
-defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array });
+defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array, achievements: Object });
 const user = usePage().props.auth.user;
 
-const soon = [
-    { icon: '🗺️', title: 'Peta belajar', text: 'Jalur pelajaran ala game, buka level satu per satu.' },
-    { icon: '🏆', title: 'XP & lencana', text: 'Kumpulkan poin dari tugas dan proyek.' },
-];
 </script>
 
 <template>
@@ -36,6 +33,15 @@ const soon = [
             <span v-if="stats.rate !== null" class="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold backdrop-blur-sm">🔥 Kehadiran {{ stats.rate }}%</span>
             <span v-if="profile.code" class="rounded-full bg-white/20 px-3 py-1 font-mono text-sm backdrop-blur-sm">{{ profile.code }}</span>
         </div>
+    </div>
+
+    <div v-if="achievements" class="mt-6 grid gap-4 lg:grid-cols-3">
+        <Link :href="route('gamification.me')" class="lg:col-span-2"><LevelCard :level="achievements.level" compact class="h-full transition hover:shadow-lg" /></Link>
+        <Link :href="route('gamification.me')" class="card flex flex-col justify-center p-5 transition hover:shadow-md">
+            <p class="eyebrow">Lencana {{ achievements.badges_earned }}/{{ achievements.badges_total }}</p>
+            <p v-if="achievements.badges.length" class="mt-2 flex flex-wrap gap-1 text-3xl"><span v-for="b in achievements.badges" :key="b.name" :title="b.name">{{ b.emoji }}</span></p>
+            <p v-else class="mt-2 text-sm text-muted">Selesaikan pelajaran pertamamu untuk dapat lencana 👣</p>
+        </Link>
     </div>
 
     <div v-if="learning.length" class="mt-6">
@@ -97,12 +103,4 @@ const soon = [
     </div>
     <div v-else class="card"><EmptyState icon="school" title="Kamu belum punya kelas" description="Admin akan segera mendaftarkanmu ke kelas." /></div>
 
-    <h2 class="mt-8 mb-4 font-display text-lg font-bold text-ink">Segera hadir</h2>
-    <div class="grid gap-4 sm:grid-cols-2">
-        <div v-for="item in soon" :key="item.title" class="rounded-2xl border border-dashed border-brand-200 bg-brand-50/50 p-5">
-            <p class="text-3xl">{{ item.icon }}</p>
-            <p class="mt-3 font-display font-bold text-ink">{{ item.title }}</p>
-            <p class="mt-1 text-sm text-muted">{{ item.text }}</p>
-        </div>
-    </div>
 </template>

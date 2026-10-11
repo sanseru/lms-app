@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Storage;
 use Modules\Classes\Models\ClassRoom;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
+use Modules\Finance\Models\StudentPackage;
+use Modules\Finance\Support\Terbilang;
 
 beforeEach(function () {
     Storage::fake('local');
@@ -142,4 +144,49 @@ test('finance overview summarises outstanding and pending payments', function ()
             ->where('stats.outstanding', 350000)
             ->where('stats.pending_count', 1)
             ->has('months', 6));
+});
+
+test('guardian can print a receipt once a payment is verified', function () {
+    $invoice = invoiceFor($this->student, 1250000);
+
+    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/kuitansi")->assertNotFound();
+
+    $this->actingAs($this->admin)->post("/finance/invoices/{$invoice->id}/payments", [
+        'amount' => 1250000, 'paid_at' => today()->toDateString(), 'method' => 'cash',
+    ]);
+
+    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/kuitansi")
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Finance::Invoices/Receipt')
+            ->where('receipt.number', "KWT-{$invoice->number}")
+            ->where('receipt.paid_in_full', true)
+            ->where('receipt.in_words', 'Satu juta dua ratus lima puluh ribu rupiah')
+            ->where('receipt.payer', $this->guardian->name));
+
+    $this->actingAs(userWithRole('guardian'))->get("/finance/invoices/{$invoice->id}/kuitansi")->assertForbidden();
+});
+
+test('amounts are spelled out in Indonesian for receipts', function (int $amount, string $words) {
+    expect(Terbilang::rupiah($amount))->toBe($words);
+})->with([
+    [0, 'Nol rupiah'],
+    [11, 'Sebelas rupiah'],
+    [115, 'Seratus lima belas rupiah'],
+    [1000, 'Seribu rupiah'],
+    [350000, 'Tiga ratus lima puluh ribu rupiah'],
+    [2001500, 'Dua juta seribu lima ratus rupiah'],
+]);
+
+test('finance overview lists packages that are almost used up', function () {
+    StudentPackage::create([
+        'student_id' => $this->student->id, 'name' => 'Paket 8 sesi', 'sessions_total' => 2, 'price' => 0,
+        'valid_days' => 90, 'status' => 'active', 'starts_at' => today(), 'expires_at' => today()->addDays(90),
+    ]);
+    StudentPackage::create([
+        'student_id' => userWithRole('student')->id, 'name' => 'Paket 16 sesi', 'sessions_total' => 16, 'price' => 0,
+        'valid_days' => 90, 'status' => 'active', 'starts_at' => today(), 'expires_at' => today()->addDays(90),
+    ]);
+
+    $this->actingAs($this->admin)->get('/finance')
+        ->assertInertia(fn ($page) => $page->has('lowQuota', 1)->where('lowQuota.0.student.id', $this->student->id));
 });

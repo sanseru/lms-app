@@ -43,6 +43,11 @@ const cancelling = ref(false);
 const cancelForm = useForm({ reason: '' });
 const cancel = () =>
     cancelForm.post(route('sessions.cancel', props.session.id), { preserveScroll: true, onSuccess: () => (cancelling.value = false) });
+
+const rescheduling = ref(false);
+const rescheduleForm = useForm({ date: '', start_time: props.session.start_time, end_time: props.session.end_time, reason: '' });
+const reschedule = () => rescheduleForm.post(route('sessions.reschedule', props.session.id), { onSuccess: () => (rescheduling.value = false) });
+const today = new Date().toLocaleDateString('sv-SE');
 </script>
 
 <template>
@@ -64,19 +69,41 @@ const cancel = () =>
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <span class="rounded-full bg-white px-1 py-0.5"><StatusBadge :status="completed ? 'paid' : session.status === 'cancelled' ? 'cancelled' : 'upcoming'" :label="session.status_label" /></span>
+                <span class="rounded-full bg-white px-1 py-0.5"><StatusBadge :status="completed ? 'paid' : ['cancelled', 'rescheduled'].includes(session.status) ? 'cancelled' : 'upcoming'" :label="session.status_label" /></span>
                 <a v-if="session.zoom_url && session.status === 'scheduled'" :href="session.zoom_url" target="_blank" rel="noopener" class="btn bg-white text-ink hover:bg-white/90">
                     <Icon name="video" :size="18" /> Masuk Zoom
                 </a>
                 <a v-if="session.recording_url" :href="session.recording_url" target="_blank" rel="noopener" class="btn bg-white/20 text-white hover:bg-white/30">
                     <Icon name="video" :size="16" /> Rekaman
                 </a>
+                <button v-if="can.reschedule" class="btn bg-white/20 text-white hover:bg-white/30" @click="rescheduling = true">
+                    <Icon name="calendar-days" :size="16" /> {{ session.status === 'cancelled' ? 'Buat sesi pengganti' : 'Pindah jadwal' }}
+                </button>
                 <button v-if="can.cancel" class="btn bg-white/20 text-white hover:bg-white/30" @click="cancelling = true">Batalkan</button>
             </div>
         </div>
     </div>
 
     <p v-if="session.status === 'cancelled'" class="mt-4 rounded-xl bg-chip px-4 py-3 text-sm text-ink">Sesi dibatalkan: {{ session.cancel_reason }}. Kuota siswa tidak terpotong.</p>
+    <p v-if="session.status === 'rescheduled'" class="mt-4 rounded-xl bg-chip px-4 py-3 text-sm text-ink">Sesi dipindah: {{ session.cancel_reason }}. Kuota siswa tidak terpotong.</p>
+    <Link
+        v-if="session.replacement"
+        :href="route('sessions.show', session.replacement.id)"
+        class="mt-3 flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700 hover:bg-brand-100"
+    >
+        <Icon name="calendar-days" :size="18" />
+        <span class="flex-1"><b>Sesi pengganti:</b> {{ session.replacement.label }} WIB ({{ session.replacement.status_label }})</span>
+        <Icon name="arrow-right" :size="16" />
+    </Link>
+    <Link
+        v-if="session.replaces"
+        :href="route('sessions.show', session.replaces.id)"
+        class="mt-4 flex items-center gap-3 rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink hover:bg-chip/60"
+    >
+        <Icon name="calendar-days" :size="18" class="text-muted" />
+        <span class="flex-1"><b>Pengganti untuk sesi</b> {{ session.replaces.label }} WIB ({{ session.replaces.status_label }})</span>
+        <Icon name="arrow-right" :size="16" class="text-muted" />
+    </Link>
 
     <!-- Form satu layar: absensi + catatan -->
     <form v-if="can.report" class="mt-6 grid gap-6 lg:grid-cols-5" @submit.prevent="submit">
@@ -178,6 +205,33 @@ const cancel = () =>
             </ul>
         </div>
     </div>
+
+    <Modal :show="rescheduling" max-width="md" @close="rescheduling = false">
+        <form class="p-6" @submit.prevent="reschedule">
+            <h3 class="font-display text-lg font-bold text-ink">{{ session.status === 'cancelled' ? 'Buat sesi pengganti' : 'Pindah jadwal sesi' }}</h3>
+            <p class="mb-4 text-sm text-muted">
+                Sesi baru tertaut ke sesi ini, memakai guru dan link Zoom yang sama. Jadwal guru dicek agar tidak bentrok.
+            </p>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <Field id="rs_date" label="Tanggal" :error="rescheduleForm.errors.date" required class="sm:col-span-3">
+                    <input id="rs_date" v-model="rescheduleForm.date" type="date" :min="today" class="field" />
+                </Field>
+                <Field id="rs_start" label="Mulai" :error="rescheduleForm.errors.start_time" required class="sm:col-span-1">
+                    <input id="rs_start" v-model="rescheduleForm.start_time" type="time" class="field" />
+                </Field>
+                <Field id="rs_end" label="Selesai" :error="rescheduleForm.errors.end_time" required class="sm:col-span-2">
+                    <input id="rs_end" v-model="rescheduleForm.end_time" type="time" class="field" />
+                </Field>
+                <Field id="rs_reason" label="Alasan" :error="rescheduleForm.errors.reason" required class="sm:col-span-3">
+                    <input id="rs_reason" v-model="rescheduleForm.reason" type="text" class="field" placeholder="mis. Siswa ujian sekolah" />
+                </Field>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button type="button" class="btn-ghost" @click="rescheduling = false">Kembali</button>
+                <button type="submit" class="btn-primary" :disabled="rescheduleForm.processing">Simpan jadwal baru</button>
+            </div>
+        </form>
+    </Modal>
 
     <Modal :show="cancelling" max-width="md" @close="cancelling = false">
         <form class="p-6" @submit.prevent="cancel">

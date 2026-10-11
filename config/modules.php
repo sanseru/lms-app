@@ -11,6 +11,7 @@ use Modules\Identity\Providers\IdentityServiceProvider;
 use Modules\Kanban\Providers\KanbanServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
+use Modules\Notifications\Providers\NotificationsServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
 use Modules\Sessions\Providers\SessionsServiceProvider;
 
@@ -41,5 +42,6 @@ return [
         GamificationServiceProvider::class,
         CertificatesServiceProvider::class,
         FinanceServiceProvider::class,
+        NotificationsServiceProvider::class,
     ],
 ];

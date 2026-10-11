@@ -129,3 +129,88 @@ test('enrolling a student into a clashing class is rejected', function () {
 
     expect($other->students()->count())->toBe(0);
 });
+
+test('teacher moves a session and the replacement links back to the original', function () {
+    $session = $this->class->sessions()->orderBy('starts_at')->first(); // Rabu 7 Okt 16:00
+
+    $this->actingAs($this->teacher)->post("/sessions/{$session->id}/reschedule", [
+        'date' => '2026-10-10', 'start_time' => '09:00', 'end_time' => '10:30', 'reason' => 'Siswa ujian sekolah',
+    ])->assertRedirect();
+
+    $replacement = ClassSession::where('replaces_session_id', $session->id)->firstOrFail();
+    expect($session->fresh()->status)->toBe('rescheduled')
+        ->and($session->fresh()->cancel_reason)->toBe('Siswa ujian sekolah')
+        ->and($replacement->starts_at->toDateTimeString())->toBe('2026-10-10 09:00:00')
+        ->and($replacement->teacher_id)->toBe($this->teacher->id)
+        ->and($replacement->status)->toBe('scheduled');
+
+    // Sesi yang sudah dipindah tidak bisa dipindah lagi atau diisi absensinya.
+    $this->actingAs($this->teacher)->post("/sessions/{$session->id}/reschedule", [
+        'date' => '2026-10-11', 'start_time' => '09:00', 'end_time' => '10:30', 'reason' => 'Lagi',
+    ])->assertSessionHasErrors('date');
+    $this->actingAs(userWithRole('admin'))->put("/sessions/{$session->id}", sessionReport())->assertForbidden();
+
+    $this->actingAs($this->student)->get("/sessions/{$replacement->id}")
+        ->assertInertia(fn ($page) => $page->where('session.replaces.id', $session->id));
+});
+
+test('replacement sessions survive a class schedule change and are not regenerated twice', function () {
+    $session = $this->class->sessions()->orderBy('starts_at')->first();
+
+    $this->actingAs($this->teacher)->post("/sessions/{$session->id}/reschedule", [
+        'date' => '2026-10-10', 'start_time' => '09:00', 'end_time' => '10:30', 'reason' => 'Pindah',
+    ]);
+
+    $this->artisan('sessions:generate')->assertSuccessful();
+    expect(ClassSession::where('class_room_id', $this->class->id)->where('starts_at', '2026-10-07 16:00:00')->count())->toBe(1);
+
+    $this->class->update(['schedule_days' => [5]]);
+    expect(ClassSession::where('replaces_session_id', $session->id)->exists())->toBeTrue();
+});
+
+test('cancelled sessions can get a makeup session but clashing times are rejected', function () {
+    $admin = userWithRole('admin');
+    $session = $this->class->sessions()->orderBy('starts_at')->first();
+    $this->actingAs($admin)->post("/sessions/{$session->id}/cancel", ['reason' => 'Guru sakit']);
+
+    // Senin 12 Okt 16:00 sudah ada sesi kelas ini untuk guru yang sama.
+    $this->actingAs($admin)->post("/sessions/{$session->id}/reschedule", [
+        'date' => '2026-10-12', 'start_time' => '16:30', 'end_time' => '17:30', 'reason' => 'Pengganti',
+    ])->assertSessionHasErrors('start_time');
+
+    $this->actingAs($admin)->post("/sessions/{$session->id}/reschedule", [
+        'date' => '2026-10-13', 'start_time' => '16:00', 'end_time' => '17:30', 'reason' => 'Pengganti',
+    ])->assertRedirect();
+
+    expect($session->fresh()->status)->toBe('cancelled')
+        ->and($session->replacement()->exists())->toBeTrue();
+});
+
+test('only the session teacher or admin can reschedule', function () {
+    $session = $this->class->sessions()->first();
+    $payload = ['date' => '2026-10-10', 'start_time' => '09:00', 'end_time' => '10:00', 'reason' => 'x'];
+
+    $this->actingAs(userWithRole('teacher'))->post("/sessions/{$session->id}/reschedule", $payload)->assertForbidden();
+    $this->actingAs($this->student)->post("/sessions/{$session->id}/reschedule", $payload)->assertForbidden();
+});
+
+test('users get a private iCal feed of their sessions', function () {
+    $this->actingAs($this->student)->post('/kalender')->assertSessionHas('success');
+    $token = $this->student->fresh()->calendar_token;
+
+    $ics = $this->get("/kalender/{$token}.ics")
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/calendar; charset=utf-8')
+        ->getContent();
+
+    expect($ics)->toContain('BEGIN:VCALENDAR')
+        ->and(substr_count($ics, 'BEGIN:VEVENT'))->toBe(9)
+        ->and($ics)->toContain('DTSTART:20261007T090000Z') // 16:00 WIB
+        ->and($ics)->toContain('SUMMARY:Python Start');
+
+    // Siswa lain tidak melihat sesi kelas ini; token salah ditolak.
+    $other = userWithRole('student');
+    $this->actingAs($other)->post('/kalender');
+    expect(substr_count($this->get('/kalender/'.$other->fresh()->calendar_token.'.ics')->getContent(), 'BEGIN:VEVENT'))->toBe(0);
+    $this->get('/kalender/'.str_repeat('a', 40).'.ics')->assertNotFound();
+});

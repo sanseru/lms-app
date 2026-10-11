@@ -12,8 +12,8 @@ class SessionReportRequest extends FormRequest
     {
         $session = $this->route('session');
 
-        // Admin lolos Gate::before, jadi status batal dicek eksplisit.
-        return $session->status !== 'cancelled' && $this->user()->can('report', $session);
+        // Admin lolos Gate::before, jadi status batal/dipindah dicek eksplisit.
+        return $session->isReportable() && $this->user()->can('report', $session);
     }
 
     public function rules(): array

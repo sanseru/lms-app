@@ -40,6 +40,7 @@ class ScheduleController extends Controller
 
         return Inertia::render('Classes::Schedule/Index', [
             'days' => $days,
+            'calendarUrl' => $user->calendar_token ? route('calendar.feed', $user->calendar_token) : null,
             'week' => [
                 'start' => $start->toDateString(),
                 'label' => $start->translatedFormat('d M').' – '.$end->translatedFormat('d M Y'),

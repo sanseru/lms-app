@@ -15,6 +15,7 @@ use Modules\Classes\Models\ClassRoom;
 use Modules\Finance\Http\Requests\InvoiceRequest;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
+use Modules\Finance\Support\Terbilang;
 use Modules\Identity\Enums\Role;
 
 class InvoiceController extends Controller
@@ -125,9 +126,48 @@ class InvoiceController extends Controller
             ],
             'bank' => config('finance.bank'),
             'can' => [
+                'receipt' => $invoice->status !== 'cancelled' && $invoice->paid_amount > 0,
                 'manage' => $request->user()->can('finance.manage'),
                 'pay' => $request->user()->can('pay', $invoice) && in_array($invoice->status, ['unpaid', 'partial']),
             ],
+        ]);
+    }
+
+    /** Kuitansi untuk pembayaran yang sudah diverifikasi (siap cetak / simpan PDF). */
+    public function receipt(Invoice $invoice): Response
+    {
+        Gate::authorize('view', $invoice);
+        abort_if($invoice->status === 'cancelled' || $invoice->paid_amount <= 0, 404);
+
+        $invoice->load(['student.studentProfile', 'student.guardians:id,name', 'classRoom:id,name']);
+        $payments = $invoice->payments()->where('status', 'verified')->with('verifier:id,name')->orderBy('paid_at')->get();
+
+        return Inertia::render('Finance::Invoices/Receipt', [
+            'receipt' => [
+                'number' => 'KWT-'.$invoice->number,
+                'invoice_id' => $invoice->id,
+                'invoice_number' => $invoice->number,
+                'title' => $invoice->title,
+                'period' => $invoice->period?->translatedFormat('F Y'),
+                'class' => $invoice->classRoom?->name,
+                'student' => $invoice->student->name,
+                'student_code' => $invoice->student->studentProfile?->student_code,
+                'payer' => $invoice->student->guardians->pluck('name')->implode(' / ') ?: $invoice->student->name,
+                'amount' => $invoice->amount,
+                'paid_amount' => $invoice->paid_amount,
+                'remaining' => $invoice->remaining(),
+                'paid_in_full' => $invoice->status === 'paid',
+                'in_words' => Terbilang::rupiah($invoice->paid_amount),
+                'date' => ($payments->last()?->verified_at ?? now())->translatedFormat('d F Y'),
+                'verifier' => $payments->last()?->verifier?->name,
+                'payments' => $payments->map(fn (Payment $p) => [
+                    'id' => $p->id,
+                    'paid_at' => $p->paid_at->translatedFormat('d M Y'),
+                    'method' => $p->method === 'cash' ? 'Tunai' : trim('Transfer '.$p->bank_name),
+                    'amount' => $p->amount,
+                ]),
+            ],
+            'company' => config('finance.bank.account_name'),
         ]);
     }
 

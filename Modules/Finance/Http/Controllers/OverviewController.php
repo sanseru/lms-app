@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
+use Modules\Finance\Models\StudentPackage;
 
 class OverviewController extends Controller
 {
@@ -25,7 +26,24 @@ class OverviewController extends Controller
             ];
         });
 
+        // Paket aktif yang sisa kuotanya ≤ 2 sesi atau kedaluwarsa dalam 14 hari: saatnya menagih perpanjangan.
+        $lowQuota = StudentPackage::query()
+            ->where('status', 'active')
+            ->withCount('usages')
+            ->with(['student:id,name', 'classRoom:id,name'])
+            ->get()
+            ->filter(fn (StudentPackage $p) => $p->remaining() <= 2 || ($p->expires_at && $p->expires_at->lte(today()->addDays(14))))
+            ->sortBy(fn (StudentPackage $p) => [$p->remaining(), $p->expires_at?->timestamp ?? PHP_INT_MAX])
+            ->take(10)
+            ->values()
+            ->map(fn (StudentPackage $p) => [
+                ...$p->toSummary(),
+                'student' => $p->student?->only('id', 'name'),
+                'expiring' => $p->expires_at?->lte(today()->addDays(14)) ?? false,
+            ]);
+
         return Inertia::render('Finance::Overview', [
+            'lowQuota' => $lowQuota,
             'stats' => [
                 'received_month' => (int) Payment::where('status', 'verified')->where('paid_at', '>=', $monthStart)->sum('amount'),
                 'outstanding' => (int) Invoice::outstanding()->selectRaw('coalesce(sum(amount - paid_amount), 0) as total')->value('total'),

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Modules\Classes\Models\ClassRoom;
 
 /**
@@ -19,10 +21,11 @@ class ClassSession extends Model
         'scheduled' => 'Terjadwal',
         'completed' => 'Selesai',
         'cancelled' => 'Batal',
+        'rescheduled' => 'Dipindah',
     ];
 
     protected $fillable = [
-        'class_room_id', 'teacher_id', 'starts_at', 'ends_at', 'zoom_url', 'status',
+        'class_room_id', 'replaces_session_id', 'teacher_id', 'starts_at', 'ends_at', 'zoom_url', 'status',
         'topic', 'homework', 'parent_note', 'internal_note', 'flagged', 'recording_url',
         'cancel_reason', 'completed_at', 'completed_by',
     ];
@@ -50,6 +53,47 @@ class ClassSession extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(SessionAttendance::class);
+    }
+
+    /** Sesi asal yang digantikan sesi ini. */
+    public function replaces(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'replaces_session_id');
+    }
+
+    /** Sesi pengganti untuk sesi ini (bila dipindah atau dibatalkan). */
+    public function replacement(): HasOne
+    {
+        return $this->hasOne(self::class, 'replaces_session_id');
+    }
+
+    /** Absensi hanya untuk sesi yang benar-benar berlangsung (bukan batal atau dipindah). */
+    public function isReportable(): bool
+    {
+        return in_array($this->status, ['scheduled', 'completed']);
+    }
+
+    /** Sesi terjadwal bisa dipindah; sesi batal bisa diganti. Masing-masing hanya sekali. */
+    public function canBeRescheduled(): bool
+    {
+        return in_array($this->status, ['scheduled', 'cancelled']) && ! $this->replacement()->exists();
+    }
+
+    /** Sesi lain milik guru yang waktunya bertumpuk. */
+    public static function clashFor(?int $teacherId, Carbon $startsAt, Carbon $endsAt, ?int $ignoreId = null): ?self
+    {
+        if (! $teacherId) {
+            return null;
+        }
+
+        return self::query()
+            ->with('classRoom:id,name')
+            ->where('teacher_id', $teacherId)
+            ->whereIn('status', ['scheduled', 'completed'])
+            ->where('starts_at', '<', $endsAt)
+            ->where('ends_at', '>', $startsAt)
+            ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+            ->first();
     }
 
     public function scopeVisibleTo(Builder $query, User $user): Builder

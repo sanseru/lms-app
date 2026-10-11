@@ -98,10 +98,13 @@ const copyAccount = async () => {
                     <div v-if="invoice.notes" class="sm:col-span-3"><dt class="text-muted">Catatan</dt><dd class="text-ink">{{ invoice.notes }}</dd></div>
                 </dl>
 
-                <div v-if="can.pay || (can.manage && invoice.status === 'unpaid' && !invoice.paid_amount)" class="mt-6 flex flex-wrap gap-2 border-t border-line pt-6">
+                <div v-if="can.pay || can.receipt || (can.manage && invoice.status === 'unpaid' && !invoice.paid_amount)" class="mt-6 flex flex-wrap gap-2 border-t border-line pt-6">
                     <button v-if="can.pay" class="btn-accent" @click="paying = true">
                         <Icon :name="can.manage ? 'plus' : 'upload'" :size="18" /> {{ can.manage ? 'Catat pembayaran' : 'Kirim bukti transfer' }}
                     </button>
+                    <Link v-if="can.receipt" :href="route('finance.invoices.receipt', invoice.id)" class="btn-ghost">
+                        <Icon name="printer" :size="16" /> Kuitansi
+                    </Link>
                     <button
                         v-if="can.manage && invoice.status === 'unpaid' && !invoice.paid_amount"
                         class="btn-ghost text-rose-600"

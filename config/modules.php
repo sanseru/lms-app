@@ -1,5 +1,6 @@
 <?php
 
+use Modules\Audit\Providers\AuditServiceProvider;
 use Modules\Certificates\Providers\CertificatesServiceProvider;
 use Modules\Classes\Providers\ClassesServiceProvider;
 use Modules\Coding\Providers\CodingServiceProvider;
@@ -43,5 +44,6 @@ return [
         CertificatesServiceProvider::class,
         FinanceServiceProvider::class,
         NotificationsServiceProvider::class,
+        AuditServiceProvider::class,
     ],
 ];

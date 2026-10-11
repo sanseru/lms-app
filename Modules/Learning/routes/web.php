@@ -37,6 +37,7 @@ Route::name('learning.')->group(function () {
     Route::post('lessons/{lesson}/report', [LessonReportController::class, 'store'])->middleware('throttle:10,1')->name('reports.store');
     Route::post('lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
     Route::post('lessons/{lesson}/quiz', [QuizController::class, 'store'])->name('quiz.store');
+    Route::post('lessons/{lesson}/quiz/start', [QuizController::class, 'start'])->name('quiz.start');
     Route::post('lessons/{lesson}/submission', [SubmissionController::class, 'store'])->name('submissions.store');
     Route::post('submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
     Route::get('submissions/{submission}/file', [SubmissionController::class, 'file'])->name('submissions.file');

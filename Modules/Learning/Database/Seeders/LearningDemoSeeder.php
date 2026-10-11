@@ -25,7 +25,9 @@ class LearningDemoSeeder
                     ['Tipe data dari nilai 3.14 adalah…', 'single', [['int', false], ['float', true], ['str', false], ['bool', false]], 'Bilangan dengan koma desimal bertipe float.'],
                     ['Mana saja nama variabel yang benar di Python?', 'multiple', [['skor_pemain', true], ['2nilai', false], ['namaKu', true], ['nilai akhir', false]], 'Nama variabel tidak boleh diawali angka dan tidak boleh ada spasi.'],
                     ['Hasil dari `print(3 + 4 * 2)` adalah…', 'single', [['14', false], ['11', true], ['10', false]], 'Perkalian dikerjakan lebih dulu: 4 × 2 = 8, lalu 3 + 8 = 11.'],
-                ]],
+                    ['Di Python, `Nama` dan `nama` adalah variabel yang sama.', 'true_false', [['Benar', false], ['Salah', true]], 'Python membedakan huruf besar dan kecil, jadi keduanya variabel yang berbeda.'],
+                    ['Perintah untuk meminta pengguna mengetik sesuatu adalah… (tulis nama perintahnya saja)', 'short', [['input', true], ['input()', true]], 'input() menunggu pengguna mengetik lalu menekan Enter.'],
+                ], 10],
                 ['material', 'Percabangan if dan else', 20, "## Program yang bisa memilih\n\n```python\nnilai = 80\nif nilai >= 75:\n    print(\"Lulus!\")\nelse:\n    print(\"Ayo belajar lagi\")\n```\n\nPerhatikan **indentasi** (spasi di depan baris). Python memakainya untuk tahu baris mana yang masuk ke dalam `if`."],
                 ['assignment', 'Proyek: Game tebak angka', 45, "Buat game tebak angka 1 sampai 10.\n\n1. Komputer memilih angka acak dengan `random.randint(1, 10)`\n2. Pemain menebak sampai benar\n3. Beri petunjuk *terlalu besar* atau *terlalu kecil*\n\nUnggah berkas `.py` kamu, atau tempel link karyamu kalau disimpan online."],
             ]);
@@ -112,6 +114,7 @@ class LearningDemoSeeder
             $lesson = $course->lessons()->create([
                 'position' => $i + 1, 'type' => $l[0], 'title' => $l[1], 'duration_minutes' => $l[2], 'body' => $l[3], 'video_url' => $l[4] ?? null,
                 'pass_score' => $l[0] === 'quiz' ? 70 : null, 'max_score' => $l[0] === 'assignment' ? 100 : null,
+                'time_limit_minutes' => $l[6] ?? null,
             ]);
 
             foreach ($l[5] ?? [] as $q => [$prompt, $type, $options, $explanation]) {
@@ -151,7 +154,11 @@ class LearningDemoSeeder
     {
         // Percobaan pertama ada salah satu soal, percobaan kedua (untuk sebagian siswa) benar semua.
         $answers = fn (bool $perfect) => $lesson->questions->mapWithKeys(fn ($q, $i) => [
-            $q->id => $perfect || $i > 0 ? ($q->type === 'multiple' ? $q->correctIndexes() : $q->correctIndexes()[0]) : ($q->type === 'multiple' ? [0] : count($q->options) - 1),
+            $q->id => $perfect || $i > 0
+                ? match ($q->type) {
+                    'multiple' => $q->correctIndexes(), 'short' => $q->answerKey()[0], default => $q->correctIndexes()[0]
+                }
+                : ($q->type === 'multiple' ? [0] : count($q->options) - 1),
         ])->all();
 
         $grade->handle($lesson, $student, $answers(false));

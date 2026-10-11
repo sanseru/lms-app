@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { computed, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Field from '@/Components/ui/Field.vue';
@@ -13,7 +13,7 @@ import SubmissionContent from '../../Components/SubmissionContent.vue';
 
 const props = defineProps({
     course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object, reports: Object,
-    questions: Array, attempts: Array, remaining: Number, result: Object, answerKey: Object, attemptSummary: Array,
+    questions: Array, attempts: Array, remaining: Number, timer: Object, result: Object, answerKey: Object, attemptSummary: Array,
     submission: Object, submissions: Array,
 });
 
@@ -23,16 +23,70 @@ const complete = () => router.post(route('learning.lessons.complete', props.less
 // ---- Kuis ----
 const passedOnce = computed(() => props.attempts?.some((a) => a.passed));
 const canAttempt = computed(() => props.can.learn && (props.remaining === null || props.remaining > 0));
-const taking = ref(props.can.learn && !props.result);
+// Kuis berwaktu yang sedang berjalan langsung dibuka lagi, walau sudah ada hasil sebelumnya.
+const timerRunning = computed(() => props.timer?.remaining !== null && props.timer?.remaining !== undefined);
+const needsStart = computed(() => !!props.timer && !timerRunning.value);
+const taking = ref(props.can.learn && (!props.result || timerRunning.value));
 const answers = reactive({});
-const resetAnswers = () => props.questions?.forEach((q) => (answers[q.id] = q.type === 'multiple' ? [] : null));
+const blank = (q) => (q.type === 'multiple' ? [] : q.type === 'short' ? '' : null);
+const resetAnswers = () => props.questions?.forEach((q) => (answers[q.id] = blank(q)));
 resetAnswers();
-const answeredCount = computed(() => props.questions?.filter((q) => (q.type === 'multiple' ? answers[q.id]?.length : answers[q.id] !== null)).length ?? 0);
+const isAnswered = (q) => (q.type === 'multiple' ? answers[q.id]?.length > 0 : q.type === 'short' ? String(answers[q.id] ?? '').trim() !== '' : answers[q.id] !== null);
+const answeredCount = computed(() => props.questions?.filter(isAnswered).length ?? 0);
+
+// Draf jawaban kuis berwaktu disimpan di browser supaya tidak hilang saat halaman dimuat ulang.
+const draftKey = `quiz-draft-${props.lesson.id}`;
+const saveDraft = () => { try { localStorage.setItem(draftKey, JSON.stringify(answers)); } catch {} };
+const clearDraft = () => { try { localStorage.removeItem(draftKey); } catch {} };
+if (timerRunning.value) {
+    try {
+        const saved = JSON.parse(localStorage.getItem(draftKey) ?? 'null');
+        props.questions?.forEach((q) => { if (saved && q.id in saved) answers[q.id] = saved[q.id]; });
+    } catch {}
+}
+watch(answers, () => timerRunning.value && saveDraft(), { deep: true });
+
 const quizForm = useForm({ answers: {} });
 const submitQuiz = () => {
+    if (quizForm.processing) return;
     quizForm.answers = { ...answers };
-    quizForm.post(route('learning.quiz.store', props.lesson.id), { preserveScroll: true, onSuccess: () => { taking.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+    quizForm.post(route('learning.quiz.store', props.lesson.id), {
+        preserveScroll: true,
+        onSuccess: () => { taking.value = false; clearDraft(); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+    });
 };
+
+const secondsLeft = ref(props.timer?.remaining ?? null);
+let tick = null;
+const runClock = () => {
+    clearInterval(tick);
+    secondsLeft.value = props.timer?.remaining ?? null;
+    if (secondsLeft.value === null) return;
+    const endsAt = Date.now() + secondsLeft.value * 1000;
+    const step = () => {
+        secondsLeft.value = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
+        if (secondsLeft.value === 0) { clearInterval(tick); if (taking.value) submitQuiz(); }
+    };
+    step();
+    tick = setInterval(step, 1000);
+};
+runClock();
+watch(() => props.timer?.remaining, runClock);
+onBeforeUnmount(() => clearInterval(tick));
+const clock = computed(() => {
+    const s = secondsLeft.value ?? 0;
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+});
+const timeShare = computed(() => (props.timer && secondsLeft.value !== null ? Math.min(100, (secondsLeft.value / (props.timer.limit * 60)) * 100) : 100));
+const clockTone = computed(() => (secondsLeft.value <= 30 ? 'bg-rose-100 text-rose-800' : secondsLeft.value <= 60 ? 'bg-amber-100 text-amber-800' : 'bg-chip text-ink'));
+const starting = ref(false);
+const startQuiz = () => {
+    resetAnswers();
+    clearDraft();
+    router.post(route('learning.quiz.start', props.lesson.id), {}, { preserveScroll: true, onStart: () => (starting.value = true), onFinish: () => (starting.value = false) });
+};
+const duration = (s) => (s === null || s === undefined ? null : `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`);
+const hint = (q) => ({ multiple: 'Pilih semua jawaban yang benar', single: 'Pilih satu jawaban', true_false: 'Choose true or false', short: 'Type your answer' })[q.type];
 const retry = () => { resetAnswers(); taking.value = true; };
 const optionClass = (q, i) => {
     const item = props.result?.items?.[q.id];
@@ -121,6 +175,8 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                             <p class="font-display text-2xl font-extrabold">{{ result.passed ? 'Lulus! Kerja bagus 🎉' : 'Belum lulus, ayo coba lagi!' }}</p>
                             <p class="text-white">{{ result.earned }} dari {{ result.total }} poin · nilai lulus {{ lesson.pass_score }}</p>
                             <p v-if="remaining !== null" class="text-sm text-white">Sisa kesempatan: {{ remaining }}</p>
+                            <p v-if="result.duration !== null" class="text-sm text-white">Finished in {{ duration(result.duration) }}</p>
+                            <p v-if="result.late" class="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-white/20 px-2 py-1 text-sm font-semibold text-white"><Icon name="clock" :size="14" /> Sent after the time limit, so this try does not count as a pass.</p>
                         </div>
                         <button v-if="canAttempt" class="btn bg-white text-ink hover:bg-white/90" @click="retry"><Icon name="rotate-ccw" :size="16" /> {{ passedOnce ? 'Kerjakan lagi' : 'Coba lagi' }}</button>
                     </div>
@@ -133,7 +189,13 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                             <span :class="result.items[q.id].correct ? 'bg-emerald-500' : 'bg-rose-500'" class="grid size-7 shrink-0 place-items-center rounded-lg text-white"><Icon :name="result.items[q.id].correct ? 'check' : 'x'" :size="14" /></span>
                             <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }}</p>
                         </div>
-                        <ul class="mt-3 space-y-2 pl-10">
+                        <div v-if="q.type === 'short'" class="mt-3 space-y-2 pl-10 text-sm">
+                            <p :class="result.items[q.id].correct ? 'border-emerald-300 bg-emerald-50' : 'border-rose-300 bg-rose-50'" class="rounded-xl border px-3 py-2 text-ink">
+                                <span class="text-muted">Your answer:</span> <b>{{ result.items[q.id].given || '(empty)' }}</b>
+                            </p>
+                            <p v-if="result.items[q.id].answer" class="text-muted">Accepted: <span v-for="(a, ai) in result.items[q.id].answer" :key="ai"><b class="text-emerald-800">{{ a }}</b><template v-if="ai < result.items[q.id].answer.length - 1">, </template></span></p>
+                        </div>
+                        <ul v-else class="mt-3 space-y-2 pl-10">
                             <li v-for="(o, oi) in q.options" :key="oi" :class="optionClass(q, oi)" class="rounded-xl border px-3 py-2 text-sm text-ink">{{ o }}</li>
                         </ul>
                         <p v-if="result.items[q.id].explanation" class="mt-3 ml-10 rounded-xl bg-sky-soft p-3 text-sm text-ink"><b class="text-sky-ink">Pembahasan:</b> {{ result.items[q.id].explanation }}</p>
@@ -141,12 +203,41 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <p v-if="!result.reveal" class="text-center text-sm text-muted">Kunci jawaban dan pembahasan muncul setelah kamu lulus.</p>
                 </div>
 
+                <!-- Kuis berwaktu: mulai dulu -->
+                <div v-if="taking && canAttempt && needsStart" class="card flex flex-wrap items-center gap-5 p-6">
+                    <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-amber-100 text-amber-800"><Icon name="clock" :size="28" /></span>
+                    <div class="min-w-48 flex-1">
+                        <h2 class="font-display text-xl font-extrabold text-ink">This quiz has a {{ timer.limit }}-minute timer</h2>
+                        <p class="mt-1 text-sm text-muted">{{ questions.length }} questions. The clock starts when you press Start and keeps running if you leave the page. Your answers are sent automatically when time runs out.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button v-if="result" type="button" class="btn-ghost" @click="taking = false">Batal</button>
+                        <button type="button" class="btn-accent" :disabled="starting" @click="startQuiz"><Icon name="play" :size="18" /> Start quiz</button>
+                    </div>
+                </div>
+
                 <!-- Mengerjakan -->
-                <form v-if="taking && canAttempt" class="space-y-4" @submit.prevent="submitQuiz">
+                <form v-if="taking && canAttempt && !needsStart" class="space-y-4" @submit.prevent="submitQuiz">
                     <div v-for="(q, qi) in questions" :key="q.id" class="card p-5">
                         <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }}</p>
-                        <p class="mt-0.5 text-xs text-muted">{{ q.type === 'multiple' ? 'Pilih semua jawaban yang benar' : 'Pilih satu jawaban' }} · {{ q.points }} poin</p>
-                        <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                        <p class="mt-0.5 text-xs text-muted">{{ hint(q) }} · {{ q.points }} poin</p>
+                        <div v-if="q.type === 'true_false'" class="mt-3 grid grid-cols-2 gap-3">
+                            <label
+                                v-for="(o, oi) in q.options"
+                                :key="oi"
+                                :class="answers[q.id] === oi ? (oi === 0 ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-100' : 'border-rose-500 bg-rose-50 ring-2 ring-rose-100') : 'border-line hover:border-brand-200'"
+                                class="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center font-display text-lg font-bold text-ink transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-300"
+                            >
+                                <input v-model="answers[q.id]" type="radio" :name="`q${q.id}`" :value="oi" class="sr-only" />
+                                <span :class="oi === 0 ? 'bg-emerald-600' : 'bg-rose-600'" class="grid size-10 place-items-center rounded-full text-white"><Icon :name="oi === 0 ? 'check' : 'x'" :size="20" /></span>
+                                {{ o }}
+                            </label>
+                        </div>
+                        <div v-else-if="q.type === 'short'" class="mt-3">
+                            <label :for="`q${q.id}`" class="sr-only">Answer for question {{ qi + 1 }}</label>
+                            <input :id="`q${q.id}`" v-model="answers[q.id]" type="text" maxlength="200" autocomplete="off" spellcheck="false" class="field max-w-md" placeholder="Your answer" />
+                        </div>
+                        <div v-else class="mt-3 grid gap-2 sm:grid-cols-2">
                             <label
                                 v-for="(o, oi) in q.options"
                                 :key="oi"
@@ -160,11 +251,17 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                             </label>
                         </div>
                     </div>
-                    <div class="card sticky bottom-4 flex flex-wrap items-center justify-between gap-3 p-4 shadow-lg">
-                        <p class="text-sm text-muted">Terjawab <b class="text-ink">{{ answeredCount }}/{{ questions.length }}</b><template v-if="remaining !== null"> · sisa kesempatan {{ remaining }}</template></p>
-                        <div class="flex gap-2">
-                            <button v-if="result" type="button" class="btn-ghost" @click="taking = false">Batal</button>
-                            <button type="submit" class="btn-accent" :disabled="quizForm.processing || answeredCount === 0"><Icon name="check" :size="18" /> Kumpulkan jawaban</button>
+                    <div class="card sticky bottom-4 overflow-hidden shadow-lg">
+                        <div v-if="timer" class="h-1 bg-chip"><div :class="secondsLeft <= 60 ? 'bg-rose-500' : 'bg-brand-500'" class="h-full transition-[width] duration-1000 ease-linear" :style="{ width: `${timeShare}%` }" /></div>
+                        <div class="flex flex-wrap items-center justify-between gap-3 p-4">
+                            <div class="flex items-center gap-3">
+                                <span v-if="timer" :class="clockTone" class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-display text-lg font-bold tabular-nums" role="timer" :aria-label="`Time left ${clock}`"><Icon name="clock" :size="16" /> {{ clock }}</span>
+                                <p class="text-sm text-muted">Terjawab <b class="text-ink">{{ answeredCount }}/{{ questions.length }}</b><template v-if="remaining !== null"> · sisa kesempatan {{ remaining }}</template></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button v-if="result && !timer" type="button" class="btn-ghost" @click="taking = false">Batal</button>
+                                <button type="submit" class="btn-accent" :disabled="quizForm.processing || answeredCount === 0"><Icon name="check" :size="18" /> Kumpulkan jawaban</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -176,7 +273,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                 <div class="card overflow-hidden">
                     <div class="border-b border-line px-5 py-4">
                         <h2 class="font-display font-bold text-ink">Hasil siswa</h2>
-                        <p class="text-sm text-muted">Nilai lulus {{ lesson.pass_score }}<template v-if="lesson.max_attempts"> · maks. {{ lesson.max_attempts }} percobaan</template></p>
+                        <p class="text-sm text-muted">Nilai lulus {{ lesson.pass_score }}<template v-if="lesson.max_attempts"> · maks. {{ lesson.max_attempts }} percobaan</template><template v-if="lesson.time_limit_minutes"> · {{ lesson.time_limit_minutes }}-minute timer</template></p>
                     </div>
                     <ul v-if="attemptSummary.length" class="divide-y divide-line">
                         <li v-for="row in attemptSummary" :key="row.student.id" class="flex items-center gap-3 px-5 py-3">
@@ -192,7 +289,11 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <h2 class="font-display font-bold text-ink">Soal dan kunci jawaban</h2>
                     <div v-for="(q, qi) in questions" :key="q.id" class="card p-5">
                         <p class="font-semibold whitespace-pre-line text-ink">{{ qi + 1 }}. {{ q.prompt }} <span class="text-xs font-normal text-muted">({{ q.points }} poin)</span></p>
-                        <ul class="mt-2 space-y-1.5">
+                        <p v-if="q.type === 'short'" class="mt-2 flex flex-wrap items-center gap-1.5 text-sm text-muted">
+                            Accepted answers:
+                            <span v-for="(a, ai) in answerKey[q.id].answer" :key="ai" class="rounded-lg bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-800">{{ a }}</span>
+                        </p>
+                        <ul v-else class="mt-2 space-y-1.5">
                             <li v-for="(o, oi) in q.options" :key="oi" :class="answerKey[q.id].answer.includes(oi) ? 'bg-emerald-50 font-semibold text-emerald-800' : 'text-ink'" class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm">
                                 <Icon v-if="answerKey[q.id].answer.includes(oi)" name="check" :size="14" /> {{ o }}
                             </li>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Learning\Actions\QuizTimer;
 use Modules\Learning\Http\Requests\LessonRequest;
 use Modules\Learning\Models\Course;
 use Modules\Learning\Models\Lesson;
@@ -70,6 +71,7 @@ class LessonController extends Controller
                 'video_url' => $lesson->video_url,
                 'pass_score' => $lesson->type === 'quiz' ? $lesson->passScore() : null,
                 'max_attempts' => $lesson->max_attempts,
+                'time_limit_minutes' => $lesson->type === 'quiz' ? $lesson->time_limit_minutes : null,
                 'max_score' => $lesson->type === 'assignment' ? $lesson->maxScore() : null,
             ],
             'outline' => $siblings->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
@@ -113,7 +115,7 @@ class LessonController extends Controller
 
         return Inertia::render('Learning::Lessons/Form', [
             'course' => $lesson->course->only('id', 'title'),
-            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'max_score', 'assessment') + [
+            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'assessment') + [
                 'questions' => $lesson->questions->map->only('id', 'prompt', 'type', 'options', 'explanation', 'points', 'concept'),
             ],
             'defaultType' => $lesson->type,
@@ -186,7 +188,7 @@ class LessonController extends Controller
 
         // Kolom khusus jenis lain dikosongkan agar data tetap bersih.
         if ($data['type'] !== 'quiz') {
-            $data['pass_score'] = $data['max_attempts'] = $data['assessment'] = null;
+            $data['pass_score'] = $data['max_attempts'] = $data['time_limit_minutes'] = $data['assessment'] = null;
         }
         if ($data['type'] !== 'assignment') {
             $data['max_score'] = null;
@@ -212,7 +214,8 @@ class LessonController extends Controller
                 'points' => $q['points'],
                 'explanation' => $q['explanation'] ?? null,
                 'concept' => isset($q['concept']) ? mb_strtolower(trim($q['concept'])) ?: null : null,
-                'options' => collect($q['options'])->map(fn ($o) => ['text' => $o['text'], 'correct' => (bool) ($o['correct'] ?? false)])->values()->all(),
+                // Soal isian: setiap opsi adalah jawaban yang diterima, jadi semuanya benar.
+                'options' => collect($q['options'])->map(fn ($o) => ['text' => trim($o['text']), 'correct' => $q['type'] === 'short' || (bool) ($o['correct'] ?? false)])->values()->all(),
             ];
 
             $existing = ! empty($q['id']) ? $lesson->questions()->find($q['id']) : null;
@@ -234,25 +237,31 @@ class LessonController extends Controller
             // Kunci jawaban dibuka setelah lulus atau kesempatan habis.
             $reveal = $last && ($attempts->contains('passed', true) || $remaining === 0);
 
-            $data['attempts'] = $attempts->map(fn (QuizAttempt $a) => ['id' => $a->id, 'score' => $a->score, 'passed' => $a->passed, 'at' => $a->created_at->translatedFormat('d M Y, H:i')]);
+            $data['attempts'] = $attempts->map(fn (QuizAttempt $a) => ['id' => $a->id, 'score' => $a->score, 'passed' => $a->passed, 'late' => $a->late, 'duration' => $a->duration_seconds, 'at' => $a->created_at->translatedFormat('d M Y, H:i')]);
+            $data['timer'] = $lesson->time_limit_minutes ? [
+                'limit' => $lesson->time_limit_minutes,
+                'remaining' => app(QuizTimer::class)->remaining($lesson, $user->id),
+            ] : null;
             $data['remaining'] = $remaining;
             $data['result'] = $last ? [
                 'score' => $last->score,
                 'passed' => $last->passed,
+                'late' => $last->late,
+                'duration' => $last->duration_seconds,
                 'earned' => $last->earned_points,
                 'total' => $last->total_points,
                 'reveal' => $reveal,
                 'items' => $questions->mapWithKeys(fn ($q) => [$q->id => [
-                    'given' => $last->answers[$q->id]['given'] ?? [],
+                    'given' => $last->answers[$q->id]['given'] ?? ($q->isShort() ? '' : []),
                     'correct' => $last->answers[$q->id]['correct'] ?? false,
-                    'answer' => $reveal ? $q->correctIndexes() : null,
+                    'answer' => $reveal ? $q->answerKey() : null,
                     'explanation' => $reveal ? $q->explanation : null,
                 ]]),
             ] : null;
         }
 
         if ($manage) {
-            $data['answerKey'] = $questions->mapWithKeys(fn ($q) => [$q->id => ['answer' => $q->correctIndexes(), 'explanation' => $q->explanation]]);
+            $data['answerKey'] = $questions->mapWithKeys(fn ($q) => [$q->id => ['answer' => $q->answerKey(), 'explanation' => $q->explanation]]);
             $data['attemptSummary'] = $lesson->attempts()
                 ->with('student')
                 ->get()

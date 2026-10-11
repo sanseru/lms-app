@@ -7,8 +7,9 @@ import LastSessionCard from '@/Components/ui/LastSessionCard.vue';
 import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import LearningCard from '@/Components/ui/LearningCard.vue';
+import ProgressBar from '@/Components/ui/ProgressBar.vue';
 
-defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array });
+defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array });
 const user = usePage().props.auth.user;
 
 const soon = [
@@ -44,6 +45,23 @@ const soon = [
         </div>
         <div class="grid gap-4 md:grid-cols-2">
             <LearningCard v-for="c in learning" :key="c.id" :course="c" />
+        </div>
+    </div>
+
+    <div v-if="projects.length" class="mt-6">
+        <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-display text-lg font-bold text-ink">Proyekku</h2>
+            <Link :href="route('kanban.projects.index')" class="text-sm font-semibold text-brand-600 hover:underline">Semua proyek →</Link>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+            <Link v-for="p in projects" :key="p.board.id" :href="route('kanban.boards.show', p.board.id)" class="card flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-md">
+                <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-50 text-3xl">{{ p.emoji }}</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block truncate font-display font-bold text-ink">{{ p.title }}</span>
+                    <span class="mb-2 block text-xs text-muted">{{ p.board.progress.done }} dari {{ p.board.progress.total }} langkah<template v-if="p.due_date"> · tenggat {{ p.due_date }}</template></span>
+                    <ProgressBar :value="p.board.progress.percent" size="sm" :tone="p.board.completed ? 'green' : 'brand'" />
+                </span>
+            </Link>
         </div>
     </div>
 

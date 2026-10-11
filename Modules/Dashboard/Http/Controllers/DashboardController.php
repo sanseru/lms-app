@@ -15,6 +15,8 @@ use Modules\Finance\Models\PayrollItem;
 use Modules\Finance\Models\StudentPackage;
 use Modules\Forum\Models\Question;
 use Modules\Identity\Enums\Role;
+use Modules\Kanban\Models\Board;
+use Modules\Kanban\Models\Card;
 use Modules\Learning\Actions\StudentProgress;
 use Modules\Learning\Models\AssignmentSubmission;
 use Modules\Sessions\Models\ClassSession;
@@ -81,6 +83,9 @@ class DashboardController extends Controller
                 'questions_waiting' => Route::has('forum.questions.index')
                     ? Question::query()->whereIn('class_room_id', $classes->pluck('id'))->status('unanswered')->count()
                     : 0,
+                'cards_to_review' => Route::has('kanban.projects.index')
+                    ? Card::query()->where('column', 'review')->whereHas('board.project', fn ($q) => $q->whereIn('class_room_id', $classes->pluck('id'))->where('status', 'active'))->count()
+                    : 0,
             ],
             'today' => $this->sessions($mine()->whereDate('starts_at', today())),
             'needsReport' => $this->sessions($mine()->needsReport()->orderBy('starts_at')->take(10)),
@@ -102,6 +107,7 @@ class DashboardController extends Controller
             'packages' => $this->packagesFor($user),
             'stats' => $this->attendanceStats($user),
             'learning' => $this->learningSummary($user),
+            'projects' => $this->projectsFor($user),
             'profile' => [
                 'code' => $user->studentProfile?->student_code,
                 'grade' => $user->studentProfile?->grade,
@@ -203,6 +209,20 @@ class DashboardController extends Controller
     }
 
     /** Ringkas progres kursus untuk kartu dashboard. */
+    /** Papan proyek aktif milik siswa. */
+    private function projectsFor(User $student): array
+    {
+        if (! Route::has('kanban.projects.index')) {
+            return [];
+        }
+
+        return Board::query()->where('student_id', $student->id)
+            ->whereHas('project', fn ($q) => $q->where('status', 'active'))
+            ->with(['project.classRoom', 'student', 'cards:id,board_id,column'])->latest('updated_at')->take(4)->get()
+            ->map(fn (Board $b) => $b->project->toCard() + ['board' => $b->toSummary()])
+            ->all();
+    }
+
     private function learningSummary(User $student): array
     {
         return app(StudentProgress::class)->forStudent($student)

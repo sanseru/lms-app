@@ -12,6 +12,7 @@ use Modules\Finance\Models\PayrollItem;
 use Modules\Finance\Models\StudentPackage;
 use Modules\Finance\Models\TeacherPayout;
 use Modules\Forum\Database\Seeders\ForumDemoSeeder;
+use Modules\Kanban\Database\Seeders\KanbanDemoSeeder;
 use Modules\Learning\Database\Seeders\LearningDemoSeeder;
 use Modules\People\Actions\SavePerson;
 use Modules\Sessions\Actions\CompleteSession;
@@ -116,6 +117,7 @@ class DemoSeeder extends Seeder
         (new LearningDemoSeeder)->run($admin, $classes);
         (new CodingDemoSeeder)->run();
         (new ForumDemoSeeder)->run();
+        (new KanbanDemoSeeder)->run();
     }
 
     private function sessionsPackagesAndPayroll(User $admin, $students, $classes): void

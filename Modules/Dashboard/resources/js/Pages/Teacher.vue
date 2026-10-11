@@ -46,6 +46,15 @@ const user = usePage().props.auth.user;
         <Icon name="arrow-right" class="text-accent-700" />
     </Link>
 
+    <Link v-if="stats.cards_to_review" :href="route('kanban.projects.index')" class="mt-4 flex items-center gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-5 transition hover:shadow-md">
+        <span class="grid size-11 place-items-center rounded-xl bg-sky-100 text-sky-700"><Icon name="kanban" /></span>
+        <span class="flex-1">
+            <span class="block font-display font-bold text-ink">{{ stats.cards_to_review }} langkah proyek menunggu dicek</span>
+            <span class="text-sm text-muted">Setujui atau kembalikan dengan catatan supaya siswa bisa lanjut.</span>
+        </span>
+        <Icon name="arrow-right" class="text-sky-700" />
+    </Link>
+
     <div v-if="needsReport.length" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
         <div class="mb-3 flex items-center gap-2">
             <Icon name="clipboard-check" class="text-amber-600" />

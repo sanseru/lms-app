@@ -6,6 +6,7 @@ use Modules\Dashboard\Providers\DashboardServiceProvider;
 use Modules\Finance\Providers\FinanceServiceProvider;
 use Modules\Forum\Providers\ForumServiceProvider;
 use Modules\Identity\Providers\IdentityServiceProvider;
+use Modules\Kanban\Providers\KanbanServiceProvider;
 use Modules\Landing\Providers\LandingServiceProvider;
 use Modules\Learning\Providers\LearningServiceProvider;
 use Modules\People\Providers\PeopleServiceProvider;
@@ -34,6 +35,7 @@ return [
         LearningServiceProvider::class,
         CodingServiceProvider::class,
         ForumServiceProvider::class,
+        KanbanServiceProvider::class,
         FinanceServiceProvider::class,
     ],
 ];

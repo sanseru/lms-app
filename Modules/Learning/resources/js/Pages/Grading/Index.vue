@@ -13,15 +13,15 @@ import SubmissionContent from '../../Components/SubmissionContent.vue';
 
 defineProps({ submissions: Object, tab: String, counts: Object });
 
-const tabs = { submitted: 'Perlu dinilai', revision: 'Menunggu revisi', graded: 'Sudah dinilai' };
+const tabs = { submitted: 'To grade', revision: 'Awaiting revision', graded: 'Graded' };
 const tone = { submitted: 'amber', revision: 'red', graded: 'green' };
 const open = ref(null);
 </script>
 
 <template>
-    <Head title="Penilaian Tugas" />
+    <Head title="Grading" />
 
-    <PageHeader eyebrow="Belajar" title="Penilaian tugas" description="Tugas dari siswa di kelasmu. Beri nilai atau minta revisi dengan umpan balik." />
+    <PageHeader eyebrow="Learning" title="Grading" description="Assignments from students in your classes. Give a grade or ask for a revision with feedback." />
 
     <div class="mb-5 flex flex-wrap gap-2">
         <Link
@@ -50,8 +50,8 @@ const open = ref(null);
                     </p>
                 </div>
                 <div class="text-right text-xs text-muted">
-                    <p>Dikumpulkan {{ s.submitted_at }}</p>
-                    <p v-if="s.graded_at">Dinilai {{ s.graded_at }}<template v-if="s.grader"> oleh {{ s.grader }}</template></p>
+                    <p>Submitted {{ s.submitted_at }}</p>
+                    <p v-if="s.graded_at">Graded {{ s.graded_at }}<template v-if="s.grader"> by {{ s.grader }}</template></p>
                 </div>
                 <span v-if="s.score !== null" class="font-display text-lg font-bold text-ink">{{ s.score }}/{{ s.lesson.max_score }}</span>
                 <Badge :tone="tone[s.status]">{{ s.status_label }}</Badge>
@@ -59,16 +59,16 @@ const open = ref(null);
             <div class="mt-4 rounded-2xl border border-line p-4">
                 <SubmissionContent :submission="s" />
             </div>
-            <p v-if="s.feedback && open !== s.id" class="mt-3 text-sm text-muted"><b class="text-ink">Umpan balik:</b> {{ s.feedback }}</p>
+            <p v-if="s.feedback && open !== s.id" class="mt-3 text-sm text-muted"><b class="text-ink">Feedback:</b> {{ s.feedback }}</p>
             <div class="mt-3">
                 <GradeForm v-if="open === s.id || s.status === 'submitted'" :submission="s" :max-score="s.lesson.max_score" @done="open = null" />
-                <button v-else class="btn-ghost py-2 text-sm" @click="open = s.id"><Icon name="pencil" :size="15" /> Ubah nilai</button>
+                <button v-else class="btn-ghost py-2 text-sm" @click="open = s.id"><Icon name="pencil" :size="15" /> Edit grade</button>
             </div>
         </div>
         <div v-if="submissions.last_page > 1" class="card overflow-hidden"><Pagination :meta="submissions" /></div>
     </div>
 
     <div v-else class="card">
-        <EmptyState icon="badge-check" :title="tab === 'submitted' ? 'Semua tugas sudah dinilai' : 'Belum ada data'" :description="tab === 'submitted' ? 'Tugas baru dari siswa akan muncul di sini.' : null" />
+        <EmptyState icon="badge-check" :title="tab === 'submitted' ? 'All assignments are graded' : 'Nothing here yet'" :description="tab === 'submitted' ? 'New assignments from students will show up here.' : null" />
     </div>
 </template>

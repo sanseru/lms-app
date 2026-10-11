@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     public const STATUSES = [
-        'pending' => 'Menunggu verifikasi',
-        'verified' => 'Terverifikasi',
-        'rejected' => 'Ditolak',
+        'pending' => 'Awaiting verification',
+        'verified' => 'Verified',
+        'rejected' => 'Rejected',
     ];
 
     protected $fillable = ['invoice_id', 'amount', 'paid_at', 'method', 'bank_name', 'account_name', 'proof_path', 'status', 'notes', 'rejection_reason', 'submitted_by', 'verified_by', 'verified_at'];

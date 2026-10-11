@@ -19,20 +19,20 @@ const confirm = useConfirm();
 </script>
 
 <template>
-    <Head title="Guru" />
+    <Head title="Teachers" />
 
-    <PageHeader eyebrow="Pengguna" title="Guru" description="Kelola pengajar dan keahliannya.">
+    <PageHeader eyebrow="People" title="Teachers" description="Manage teachers and their expertise.">
         <template #actions>
-            <Link :href="route('people.teachers.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Tambah guru</Link>
+            <Link :href="route('people.teachers.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Add teacher</Link>
         </template>
     </PageHeader>
 
     <div class="mb-5 flex flex-col gap-3 sm:flex-row">
-        <SearchInput v-model="filters.search" placeholder="Cari nama atau keahlian…" />
+        <SearchInput v-model="filters.search" placeholder="Search by name or expertise…" />
         <select v-model="filters.status" class="field sm:w-44">
-            <option value="">Semua status</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Nonaktif</option>
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
         </select>
     </div>
 
@@ -46,7 +46,7 @@ const confirm = useConfirm();
                         <StatusBadge :status="teacher.status" />
                     </div>
                     <p class="font-mono text-xs text-muted">{{ teacher.code }}</p>
-                    <p class="mt-1 text-sm text-accent-700">{{ teacher.expertise ?? 'Keahlian belum diisi' }}</p>
+                    <p class="mt-1 text-sm text-accent-700">{{ teacher.expertise ?? 'No expertise added yet' }}</p>
                 </div>
             </div>
             <div class="mt-4 space-y-1.5 text-sm text-muted">
@@ -55,15 +55,15 @@ const confirm = useConfirm();
             </div>
             <div class="mt-4 flex items-center justify-between border-t border-line pt-4">
                 <p class="text-sm">
-                    <b class="font-display text-ink">{{ teacher.classes_count }}</b> <span class="text-muted">kelas ·</span>
-                    <b class="font-display text-ink">{{ rupiah(teacher.rate_per_session) }}</b><span class="text-muted">/sesi</span>
+                    <b class="font-display text-ink">{{ teacher.classes_count }}</b> <span class="text-muted">classes ·</span>
+                    <b class="font-display text-ink">{{ rupiah(teacher.rate_per_session) }}</b><span class="text-muted">/session</span>
                 </p>
                 <div class="flex gap-1">
-                    <Link :href="route('people.teachers.edit', teacher.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Ubah"><Icon name="pencil" :size="16" /></Link>
+                    <Link :href="route('people.teachers.edit', teacher.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Edit"><Icon name="pencil" :size="16" /></Link>
                     <button
                         class="rounded-lg p-2 text-muted hover:bg-rose-50 hover:text-rose-600"
-                        title="Hapus"
-                        @click="confirm.ask({ title: `Hapus ${teacher.name}?`, message: 'Guru yang masih mengajar kelas aktif tidak bisa dihapus.', url: route('people.teachers.destroy', teacher.id) })"
+                        title="Delete"
+                        @click="confirm.ask({ title: `Delete ${teacher.name}?`, message: 'Teachers who still teach active classes cannot be deleted.', url: route('people.teachers.destroy', teacher.id) })"
                     >
                         <Icon name="trash" :size="16" />
                     </button>
@@ -73,8 +73,8 @@ const confirm = useConfirm();
     </div>
 
     <div v-else class="card">
-        <EmptyState icon="presentation" title="Belum ada guru" description="Tambahkan guru agar bisa ditugaskan ke kelas.">
-            <Link :href="route('people.teachers.create')" class="btn-primary"><Icon name="plus" :size="18" /> Tambah guru</Link>
+        <EmptyState icon="presentation" title="No teachers yet" description="Add teachers so they can be assigned to classes.">
+            <Link :href="route('people.teachers.create')" class="btn-primary"><Icon name="plus" :size="18" /> Add teacher</Link>
         </EmptyState>
     </div>
 

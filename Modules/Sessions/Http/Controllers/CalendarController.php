@@ -11,8 +11,8 @@ use Illuminate\Support\Str;
 use Modules\Sessions\Models\ClassSession;
 
 /**
- * Feed iCal jadwal sesi per user, untuk dilanggan di Google Calendar,
- * Apple Calendar, atau Outlook. Diakses dengan token rahasia tanpa login.
+ * Per-user iCal feed of session schedules, to subscribe to in Google Calendar,
+ * Apple Calendar or Outlook. Accessed with a secret token, no login.
  */
 class CalendarController extends Controller
 {
@@ -31,10 +31,10 @@ class CalendarController extends Controller
         $lines = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//Alprogmatics//LMS//ID',
+            'PRODID:-//Alprogmatics//LMS//EN',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            'X-WR-CALNAME:'.self::escape(config('app.name').' – Jadwal '.$user->name),
+            'X-WR-CALNAME:'.self::escape(config('app.name').' – '.$user->name.' schedule'),
             'X-WR-TIMEZONE:Asia/Jakarta',
         ];
 
@@ -47,7 +47,7 @@ class CalendarController extends Controller
                 'DTSTAMP:'.$session->updated_at->utc()->format('Ymd\THis\Z'),
                 'DTSTART:'.$session->starts_at->utc()->format('Ymd\THis\Z'),
                 'DTEND:'.$session->ends_at->utc()->format('Ymd\THis\Z'),
-                'SUMMARY:'.self::escape(($session->classRoom?->name ?? 'Sesi kelas').($session->topic ? " · {$session->topic}" : '')),
+                'SUMMARY:'.self::escape(($session->classRoom?->name ?? 'Class session').($session->topic ? " · {$session->topic}" : '')),
                 'DESCRIPTION:'.self::escape(collect([$zoom ? "Zoom: {$zoom}" : null, 'Detail: '.route('sessions.show', $session)])->filter()->implode("\n")),
                 ...($zoom ? ['LOCATION:'.self::escape($zoom)] : []),
                 'URL:'.route('sessions.show', $session),
@@ -60,16 +60,16 @@ class CalendarController extends Controller
 
         return response(collect($lines)->map(self::fold(...))->implode("\r\n")."\r\n", 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'inline; filename="jadwal.ics"',
+            'Content-Disposition' => 'inline; filename="schedule.ics"',
         ]);
     }
 
-    /** Buat atau ganti token (tautan lama berhenti bekerja). */
+    /** Create or replace the token (the old link stops working). */
     public function regenerate(Request $request): RedirectResponse
     {
         $request->user()->forceFill(['calendar_token' => Str::random(40)])->save();
 
-        return back()->with('success', 'Tautan kalender baru dibuat. Tautan lama tidak berlaku lagi.');
+        return back()->with('success', 'New calendar link created. The old link no longer works.');
     }
 
     private static function escape(string $text): string
@@ -77,14 +77,14 @@ class CalendarController extends Controller
         return str_replace(['\\', ';', ',', "\n"], ['\\\\', '\;', '\,', '\n'], $text);
     }
 
-    /** Baris iCal maksimal 75 oktet; lanjutan diawali spasi. */
+    /** iCal lines are at most 75 octets; continuations start with a space. */
     private static function fold(string $line): string
     {
         $out = [];
         while (strlen($line) > 75) {
             $cut = 75;
             while ($cut > 0 && (ord($line[$cut]) & 0xC0) === 0x80) {
-                $cut--; // jangan memotong karakter UTF-8 multibyte
+                $cut--; // never split a multibyte UTF-8 character
             }
             $out[] = substr($line, 0, $cut);
             $line = ' '.substr($line, $cut);

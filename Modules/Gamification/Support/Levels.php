@@ -2,12 +2,12 @@
 
 namespace Modules\Gamification\Support;
 
-/** Level dari total XP: level n butuh 50·n·(n−1) XP (0, 100, 300, 600, 1000, …). */
+/** Level from total XP: level n butuh 50·n·(n−1) XP (0, 100, 300, 600, 1000, …). */
 class Levels
 {
     public const NAMES = [
-        1 => 'Pemula Koding', 2 => 'Penjelajah', 3 => 'Perakit', 4 => 'Penemu',
-        5 => 'Insinyur Cilik', 6 => 'Pencipta', 7 => 'Master Koding', 8 => 'Legenda',
+        1 => 'Code Rookie', 2 => 'Explorer', 3 => 'Tinkerer', 4 => 'Inventor',
+        5 => 'Junior Engineer', 6 => 'Creator', 7 => 'Code Master', 8 => 'Legend',
     ];
 
     public static function threshold(int $level): int

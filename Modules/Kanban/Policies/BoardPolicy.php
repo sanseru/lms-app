@@ -15,7 +15,7 @@ class BoardPolicy
             || $user->children()->whereKey($board->student_id)->exists();
     }
 
-    /** Menambah dan memindahkan kartu: pemilik papan selama proyek aktif, atau guru. */
+    /** Adding and moving cards: the board owner while the project is active, or the teacher. */
     public function work(User $user, Board $board): bool
     {
         return ($board->student_id === $user->id && $board->project->status === 'active')
@@ -27,7 +27,7 @@ class BoardPolicy
         return $board->project->isStaff($user);
     }
 
-    /** Siswa hanya boleh mengubah atau menghapus kartu buatannya sendiri yang belum selesai. */
+    /** Students may only edit or delete their own cards that are not done yet. */
     public function editCard(User $user, Board $board, Card $card): bool
     {
         if ($board->project->isStaff($user)) {
@@ -37,7 +37,7 @@ class BoardPolicy
         return $this->work($user, $board) && $card->template_task_id === null && $card->column !== 'done';
     }
 
-    /** Siswa tidak bisa memasukkan atau mengeluarkan kartu dari Selesai bila proyek butuh pengecekan guru. */
+    /** Students cannot move cards into or out of Done when the project needs teacher review. */
     public function moveCard(User $user, Board $board, Card $card, string $to): bool
     {
         if (! $this->work($user, $board)) {

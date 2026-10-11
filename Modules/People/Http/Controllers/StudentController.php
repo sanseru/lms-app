@@ -66,7 +66,7 @@ class StudentController extends Controller
     {
         $student = $save->student($request->validated());
 
-        return to_route('people.students.index')->with('success', "Siswa {$student->name} berhasil ditambahkan.");
+        return to_route('people.students.index')->with('success', "Student {$student->name} added.");
     }
 
     public function edit(User $student): Response
@@ -102,7 +102,7 @@ class StudentController extends Controller
         abort_unless($student->hasRole(Role::Student->value), 404);
         $save->student($request->validated(), $student);
 
-        return to_route('people.students.index')->with('success', "Data {$student->name} berhasil diperbarui.");
+        return to_route('people.students.index')->with('success', "{$student->name}'s details updated.");
     }
 
     public function destroy(User $student): RedirectResponse
@@ -110,7 +110,7 @@ class StudentController extends Controller
         abort_unless($student->hasRole(Role::Student->value), 404);
         $student->delete();
 
-        return back()->with('success', "Siswa {$student->name} dihapus.");
+        return back()->with('success', "Student {$student->name} deleted.");
     }
 
     private function guardianOptions()

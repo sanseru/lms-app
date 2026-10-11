@@ -4,9 +4,9 @@ import Icon from './Icon.vue';
 
 defineProps({
     show: { type: Boolean, default: false },
-    title: { type: String, default: 'Yakin?' },
+    title: { type: String, default: 'Are you sure?' },
     message: { type: String, default: null },
-    confirmText: { type: String, default: 'Ya, lanjutkan' },
+    confirmText: { type: String, default: 'Yes, continue' },
     danger: { type: Boolean, default: true },
     processing: { type: Boolean, default: false },
 });
@@ -27,7 +27,7 @@ defineEmits(['close', 'confirm']);
                 </div>
             </div>
             <div class="mt-6 flex justify-end gap-2">
-                <button type="button" class="btn-ghost" @click="$emit('close')">Batal</button>
+                <button type="button" class="btn-ghost" @click="$emit('close')">Cancel</button>
                 <button type="button" :class="danger ? 'btn-danger' : 'btn-primary'" :disabled="processing" @click="$emit('confirm')">
                     {{ confirmText }}
                 </button>

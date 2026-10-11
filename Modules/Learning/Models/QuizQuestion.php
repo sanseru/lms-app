@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuizQuestion extends Model
 {
-    public const TYPES = ['single' => 'Satu jawaban', 'multiple' => 'Beberapa jawaban'];
+    public const TYPES = ['single' => 'One answer', 'multiple' => 'Several answers'];
 
     protected $fillable = ['lesson_id', 'position', 'prompt', 'type', 'options', 'explanation', 'points', 'concept'];
 
@@ -21,7 +21,7 @@ class QuizQuestion extends Model
         return $this->belongsTo(Lesson::class);
     }
 
-    /** Indeks opsi yang benar, terurut. */
+    /** Indexes of the correct options, sorted. */
     public function correctIndexes(): array
     {
         return collect($this->options)->keys()->filter(fn ($i) => (bool) ($this->options[$i]['correct'] ?? false))->values()->all();
@@ -35,7 +35,7 @@ class QuizQuestion extends Model
         return $given !== [] && $given === $this->correctIndexes();
     }
 
-    /** Bentuk untuk siswa: tanpa kunci jawaban. */
+    /** Student-facing shape: no answer key. */
     public function toPublic(): array
     {
         return [

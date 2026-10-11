@@ -33,8 +33,8 @@ class ClassesServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Kelas', 'classes.index', 'school', 'Akademik', 10, active: 'classes.*'),
-            new NavItem('Jadwal', 'schedule.index', 'calendar-days', 'Akademik', 20),
+            new NavItem('Classes', 'classes.index', 'school', 'Academic', 10, active: 'classes.*'),
+            new NavItem('Schedule', 'schedule.index', 'calendar-days', 'Academic', 20),
         );
     }
 }

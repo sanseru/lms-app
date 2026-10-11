@@ -1,7 +1,7 @@
 /**
- * Pratinjau HTML/CSS siswa di iframe sandbox (tanpa allow-same-origin) dan cek aturan di dalamnya.
- * Hasil dikirim balik lewat postMessage. Aturan struktur juga dicek ulang di server;
- * aturan gaya CSS hanya bisa diukur di browser.
+ * Previews student HTML/CSS in a sandboxed iframe (no allow-same-origin) and checks rules inside it.
+ * Results are sent back via postMessage. Structure rules are re-checked on the server too;
+ * CSS style rules can only be measured in the browser.
  */
 const checker = (rules) => `
 <script>
@@ -43,7 +43,7 @@ export function buildSrcdoc(html, rules = []) {
     return /<\/body>/i.test(doc) ? doc.replace(/<\/body>/i, script + '</body>') : doc + script;
 }
 
-/** Jalankan cek di iframe tersembunyi; hasil {ruleId: boolean}. */
+/** Run the checks in a hidden iframe; result is {ruleId: boolean}. */
 export function checkHtml(html, rules) {
     return new Promise((resolve) => {
         const frame = document.createElement('iframe');

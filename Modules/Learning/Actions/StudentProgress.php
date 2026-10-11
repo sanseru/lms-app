@@ -13,16 +13,17 @@ use Modules\Learning\Models\QuizQuestion;
 use Modules\Learning\Support\LessonTypes;
 
 /**
- * Ringkasan belajar seorang siswa per kursus: progres, nilai kuis terbaik,
- * nilai tugas, dan materi berikutnya. Dipakai portal siswa, orang tua, dan guru.
+ * A student's learning summary per course: progress, best quiz score,
+ * assignment scores, the classes they take it in, and the next lesson.
+ * Used by the student, parent, and teacher portals.
  */
 class StudentProgress
 {
     public function __construct(private LessonTypes $types) {}
 
     /**
-     * Misi Pemanasan vs Misi Akhir: nilai percobaan pertama masing-masing,
-     * normalized gain g = (post − pre) / (100 − pre), dan rincian per konsep.
+     * Warm-up Mission vs Final Mission: the first attempt score of each,
+     * normalized gain g = (post − pre) / (100 − pre), and a per-concept breakdown.
      */
     public function missions(Course $course, User $student): ?array
     {
@@ -72,7 +73,10 @@ class StudentProgress
         $courses = Course::query()
             ->where('status', 'published')
             ->whereHas('classes.students', fn ($q) => $q->whereKey($student->id))
-            ->with(['lessons' => fn ($q) => $q->where('is_published', true)])
+            ->with([
+                'lessons' => fn ($q) => $q->where('is_published', true),
+                'classes' => fn ($q) => $q->whereHas('students', fn ($q) => $q->whereKey($student->id))->with('teacher')->orderBy('name'),
+            ])
             ->orderBy('title')
             ->get();
 
@@ -83,7 +87,7 @@ class StudentProgress
             ->selectRaw('lesson_id, max(score) as best, count(*) as tries')->groupBy('lesson_id')->get()->keyBy('lesson_id');
         $submissions = AssignmentSubmission::query()->where('student_id', $student->id)->whereIn('lesson_id', $lessonIds)->get()->keyBy('lesson_id');
 
-        // Nilai dari jenis isi tambahan (mis. soal coding).
+        // Scores from extra lesson types (e.g. coding exercises).
         $extra = [];
         foreach ($this->types->all() as $key => $handler) {
             $ids = $courses->flatMap->lessons->where('type', $key)->pluck('id')->all();
@@ -109,6 +113,7 @@ class StudentProgress
 
             return [
                 ...$course->toCard(),
+                'classes' => $course->classes->map->toCard()->values(),
                 'lessons' => $lessons->values(),
                 'total' => $total,
                 'completed' => $completed,

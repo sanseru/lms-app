@@ -34,7 +34,7 @@ class User extends Authenticatable
         ];
     }
 
-    /** Role utama untuk menentukan dashboard yang ditampilkan. */
+    /** Primary role, decides which dashboard is shown. */
     public function primaryRole(): ?Role
     {
         foreach (Role::priority() as $role) {
@@ -56,13 +56,13 @@ class User extends Authenticatable
         return $this->hasOne(TeacherProfile::class);
     }
 
-    /** Kelas yang diajar (guru). */
+    /** Classes taught (teacher). */
     public function teachingClasses(): HasMany
     {
         return $this->hasMany(ClassRoom::class, 'teacher_id');
     }
 
-    /** Kelas yang diikuti (siswa). */
+    /** Classes enrolled in (student). */
     public function enrolledClasses(): BelongsToMany
     {
         return $this->belongsToMany(ClassRoom::class, 'class_students', 'student_id', 'class_room_id')
@@ -70,7 +70,7 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    /** Anak yang terhubung ke akun orang tua. */
+    /** Children linked to a parent account. */
     public function children(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'guardian_student', 'guardian_id', 'student_id')
@@ -78,7 +78,7 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    /** Orang tua/wali dari akun siswa. */
+    /** Parents/guardians of a student account. */
     public function guardians(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'guardian_student', 'student_id', 'guardian_id')

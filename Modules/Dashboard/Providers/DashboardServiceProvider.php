@@ -15,6 +15,6 @@ class DashboardServiceProvider extends ModuleServiceProvider
 
     public function navigation(NavigationRegistry $nav): void
     {
-        $nav->add(new NavItem('Beranda', 'dashboard', 'layout-dashboard', 'Utama', 0));
+        $nav->add(new NavItem('Home', 'dashboard', 'layout-dashboard', 'Main', 0));
     }
 }

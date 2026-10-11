@@ -26,11 +26,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-ink">
-                Informasi profil
+                Profile information
             </h2>
 
             <p class="mt-1 text-sm text-muted">
-                Perbarui nama dan email akun Anda.
+                Update your account's name and email.
             </p>
         </header>
 
@@ -39,7 +39,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Nama" />
+                <InputLabel for="name" value="Name" />
 
                 <TextInput
                     id="name"
@@ -90,7 +90,7 @@ const form = useForm({
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Simpan</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"

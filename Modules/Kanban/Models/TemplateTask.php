@@ -5,7 +5,7 @@ namespace Modules\Kanban\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Langkah bawaan dari guru yang disalin ke papan setiap siswa. */
+/** A default step from the teacher that is copied to every student's board. */
 class TemplateTask extends Model
 {
     protected $table = 'project_template_tasks';

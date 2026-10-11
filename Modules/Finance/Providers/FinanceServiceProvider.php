@@ -42,12 +42,12 @@ class FinanceServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Ringkasan Keuangan', 'finance.overview', 'wallet', 'Keuangan', 10, permission: 'finance.manage'),
-            new NavItem('Tagihan', 'finance.invoices.index', 'receipt', 'Keuangan', 20, permission: 'finance.manage', active: 'finance.invoices.*'),
-            new NavItem('Paket Kuota', 'finance.packages.index', 'ticket', 'Keuangan', 30, permission: 'finance.manage', active: 'finance.packages.*'),
-            new NavItem('Honor Tutor', 'finance.payroll.index', 'hand-coins', 'Keuangan', 40, permission: 'finance.payroll', active: 'finance.payroll.*'),
-            new NavItem('Honor Saya', 'finance.my-fees', 'hand-coins', 'Keuangan', 40, roles: ['teacher']),
-            new NavItem('Tagihan Anak', 'finance.invoices.index', 'receipt', 'Keuangan', 20, roles: ['guardian'], active: 'finance.invoices.*'),
+            new NavItem('Finance overview', 'finance.overview', 'wallet', 'Finance', 10, permission: 'finance.manage'),
+            new NavItem('Invoices', 'finance.invoices.index', 'receipt', 'Finance', 20, permission: 'finance.manage', active: 'finance.invoices.*'),
+            new NavItem('Session packages', 'finance.packages.index', 'ticket', 'Finance', 30, permission: 'finance.manage', active: 'finance.packages.*'),
+            new NavItem('Tutor fees', 'finance.payroll.index', 'hand-coins', 'Finance', 40, permission: 'finance.payroll', active: 'finance.payroll.*'),
+            new NavItem('My fees', 'finance.my-fees', 'hand-coins', 'Finance', 40, roles: ['teacher']),
+            new NavItem("Child's invoices", 'finance.invoices.index', 'receipt', 'Finance', 20, roles: ['guardian'], active: 'finance.invoices.*'),
         );
     }
 }

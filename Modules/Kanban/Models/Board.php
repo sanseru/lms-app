@@ -33,7 +33,7 @@ class Board extends Model
         return $this->hasMany(Card::class)->orderBy('position');
     }
 
-    /** Jumlah kartu per kolom dan persentase selesai. */
+    /** Card count per column and percentage done. */
     public function progress(): array
     {
         $cards = $this->relationLoaded('cards') ? $this->cards : $this->cards()->get(['id', 'column']);
@@ -48,7 +48,7 @@ class Board extends Model
         ];
     }
 
-    /** Papan selesai jika semua kartu ada di kolom Selesai. */
+    /** A board is complete when every card is in the Done column. */
     public function refreshCompletion(): void
     {
         $cards = $this->cards()->get(['id', 'column']);

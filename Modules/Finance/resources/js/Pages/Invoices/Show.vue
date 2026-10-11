@@ -60,12 +60,12 @@ const copyAccount = async () => {
     <Head :title="invoice.number" />
 
     <Link :href="route('finance.invoices.index')" class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600">
-        <Icon name="arrow-left" :size="16" /> Daftar tagihan
+        <Icon name="arrow-left" :size="16" /> All invoices
     </Link>
 
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
-            <!-- Ringkasan -->
+            <!-- Summary -->
             <div class="card p-6 sm:p-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
@@ -77,15 +77,15 @@ const copyAccount = async () => {
                         </div>
                     </div>
                     <div class="text-left sm:text-right">
-                        <p class="text-sm text-muted">Sisa tagihan</p>
+                        <p class="text-sm text-muted">Remaining balance</p>
                         <p class="font-display text-3xl font-extrabold tracking-tight" :class="invoice.remaining ? 'text-ink' : 'text-emerald-700'">{{ rupiah(invoice.remaining) }}</p>
                     </div>
                 </div>
 
                 <div class="mt-6">
                     <div class="flex justify-between text-sm">
-                        <span class="text-muted">Terbayar {{ rupiah(invoice.paid_amount) }}</span>
-                        <span class="font-semibold text-ink">dari {{ rupiah(invoice.amount) }}</span>
+                        <span class="text-muted">Paid {{ rupiah(invoice.paid_amount) }}</span>
+                        <span class="font-semibold text-ink">of {{ rupiah(invoice.amount) }}</span>
                     </div>
                     <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-chip">
                         <div class="h-full rounded-full bg-emerald-500 transition-[width]" :style="{ width: `${progress}%` }" />
@@ -93,32 +93,32 @@ const copyAccount = async () => {
                 </div>
 
                 <dl class="mt-6 grid gap-4 border-t border-line pt-6 text-sm sm:grid-cols-3">
-                    <div><dt class="text-muted">Jatuh tempo</dt><dd :class="invoice.is_overdue ? 'text-rose-600' : 'text-ink'" class="font-semibold">{{ invoice.due_date }}</dd></div>
-                    <div v-if="invoice.class"><dt class="text-muted">Kelas</dt><dd class="font-semibold text-ink">{{ invoice.class.name }}</dd></div>
-                    <div v-if="invoice.notes" class="sm:col-span-3"><dt class="text-muted">Catatan</dt><dd class="text-ink">{{ invoice.notes }}</dd></div>
+                    <div><dt class="text-muted">Due date</dt><dd :class="invoice.is_overdue ? 'text-rose-600' : 'text-ink'" class="font-semibold">{{ invoice.due_date }}</dd></div>
+                    <div v-if="invoice.class"><dt class="text-muted">Class</dt><dd class="font-semibold text-ink">{{ invoice.class.name }}</dd></div>
+                    <div v-if="invoice.notes" class="sm:col-span-3"><dt class="text-muted">Notes</dt><dd class="text-ink">{{ invoice.notes }}</dd></div>
                 </dl>
 
                 <div v-if="can.pay || can.receipt || (can.manage && invoice.status === 'unpaid' && !invoice.paid_amount)" class="mt-6 flex flex-wrap gap-2 border-t border-line pt-6">
                     <button v-if="can.pay" class="btn-accent" @click="paying = true">
-                        <Icon :name="can.manage ? 'plus' : 'upload'" :size="18" /> {{ can.manage ? 'Catat pembayaran' : 'Kirim bukti transfer' }}
+                        <Icon :name="can.manage ? 'plus' : 'upload'" :size="18" /> {{ can.manage ? 'Record payment' : 'Send transfer proof' }}
                     </button>
                     <Link v-if="can.receipt" :href="route('finance.invoices.receipt', invoice.id)" class="btn-ghost">
-                        <Icon name="printer" :size="16" /> Kuitansi
+                        <Icon name="printer" :size="16" /> Receipt
                     </Link>
                     <button
                         v-if="can.manage && invoice.status === 'unpaid' && !invoice.paid_amount"
                         class="btn-ghost text-rose-600"
-                        @click="confirm.ask({ title: 'Batalkan tagihan?', message: 'Tagihan tidak akan bisa dibayar lagi.', confirmText: 'Ya, batalkan', method: 'post', url: route('finance.invoices.cancel', invoice.id) })"
+                        @click="confirm.ask({ title: 'Cancel this invoice?', message: 'The invoice can no longer be paid.', confirmText: 'Yes, cancel it', method: 'post', url: route('finance.invoices.cancel', invoice.id) })"
                     >
-                        <Icon name="ban" :size="16" /> Batalkan
+                        <Icon name="ban" :size="16" /> Cancel invoice
                     </button>
                 </div>
             </div>
 
-            <!-- Riwayat pembayaran -->
+            <!-- Payment history -->
             <div class="card overflow-hidden">
                 <div class="border-b border-line px-6 py-4">
-                    <h2 class="font-display font-bold text-ink">Riwayat pembayaran</h2>
+                    <h2 class="font-display font-bold text-ink">Payment history</h2>
                 </div>
                 <ul v-if="invoice.payments.length" class="divide-y divide-line">
                     <li v-for="p in invoice.payments" :key="p.id" class="px-6 py-4">
@@ -129,32 +129,32 @@ const copyAccount = async () => {
                                     <StatusBadge :status="p.status" :label="p.status_label" />
                                 </div>
                                 <p class="mt-0.5 text-sm text-muted">
-                                    {{ p.paid_at }} · {{ [p.method === 'cash' ? 'Tunai' : 'Transfer', p.bank_name, p.account_name && `a.n. ${p.account_name}`].filter(Boolean).join(' ') }}
+                                    {{ p.paid_at }} · {{ [p.method === 'cash' ? 'Cash' : 'Transfer', p.bank_name, p.account_name && `from ${p.account_name}`].filter(Boolean).join(' ') }}
                                 </p>
                                 <p class="text-xs text-muted">
-                                    Dikirim oleh {{ p.submitted_by }}<template v-if="p.verified_by"> · diproses {{ p.verified_by }} {{ p.verified_at }}</template>
+                                    Sent by {{ p.submitted_by }}<template v-if="p.verified_by"> · processed by {{ p.verified_by }} {{ p.verified_at }}</template>
                                 </p>
                                 <p v-if="p.notes" class="mt-1 text-sm text-ink/80">“{{ p.notes }}”</p>
-                                <p v-if="p.rejection_reason" class="mt-1 text-sm font-medium text-rose-600">Alasan ditolak: {{ p.rejection_reason }}</p>
+                                <p v-if="p.rejection_reason" class="mt-1 text-sm font-medium text-rose-600">Rejection reason: {{ p.rejection_reason }}</p>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <a v-if="p.has_proof" :href="route('finance.payments.proof', p.id)" target="_blank" class="btn-ghost px-3 py-2"><Icon name="eye" :size="16" /> Bukti</a>
+                                <a v-if="p.has_proof" :href="route('finance.payments.proof', p.id)" target="_blank" class="btn-ghost px-3 py-2"><Icon name="eye" :size="16" /> Proof</a>
                                 <template v-if="can.manage && p.status === 'pending'">
-                                    <button class="btn-ghost px-3 py-2 text-rose-600" @click="rejecting = p.id">Tolak</button>
-                                    <button class="btn-primary px-3 py-2" @click="verify(p.id)"><Icon name="check" :size="16" /> Verifikasi</button>
+                                    <button class="btn-ghost px-3 py-2 text-rose-600" @click="rejecting = p.id">Reject</button>
+                                    <button class="btn-primary px-3 py-2" @click="verify(p.id)"><Icon name="check" :size="16" /> Verify</button>
                                 </template>
                             </div>
                         </div>
                     </li>
                 </ul>
-                <p v-else class="px-6 py-8 text-center text-sm text-muted">Belum ada pembayaran.</p>
+                <p v-else class="px-6 py-8 text-center text-sm text-muted">No payments yet.</p>
             </div>
         </div>
 
-        <!-- Samping -->
+        <!-- Sidebar -->
         <div class="space-y-6">
             <div class="card p-5">
-                <p class="eyebrow mb-3">Siswa</p>
+                <p class="eyebrow mb-3">Student</p>
                 <div class="flex items-center gap-3">
                     <Avatar :initials="invoice.student.initials" :seed="invoice.student.id" size="lg" />
                     <div>
@@ -168,43 +168,43 @@ const copyAccount = async () => {
             </div>
 
             <div v-if="!can.manage" class="panel-brand !rounded-2xl p-5">
-                <p class="font-display font-bold">Transfer ke</p>
+                <p class="font-display font-bold">Transfer to</p>
                 <p class="mt-2 text-sm text-brand-100">{{ bank.name }}</p>
                 <p class="font-mono text-2xl font-medium tracking-wider">{{ bank.account_number }}</p>
-                <p class="text-sm">a.n. {{ bank.account_name }}</p>
+                <p class="text-sm">Account name: {{ bank.account_name }}</p>
                 <button class="mt-4 min-h-11 w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 hover:bg-brand-50" @click="copyAccount">
-                    {{ copied ? 'Nomor rekening tersalin ✓' : 'Salin nomor rekening' }}
+                    {{ copied ? 'Account number copied ✓' : 'Copy account number' }}
                 </button>
-                <p class="mt-3 text-xs text-brand-100">Setelah transfer, kirim bukti agar admin bisa memverifikasi.</p>
+                <p class="mt-3 text-xs text-brand-100">After you transfer, send the proof so an admin can verify it.</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal pembayaran -->
+    <!-- Payment modal -->
     <Modal :show="paying" max-width="lg" @close="paying = false">
         <form class="p-6" @submit.prevent="submitPayment">
-            <h3 class="font-display text-lg font-bold text-ink">{{ can.manage ? 'Catat pembayaran' : 'Kirim bukti transfer' }}</h3>
-            <p class="mb-5 text-sm text-muted">Sisa tagihan {{ rupiah(invoice.remaining) }}.</p>
+            <h3 class="font-display text-lg font-bold text-ink">{{ can.manage ? 'Record payment' : 'Send transfer proof' }}</h3>
+            <p class="mb-5 text-sm text-muted">Remaining balance: {{ rupiah(invoice.remaining) }}.</p>
             <div class="grid gap-4 sm:grid-cols-2">
-                <Field id="pay_amount" label="Nominal" :error="payForm.errors.amount" required>
+                <Field id="pay_amount" label="Amount" :error="payForm.errors.amount" required>
                     <input id="pay_amount" v-model.number="payForm.amount" type="number" step="1000" class="field" />
                 </Field>
-                <Field id="pay_date" label="Tanggal transfer" :error="payForm.errors.paid_at" required>
+                <Field id="pay_date" label="Transfer date" :error="payForm.errors.paid_at" required>
                     <input id="pay_date" v-model="payForm.paid_at" type="date" class="field" />
                 </Field>
-                <Field v-if="can.manage" id="pay_method" label="Metode" :error="payForm.errors.method" class="sm:col-span-2">
+                <Field v-if="can.manage" id="pay_method" label="Method" :error="payForm.errors.method" class="sm:col-span-2">
                     <select id="pay_method" v-model="payForm.method" class="field">
-                        <option value="transfer">Transfer bank</option>
-                        <option value="cash">Tunai</option>
+                        <option value="transfer">Bank transfer</option>
+                        <option value="cash">Cash</option>
                     </select>
                 </Field>
-                <Field id="pay_bank" label="Bank pengirim" :error="payForm.errors.bank_name">
-                    <input id="pay_bank" v-model="payForm.bank_name" type="text" class="field" placeholder="mis. BCA" />
+                <Field id="pay_bank" label="Sending bank" :error="payForm.errors.bank_name">
+                    <input id="pay_bank" v-model="payForm.bank_name" type="text" class="field" placeholder="e.g. BCA" />
                 </Field>
-                <Field id="pay_holder" label="Nama pemilik rekening" :error="payForm.errors.account_name">
+                <Field id="pay_holder" label="Account holder name" :error="payForm.errors.account_name">
                     <input id="pay_holder" v-model="payForm.account_name" type="text" class="field" />
                 </Field>
-                <Field id="pay_proof" label="Bukti transfer" :error="payForm.errors.proof" :required="!can.manage" hint="JPG, PNG, atau PDF, maks. 4 MB." class="sm:col-span-2">
+                <Field id="pay_proof" label="Transfer proof" :error="payForm.errors.proof" :required="!can.manage" hint="JPG, PNG, or PDF, max 4 MB." class="sm:col-span-2">
                     <input
                         id="pay_proof"
                         type="file"
@@ -213,28 +213,28 @@ const copyAccount = async () => {
                         @input="payForm.proof = $event.target.files[0]"
                     />
                 </Field>
-                <Field id="pay_notes" label="Catatan" :error="payForm.errors.notes" class="sm:col-span-2">
+                <Field id="pay_notes" label="Notes" :error="payForm.errors.notes" class="sm:col-span-2">
                     <textarea id="pay_notes" v-model="payForm.notes" rows="2" class="field" />
                 </Field>
             </div>
             <div class="mt-6 flex justify-end gap-2">
-                <button type="button" class="btn-ghost" @click="paying = false">Batal</button>
-                <button type="submit" class="btn-primary" :disabled="payForm.processing">{{ can.manage ? 'Simpan' : 'Kirim' }}</button>
+                <button type="button" class="btn-ghost" @click="paying = false">Cancel</button>
+                <button type="submit" class="btn-primary" :disabled="payForm.processing">{{ can.manage ? 'Save' : 'Send' }}</button>
             </div>
         </form>
     </Modal>
 
-    <!-- Modal tolak -->
+    <!-- Reject modal -->
     <Modal :show="!!rejecting" max-width="md" @close="rejecting = null">
         <form class="p-6" @submit.prevent="submitReject">
-            <h3 class="font-display text-lg font-bold text-ink">Tolak pembayaran</h3>
-            <p class="mb-4 text-sm text-muted">Alasan akan terlihat oleh orang tua.</p>
-            <Field id="reason" label="Alasan" :error="rejectForm.errors.reason" required>
-                <input id="reason" v-model="rejectForm.reason" type="text" class="field" placeholder="mis. Nominal tidak sesuai mutasi" />
+            <h3 class="font-display text-lg font-bold text-ink">Reject payment</h3>
+            <p class="mb-4 text-sm text-muted">Parents will see the reason.</p>
+            <Field id="reason" label="Reason" :error="rejectForm.errors.reason" required>
+                <input id="reason" v-model="rejectForm.reason" type="text" class="field" placeholder="e.g. Amount does not match the bank statement" />
             </Field>
             <div class="mt-6 flex justify-end gap-2">
-                <button type="button" class="btn-ghost" @click="rejecting = null">Batal</button>
-                <button type="submit" class="btn-danger" :disabled="rejectForm.processing">Tolak</button>
+                <button type="button" class="btn-ghost" @click="rejecting = null">Cancel</button>
+                <button type="submit" class="btn-danger" :disabled="rejectForm.processing">Reject</button>
             </div>
         </form>
     </Modal>

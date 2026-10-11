@@ -8,7 +8,7 @@ use Modules\Kanban\Actions\SyncBoards;
 use Modules\Kanban\Models\Board;
 use Modules\Kanban\Models\Project;
 
-/** Proyek contoh dengan papan siswa di berbagai tahap. */
+/** Sample projects with student boards at different stages. */
 class KanbanDemoSeeder
 {
     public function run(): void
@@ -17,12 +17,12 @@ class KanbanDemoSeeder
         $move = app(MoveCard::class);
 
         $samples = [
-            ['Scratch', '🐱', 'Game Tangkap Bola', "Buat game sederhana: sebuah keranjang menangkap bola yang jatuh dari atas.\n\nMinimal ada skor dan suara saat bola tertangkap. Bagikan link proyek Scratch-mu di bagian Hasil proyek.", 10, true,
-                ['Tulis ide game dan aturannya', 'Pilih sprite keranjang dan bola', 'Buat keranjang bergerak dengan panah', 'Bola jatuh dari posisi acak', 'Tambahkan skor dan suara', 'Uji coba bersama teman']],
-            ['Python', '🐍', 'Kalkulator Uang Jajan', 'Buat program Python yang menghitung sisa uang jajan setelah beberapa kali belanja.', 14, true,
-                ['Tulis apa yang dilakukan programmu', 'Minta input uang jajan awal', 'Ulangi input harga belanja dengan while', 'Cetak sisa uang dan peringatan jika minus', 'Uji dengan 3 contoh']],
-            ['Web Development', '🌐', 'Website Hobiku', 'Buat satu halaman website tentang hobimu dengan HTML dan CSS.', 21, false,
-                ['Rancang isi halaman di kertas', 'Buat struktur HTML', 'Tambahkan gambar dengan alt', 'Hias dengan CSS', 'Publikasikan dan bagikan link']],
+            ['Scratch', '🐱', 'Catch the Ball Game', "Make a simple game: a basket catches balls falling from the top.\n\nIt should at least have a score and a sound when a ball is caught. Share your Scratch project link in the Project result section.", 10, true,
+                ['Write down your game idea and rules', 'Pick the basket and ball sprites', 'Make the basket move with the arrow keys', 'Drop the ball from a random spot', 'Add a score and sounds', 'Test it with a friend']],
+            ['Python', '🐍', 'Pocket Money Calculator', 'Write a Python program that works out how much pocket money is left after a few purchases.', 14, true,
+                ['Write down what your program does', 'Ask for the starting pocket money', 'Use a while loop to ask for each price', 'Print the money left and a warning if it goes below zero', 'Test it with 3 examples']],
+            ['Web Development', '🌐', 'My Hobby Website', 'Build a one-page website about your hobby with HTML and CSS.', 21, false,
+                ['Sketch the page on paper', 'Build the HTML structure', 'Add pictures with alt text', 'Style it with CSS', 'Publish it and share the link']],
         ];
 
         foreach ($samples as [$subject, $emoji, $title, $description, $days, $review, $tasks]) {
@@ -40,7 +40,7 @@ class KanbanDemoSeeder
             }
             $sync->handle($project->load('templateTasks'));
 
-            // Setiap siswa di tahap berbeda.
+            // Each student is at a different stage.
             $project->boards()->with('cards', 'student', 'project.classRoom')->get()->each(function (Board $board, $n) use ($move, $class, $review) {
                 $cards = $board->cards->values();
                 $done = min($cards->count(), [1, 3, $cards->count(), 2, 0][$n % 5]);
@@ -52,11 +52,11 @@ class KanbanDemoSeeder
                     $move->handle($cards[$done], $review && $n % 2 ? 'review' : 'doing', 0, $board->student);
                 }
                 if ($n === 0 && $cards->has($done + 1)) {
-                    $cards[$done + 1]->update(['feedback' => 'Bagus! Coba tambahkan juga suara saat skor bertambah.']);
+                    $cards[$done + 1]->update(['feedback' => 'Nice work! Try adding a sound when the score goes up too.']);
                     $move->handle($cards[$done + 1], 'doing', 1, $class->teacher);
                 }
                 if ($done === $cards->count()) {
-                    $board->update(['result_url' => 'https://scratch.mit.edu/projects/1000000'.$board->id, 'result_note' => 'Bagian paling seru: membuat bolanya jatuh makin cepat!']);
+                    $board->update(['result_url' => 'https://scratch.mit.edu/projects/1000000'.$board->id, 'result_note' => 'The most fun part: making the ball fall faster and faster!']);
                 }
             });
         }

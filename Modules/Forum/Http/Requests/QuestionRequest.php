@@ -41,7 +41,7 @@ class QuestionRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['class_room_id' => 'kelas', 'lesson_id' => 'pelajaran', 'title' => 'judul', 'body' => 'pertanyaan', 'image' => 'gambar'];
+        return ['class_room_id' => 'class', 'lesson_id' => 'lesson', 'title' => 'title', 'body' => 'question', 'image' => 'image'];
     }
 
     public function after(): array
@@ -55,7 +55,7 @@ class QuestionRequest extends FormRequest
             $lesson = Lesson::find($this->input('lesson_id'));
 
             if ($lesson->course_id === null || $lesson->course_id !== ClassRoom::find($classId)?->course_id) {
-                $validator->errors()->add('lesson_id', 'Pelajaran ini bukan bagian dari materi kelas tersebut.');
+                $validator->errors()->add('lesson_id', 'This lesson is not part of that class\'s course.');
             }
         }];
     }

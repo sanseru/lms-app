@@ -2,8 +2,8 @@
 
 return [
     /*
-    | Tampilkan "Bintang kelas bulan ini" (5 siswa dengan XP terbanyak bulan
-    | berjalan) di halaman prestasi siswa. Matikan jika tidak ingin ada peringkat.
+    | Show "Class stars this month" (the 5 students with the most XP this
+    | month) on the student achievements page. Turn off if you don't want rankings.
     */
     'leaderboard' => env('GAMIFICATION_LEADERBOARD', true),
 ];

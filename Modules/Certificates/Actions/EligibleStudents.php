@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Certificates\Models\Certificate;
 use Modules\Classes\Models\ClassRoom;
 
-/** Siswa yang sudah menyelesaikan semua pelajaran terbit di kursus kelasnya tetapi belum bersertifikat. */
+/** Students who have finished every published lesson in their class's course but have no certificate yet. */
 class EligibleStudents
 {
     /** @param  Collection<int, ClassRoom>  $classes */

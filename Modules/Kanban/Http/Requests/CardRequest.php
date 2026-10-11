@@ -25,6 +25,6 @@ class CardRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['title' => 'judul kartu'];
+        return ['title' => 'card title'];
     }
 }

@@ -51,9 +51,9 @@ class LessonRequest extends FormRequest
                 $correct = collect($q['options'] ?? [])->filter(fn ($o) => ! empty($o['correct']))->count();
 
                 if ($correct === 0) {
-                    $validator->errors()->add("questions.$i.options", 'Tandai minimal satu jawaban benar.');
+                    $validator->errors()->add("questions.$i.options", 'Mark at least one correct answer.');
                 } elseif (($q['type'] ?? 'single') === 'single' && $correct > 1) {
-                    $validator->errors()->add("questions.$i.options", 'Soal satu jawaban hanya boleh punya satu jawaban benar.');
+                    $validator->errors()->add("questions.$i.options", 'A one-answer question can only have one correct answer.');
                 }
             }
         }];
@@ -62,10 +62,10 @@ class LessonRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'title' => 'judul', 'type' => 'jenis', 'body' => 'isi', 'video_url' => 'link video',
-            'duration_minutes' => 'durasi', 'pass_score' => 'nilai lulus', 'max_attempts' => 'batas percobaan',
-            'max_score' => 'nilai maksimal', 'questions' => 'soal', 'questions.*.prompt' => 'pertanyaan',
-            'questions.*.options' => 'pilihan jawaban', 'questions.*.options.*.text' => 'teks pilihan', 'questions.*.points' => 'poin',
+            'title' => 'title', 'type' => 'type', 'body' => 'content', 'video_url' => 'video link',
+            'duration_minutes' => 'duration', 'pass_score' => 'pass score', 'max_attempts' => 'attempt limit',
+            'max_score' => 'maximum score', 'questions' => 'questions', 'questions.*.prompt' => 'question',
+            'questions.*.options' => 'answer options', 'questions.*.options.*.text' => 'option text', 'questions.*.points' => 'points',
         ];
     }
 }

@@ -8,18 +8,18 @@ const props = defineProps({
 });
 
 const map = {
-    active: ['green', 'Aktif'],
-    inactive: ['gray', 'Nonaktif'],
-    upcoming: ['blue', 'Akan datang'],
-    finished: ['gray', 'Selesai'],
-    unpaid: ['amber', 'Belum bayar'],
-    partial: ['blue', 'Sebagian'],
-    paid: ['green', 'Lunas'],
-    cancelled: ['gray', 'Dibatalkan'],
-    overdue: ['red', 'Terlambat'],
-    pending: ['amber', 'Menunggu verifikasi'],
-    verified: ['green', 'Terverifikasi'],
-    rejected: ['red', 'Ditolak'],
+    active: ['green', 'Active'],
+    inactive: ['gray', 'Inactive'],
+    upcoming: ['blue', 'Upcoming'],
+    finished: ['gray', 'Finished'],
+    unpaid: ['amber', 'Unpaid'],
+    partial: ['blue', 'Partially paid'],
+    paid: ['green', 'Paid'],
+    cancelled: ['gray', 'Cancelled'],
+    overdue: ['red', 'Overdue'],
+    pending: ['amber', 'Awaiting verification'],
+    verified: ['green', 'Verified'],
+    rejected: ['red', 'Rejected'],
 };
 
 const tone = computed(() => map[props.status]?.[0] ?? 'gray');

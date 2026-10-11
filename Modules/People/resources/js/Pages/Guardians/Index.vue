@@ -14,21 +14,21 @@ const props = defineProps({ guardians: Object, filters: Object });
 
 const filters = useFilters({ search: props.filters.search ?? '' }, 'people.guardians.index');
 const confirm = useConfirm();
-const relationLabel = { ayah: 'Ayah', ibu: 'Ibu', wali: 'Wali' };
+const relationLabel = { ayah: 'Father', ibu: 'Mother', wali: 'Guardian' };
 </script>
 
 <template>
-    <Head title="Orang Tua" />
+    <Head title="Parents" />
 
-    <PageHeader eyebrow="Pengguna" title="Orang tua" description="Akun orang tua untuk memantau jadwal dan membayar tagihan anak.">
+    <PageHeader eyebrow="People" title="Parents" description="Parent accounts for following their child's schedule and paying invoices.">
         <template #actions>
-            <Link :href="route('people.guardians.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Tambah orang tua</Link>
+            <Link :href="route('people.guardians.create')" class="btn-accent"><Icon name="user-plus" :size="18" /> Add parent</Link>
         </template>
     </PageHeader>
 
     <div class="card overflow-hidden">
         <div class="border-b border-line p-4">
-            <SearchInput v-model="filters.search" placeholder="Cari nama, HP, atau nama anak…" />
+            <SearchInput v-model="filters.search" placeholder="Search by name, phone or child's name…" />
         </div>
 
         <ul v-if="guardians.data.length" class="divide-y divide-line">
@@ -45,14 +45,14 @@ const relationLabel = { ayah: 'Ayah', ibu: 'Ibu', wali: 'Wali' };
                 </div>
                 <div class="flex flex-wrap gap-1.5 sm:w-72">
                     <span v-for="child in guardian.children" :key="child.id" class="rounded-full bg-sky-soft px-2.5 py-1 text-xs font-semibold text-sky-ink">{{ child.name }}</span>
-                    <span v-if="!guardian.children.length" class="text-xs font-semibold text-amber-700">Belum ada anak terhubung</span>
+                    <span v-if="!guardian.children.length" class="text-xs font-semibold text-amber-700">No children linked yet</span>
                 </div>
                 <div class="flex gap-1">
-                    <Link :href="route('people.guardians.edit', guardian.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Ubah"><Icon name="pencil" :size="16" /></Link>
+                    <Link :href="route('people.guardians.edit', guardian.id)" class="rounded-lg p-2 text-muted hover:bg-brand-50 hover:text-brand-600" title="Edit"><Icon name="pencil" :size="16" /></Link>
                     <button
                         class="rounded-lg p-2 text-muted hover:bg-rose-50 hover:text-rose-600"
-                        title="Hapus"
-                        @click="confirm.ask({ title: `Hapus ${guardian.name}?`, message: 'Hubungan dengan data anak juga akan dilepas.', url: route('people.guardians.destroy', guardian.id) })"
+                        title="Delete"
+                        @click="confirm.ask({ title: `Delete ${guardian.name}?`, message: 'Their links to children will also be removed.', url: route('people.guardians.destroy', guardian.id) })"
                     >
                         <Icon name="trash" :size="16" />
                     </button>
@@ -60,7 +60,7 @@ const relationLabel = { ayah: 'Ayah', ibu: 'Ibu', wali: 'Wali' };
             </li>
         </ul>
 
-        <EmptyState v-else icon="users" title="Belum ada orang tua" description="Tambahkan akun orang tua lalu hubungkan dengan anaknya." />
+        <EmptyState v-else icon="users" title="No parents yet" description="Add a parent account, then link it to their children." />
 
         <Pagination :meta="guardians" />
     </div>

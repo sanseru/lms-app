@@ -35,62 +35,62 @@ const submit = () =>
 </script>
 
 <template>
-    <Head :title="student ? 'Ubah siswa' : 'Tambah siswa'" />
+    <Head :title="student ? 'Edit student' : 'Add student'" />
 
-    <PageHeader :eyebrow="student ? student.code : 'Siswa baru'" :title="student ? student.name : 'Tambah siswa'">
+    <PageHeader :eyebrow="student ? student.code : 'New student'" :title="student ? student.name : 'Add student'">
         <template #back>
             <Link :href="route('people.students.index')" class="mb-3 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600">
-                <Icon name="arrow-left" :size="16" /> Daftar siswa
+                <Icon name="arrow-left" :size="16" /> Student list
             </Link>
         </template>
     </PageHeader>
 
     <form class="card p-6 sm:p-8" @submit.prevent="submit">
-        <FormSection title="Akun login" description="Anak bisa login dengan username tanpa email.">
+        <FormSection title="Login account" description="Kids can log in with a username, no email needed.">
             <AccountFields :form="form" :editing="!!student" />
         </FormSection>
 
-        <FormSection title="Data siswa" description="Informasi untuk admin dan guru.">
-            <Field id="birth_date" label="Tanggal lahir" :error="form.errors.birth_date">
+        <FormSection title="Student details" description="Information for admins and teachers.">
+            <Field id="birth_date" label="Date of birth" :error="form.errors.birth_date">
                 <input id="birth_date" v-model="form.birth_date" type="date" class="field" />
             </Field>
-            <Field id="gender" label="Jenis kelamin" :error="form.errors.gender">
+            <Field id="gender" label="Gender" :error="form.errors.gender">
                 <select id="gender" v-model="form.gender" class="field">
                     <option value="">–</option>
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
+                    <option value="L">Male</option>
+                    <option value="P">Female</option>
                 </select>
             </Field>
-            <Field id="school" label="Asal sekolah" :error="form.errors.school">
+            <Field id="school" label="School" :error="form.errors.school">
                 <input id="school" v-model="form.school" type="text" class="field" />
             </Field>
-            <Field id="grade" label="Kelas di sekolah" :error="form.errors.grade">
-                <input id="grade" v-model="form.grade" type="text" class="field" placeholder="mis. 5 SD" />
+            <Field id="grade" label="School grade" :error="form.errors.grade">
+                <input id="grade" v-model="form.grade" type="text" class="field" placeholder="e.g. Grade 5" />
             </Field>
-            <Field id="joined_at" label="Tanggal bergabung" :error="form.errors.joined_at">
+            <Field id="joined_at" label="Join date" :error="form.errors.joined_at">
                 <input id="joined_at" v-model="form.joined_at" type="date" class="field" />
             </Field>
-            <Field id="address" label="Alamat" :error="form.errors.address" class="sm:col-span-2">
+            <Field id="address" label="Address" :error="form.errors.address" class="sm:col-span-2">
                 <textarea id="address" v-model="form.address" rows="2" class="field" />
             </Field>
-            <Field id="notes" label="Catatan" :error="form.errors.notes" class="sm:col-span-2" hint="Minat, kebutuhan khusus, atau catatan lain.">
+            <Field id="notes" label="Notes" :error="form.errors.notes" class="sm:col-span-2" hint="Interests, special needs or other notes.">
                 <textarea id="notes" v-model="form.notes" rows="3" class="field" />
             </Field>
         </FormSection>
 
-        <FormSection title="Orang tua / wali" description="Orang tua bisa melihat jadwal dan tagihan anaknya.">
+        <FormSection title="Parents / guardians" description="Parents can see their child's schedule and invoices.">
             <div class="sm:col-span-2">
-                <CheckList v-model="form.guardian_ids" :options="guardians" :subtitle="(g) => g.phone" empty="Belum ada akun orang tua." />
+                <CheckList v-model="form.guardian_ids" :options="guardians" :subtitle="(g) => g.phone" empty="No parent accounts yet." />
                 <p class="mt-2 text-sm text-muted">
-                    Orang tua belum terdaftar?
-                    <Link :href="route('people.guardians.create')" class="font-semibold text-brand-600 hover:underline">Tambah orang tua</Link>
+                    Parent not registered yet?
+                    <Link :href="route('people.guardians.create')" class="font-semibold text-brand-600 hover:underline">Add parent</Link>
                 </p>
             </div>
         </FormSection>
 
         <div class="flex justify-end gap-2 border-t border-line pt-6">
-            <Link :href="route('people.students.index')" class="btn-ghost">Batal</Link>
-            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Simpan</button>
+            <Link :href="route('people.students.index')" class="btn-ghost">Cancel</Link>
+            <button type="submit" class="btn-primary" :disabled="form.processing"><Icon name="check" :size="18" /> Save</button>
         </div>
     </form>
 </template>

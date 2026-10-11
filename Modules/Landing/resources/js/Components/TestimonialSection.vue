@@ -7,8 +7,8 @@ const avatarTones = ['bg-accent-50 text-accent-600', 'bg-brand-50 text-brand-600
 <template>
     <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6" aria-labelledby="h-testi">
         <div class="flex flex-wrap items-center gap-3">
-            <h2 id="h-testi" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Kata orang tua</h2>
-            <span class="rounded-full border border-dashed border-accent-500 px-3 py-1 text-xs font-bold text-accent-600">Contoh teks, ganti dengan testimoni asli</span>
+            <h2 id="h-testi" class="text-3xl font-extrabold tracking-tight sm:text-4xl">What parents say</h2>
+            <span class="rounded-full border border-dashed border-accent-500 px-3 py-1 text-xs font-bold text-accent-600">Sample text, replace with real testimonials</span>
         </div>
         <div class="mt-10 grid gap-5 md:grid-cols-3">
             <figure v-for="(t, i) in testimonials" :key="i" class="card flex flex-col p-6">

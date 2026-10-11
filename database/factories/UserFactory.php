@@ -45,7 +45,7 @@ class UserFactory extends Factory
         ]);
     }
 
-    /** Beri role setelah user dibuat (role harus sudah di-seed). */
+    /** Assign a role after the user is created (roles must already be seeded). */
     public function withRole(string $role): static
     {
         return $this->afterCreating(fn ($user) => $user->assignRole($role));

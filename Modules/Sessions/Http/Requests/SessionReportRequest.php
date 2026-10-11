@@ -12,7 +12,7 @@ class SessionReportRequest extends FormRequest
     {
         $session = $this->route('session');
 
-        // Admin lolos Gate::before, jadi status batal/dipindah dicek eksplisit.
+        // Admins pass Gate::before, so cancelled/rescheduled status is checked explicitly.
         return $session->isReportable() && $this->user()->can('report', $session);
     }
 
@@ -35,10 +35,10 @@ class SessionReportRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'topic' => 'materi yang dibahas',
-            'homework' => 'PR',
-            'parent_note' => 'catatan untuk orang tua',
-            'recording_url' => 'link rekaman',
+            'topic' => 'topic covered',
+            'homework' => 'homework',
+            'parent_note' => 'note for parents',
+            'recording_url' => 'recording link',
         ];
     }
 }

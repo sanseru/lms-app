@@ -29,17 +29,17 @@ class SubmissionRequest extends FormRequest
             $existing = $this->route('lesson')->submissions()->where('student_id', $this->user()->id)->first();
 
             if ($existing?->status === 'graded') {
-                $validator->errors()->add('body', 'Tugas sudah dinilai dan tidak bisa dikumpulkan ulang.');
+                $validator->errors()->add('body', 'This assignment has been graded and can no longer be resubmitted.');
             }
 
             if (! $this->filled('body') && ! $this->filled('link_url') && ! $this->hasFile('file') && ! $existing?->file_path) {
-                $validator->errors()->add('body', 'Isi jawaban, tautan, atau unggah berkas.');
+                $validator->errors()->add('body', 'Write an answer, add a link, or upload a file.');
             }
         }];
     }
 
     public function attributes(): array
     {
-        return ['body' => 'jawaban', 'link_url' => 'tautan', 'file' => 'berkas'];
+        return ['body' => 'answer', 'link_url' => 'link', 'file' => 'file'];
     }
 }

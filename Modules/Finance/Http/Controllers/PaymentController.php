@@ -16,8 +16,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class PaymentController extends Controller
 {
     /**
-     * Orang tua mengunggah bukti transfer (status menunggu verifikasi),
-     * atau admin mencatat pembayaran yang langsung terverifikasi.
+     * A parent uploads transfer proof (pending verification),
+     * or an admin records a payment that is verified straight away.
      */
     public function store(PaymentRequest $request, Invoice $invoice): RedirectResponse
     {
@@ -38,8 +38,8 @@ class PaymentController extends Controller
         });
 
         return back()->with('success', $isAdmin
-            ? 'Pembayaran dicatat dan tagihan diperbarui.'
-            : 'Bukti transfer terkirim. Admin akan memverifikasi pembayaran Anda.');
+            ? 'Payment recorded and invoice updated.'
+            : 'Transfer proof sent. An admin will verify your payment.');
     }
 
     public function verify(Request $request, Payment $payment): RedirectResponse
@@ -51,17 +51,17 @@ class PaymentController extends Controller
             $payment->invoice->recalculate();
         });
 
-        return back()->with('success', 'Pembayaran diverifikasi.');
+        return back()->with('success', 'Payment verified.');
     }
 
     public function reject(Request $request, Payment $payment): RedirectResponse
     {
         abort_unless($payment->status === 'pending', 422);
-        $data = $request->validate(['reason' => ['required', 'string', 'max:255']], [], ['reason' => 'alasan']);
+        $data = $request->validate(['reason' => ['required', 'string', 'max:255']], [], ['reason' => 'reason']);
 
         $payment->update(['status' => 'rejected', 'verified_by' => $request->user()->id, 'verified_at' => now(), 'rejection_reason' => $data['reason']]);
 
-        return back()->with('success', 'Pembayaran ditolak.');
+        return back()->with('success', 'Payment rejected.');
     }
 
     public function proof(Payment $payment): StreamedResponse

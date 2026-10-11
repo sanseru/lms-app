@@ -3,9 +3,9 @@
 namespace Modules\Coding\Grading;
 
 /**
- * Membungkus kode siswa agar fungsi dipanggil dengan argumen tes dan nilai baliknya
- * dicetak sebagai JSON. Versi JavaScript-nya ada di resources/js/lib/harness.js;
- * keduanya harus menghasilkan format yang sama.
+ * Wraps student code so the function is called with the test arguments and its return
+ * value is printed as JSON. The JavaScript version lives in resources/js/lib/harness.js;
+ * both must produce the same format.
  */
 class Harness
 {
@@ -21,7 +21,7 @@ class Harness
         return $code."\n;console.log('\\n__RESULT__' + JSON.stringify({$function}(...".$argsJson.')));'."\n";
     }
 
-    /** Ambil nilai balik dari output harness. */
+    /** Extract the return value from the harness output. */
     public static function extract(?string $output): ?string
     {
         if ($output === null || ! str_contains($output, '__RESULT__')) {

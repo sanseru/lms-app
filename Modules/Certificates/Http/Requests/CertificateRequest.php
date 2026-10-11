@@ -27,7 +27,7 @@ class CertificateRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['student_id' => 'siswa', 'class_room_id' => 'kelas', 'title' => 'judul', 'achievement' => 'keterangan', 'issued_at' => 'tanggal terbit'];
+        return ['student_id' => 'student', 'class_room_id' => 'class', 'title' => 'title', 'achievement' => 'description', 'issued_at' => 'issue date'];
     }
 
     public function after(): array
@@ -40,16 +40,16 @@ class CertificateRequest extends FormRequest
             $class = ClassRoom::find($this->input('class_room_id'));
 
             if (! $this->user()->hasRole('admin') && $class->teacher_id !== $this->user()->id) {
-                $validator->errors()->add('class_room_id', 'Kamu hanya bisa menerbitkan sertifikat untuk kelas yang kamu ajar.');
+                $validator->errors()->add('class_room_id', 'You can only issue certificates for classes you teach.');
             }
             if (! $class->students()->whereKey($this->input('student_id'))->exists()) {
-                $validator->errors()->add('student_id', 'Siswa ini tidak terdaftar di kelas tersebut.');
+                $validator->errors()->add('student_id', 'This student is not enrolled in that class.');
             }
             if ($this->filled('course_id') && (int) $this->input('course_id') !== $class->course_id) {
-                $validator->errors()->add('course_id', 'Kursus tidak sesuai dengan kelas.');
+                $validator->errors()->add('course_id', 'The course does not match the class.');
             }
             if (! $this->filled('course_id') && ! $this->filled('title')) {
-                $validator->errors()->add('title', 'Isi judul sertifikat.');
+                $validator->errors()->add('title', 'Enter a certificate title.');
             }
         }];
     }

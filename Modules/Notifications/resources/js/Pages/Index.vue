@@ -11,11 +11,11 @@ const readAll = () => router.post(route('notifications.read-all'), {}, { preserv
 </script>
 
 <template>
-    <Head title="Notifikasi" />
+    <Head title="Notifications" />
 
-    <PageHeader eyebrow="Kabar terbaru" title="Notifikasi" description="Tagihan, pembayaran, nilai tugas, jawaban pertanyaan, dan ringkasan sesi.">
+    <PageHeader eyebrow="Latest news" title="Notifications" description="Invoices, payments, assignment grades, answers to questions and session summaries.">
         <template #actions>
-            <button v-if="items.data.some((n) => !n.read)" class="btn-ghost" @click="readAll"><Icon name="check" :size="16" /> Tandai semua dibaca</button>
+            <button v-if="items.data.some((n) => !n.read)" class="btn-ghost" @click="readAll"><Icon name="check" :size="16" /> Mark all as read</button>
         </template>
     </PageHeader>
 
@@ -37,11 +37,11 @@ const readAll = () => router.post(route('notifications.read-all'), {}, { preserv
                         </span>
                         <span v-if="n.body" class="mt-0.5 block text-sm text-muted">{{ n.body }}</span>
                     </span>
-                    <span v-if="!n.read" class="mt-2 size-2 shrink-0 rounded-full bg-accent-500" aria-label="Belum dibaca" />
+                    <span v-if="!n.read" class="mt-2 size-2 shrink-0 rounded-full bg-accent-500" aria-label="Unread" />
                 </Link>
             </li>
         </ul>
-        <EmptyState v-else icon="bell" title="Belum ada notifikasi" description="Kabar soal tagihan, nilai, dan jawaban pertanyaan akan muncul di sini." />
+        <EmptyState v-else icon="bell" title="No notifications yet" description="News about invoices, grades and answers to your questions will show up here." />
         <Pagination :meta="items" />
     </div>
 </template>

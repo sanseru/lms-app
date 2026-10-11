@@ -7,7 +7,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Alprogmatics';
 
-// Halaman inti (resources/js/Pages) dan halaman modul (Modules/<Nama>/resources/js/Pages).
+// Core pages (resources/js/Pages) and module pages (Modules/<Name>/resources/js/Pages).
 const corePages = import.meta.glob('./Pages/**/*.vue');
 const modulePages = import.meta.glob('../../Modules/*/resources/js/Pages/**/*.vue');
 
@@ -23,12 +23,12 @@ async function resolvePage(name) {
     const loader = (module ? modulePages : corePages)[path];
 
     if (!loader) {
-        throw new Error(`Halaman Inertia tidak ditemukan: ${name}`);
+        throw new Error(`Inertia page not found: ${name}`);
     }
 
     const component = (await loader()).default;
-    // Semua halaman memakai AppLayout, kecuali halaman Auth dan halaman yang
-    // menentukan layout sendiri (defineOptions({ layout: null }) untuk halaman publik).
+    // Every page uses AppLayout, except Auth pages and pages that set their
+    // own layout (defineOptions({ layout: null }) for public pages).
     if (component.layout === undefined && !name.startsWith('Auth/')) {
         component.layout = AppLayout;
     }

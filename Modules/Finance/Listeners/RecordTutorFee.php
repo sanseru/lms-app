@@ -5,7 +5,7 @@ namespace Modules\Finance\Listeners;
 use Modules\Finance\Models\PayrollItem;
 use Modules\Sessions\Events\SessionCompleted;
 
-/** Catat honor tutor untuk sesi selesai (sekali per sesi, tidak diubah setelah masuk slip). */
+/** Record the tutor fee for a completed session (once per session, frozen once it is on a pay slip). */
 class RecordTutorFee
 {
     public function handle(SessionCompleted $event): void

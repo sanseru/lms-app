@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Learning\Models\AssignmentSubmission;
 
-/** Antrean tugas yang perlu dinilai guru. */
+/** Queue of assignments waiting for the teacher to grade. */
 class GradingController extends Controller
 {
     public function index(Request $request): Response

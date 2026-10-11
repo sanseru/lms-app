@@ -57,7 +57,7 @@ class GuardianController extends Controller
     {
         $guardian = $save->guardian($request->validated());
 
-        return to_route('people.guardians.index')->with('success', "Orang tua {$guardian->name} berhasil ditambahkan.");
+        return to_route('people.guardians.index')->with('success', "Parent {$guardian->name} added.");
     }
 
     public function edit(User $guardian): Response
@@ -85,7 +85,7 @@ class GuardianController extends Controller
         abort_unless($guardian->hasRole(Role::Guardian->value), 404);
         $save->guardian($request->validated(), $guardian);
 
-        return to_route('people.guardians.index')->with('success', "Data {$guardian->name} berhasil diperbarui.");
+        return to_route('people.guardians.index')->with('success', "{$guardian->name}'s details updated.");
     }
 
     public function destroy(User $guardian): RedirectResponse
@@ -94,7 +94,7 @@ class GuardianController extends Controller
         $guardian->children()->detach();
         $guardian->delete();
 
-        return back()->with('success', "Orang tua {$guardian->name} dihapus.");
+        return back()->with('success', "Parent {$guardian->name} deleted.");
     }
 
     private function studentOptions()

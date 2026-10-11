@@ -10,8 +10,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 /**
- * Membuat role dasar dan semua permission yang dideklarasikan modul aktif.
- * Aman dijalankan berulang kali.
+ * Creates the base roles and every permission declared by enabled modules.
+ * Safe to run repeatedly.
  */
 class RolesAndPermissionsSeeder extends Seeder
 {

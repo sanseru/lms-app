@@ -10,7 +10,7 @@ use Modules\People\Models\StudentProfile;
 use Modules\People\Models\TeacherProfile;
 
 /**
- * Membuat atau memperbarui akun beserta profil sesuai role.
+ * Creates or updates an account along with its role profile.
  */
 class SavePerson
 {

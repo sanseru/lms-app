@@ -101,7 +101,7 @@ class SessionController extends Controller
         $wasCompleted = $session->status === 'completed';
         $complete->handle($session, $request->validated(), $request->user());
 
-        return to_route('sessions.show', $session)->with('success', $wasCompleted ? 'Laporan sesi diperbarui.' : 'Sesi selesai. Absensi dan catatan tersimpan.');
+        return to_route('sessions.show', $session)->with('success', $wasCompleted ? 'Session report updated.' : 'Session completed. Attendance and notes saved.');
     }
 
     public function cancel(Request $request, ClassSession $session): RedirectResponse
@@ -109,13 +109,13 @@ class SessionController extends Controller
         Gate::authorize('cancel', $session);
         abort_unless($session->status === 'scheduled', 422);
 
-        $data = $request->validate(['reason' => ['required', 'string', 'max:255']], [], ['reason' => 'alasan']);
+        $data = $request->validate(['reason' => ['required', 'string', 'max:255']], [], ['reason' => 'reason']);
         $session->update(['status' => 'cancelled', 'cancel_reason' => $data['reason']]);
 
-        return back()->with('success', 'Sesi dibatalkan. Kuota siswa tidak terpotong.');
+        return back()->with('success', 'Session cancelled. Student quotas were not deducted.');
     }
 
-    /** Pindah jadwal sesi, atau buat sesi pengganti untuk sesi yang dibatalkan. */
+    /** Reschedule a session, or create a replacement for a cancelled session. */
     public function reschedule(RescheduleRequest $request, ClassSession $session, RescheduleSession $reschedule): RedirectResponse
     {
         $data = $request->validated();
@@ -126,7 +126,7 @@ class SessionController extends Controller
             $data['reason'],
         );
 
-        return to_route('sessions.show', $new)->with('success', 'Sesi pengganti dibuat '.$new->starts_at->translatedFormat('l, d M Y H:i').'.');
+        return to_route('sessions.show', $new)->with('success', 'Replacement session created for '.$new->starts_at->translatedFormat('l, d M Y H:i').'.');
     }
 
     private static function link(ClassSession $s): array
@@ -145,6 +145,6 @@ class SessionController extends Controller
 
         $count = $generator->forClass($class, now(), now()->addWeeks($data['weeks']));
 
-        return back()->with('success', "{$count} sesi baru dibuat.");
+        return back()->with('success', "{$count} new session(s) created.");
     }
 }

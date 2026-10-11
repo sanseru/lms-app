@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Slip honor tutor untuk satu periode. */
+/** Tutor pay slip for one period. */
 class TeacherPayout extends Model
 {
-    public const STATUSES = ['unpaid' => 'Belum dibayar', 'paid' => 'Sudah dibayar'];
+    public const STATUSES = ['unpaid' => 'Unpaid', 'paid' => 'Paid'];
 
     protected $fillable = ['number', 'teacher_id', 'period_start', 'period_end', 'sessions_count', 'subtotal', 'bonus', 'deduction', 'total', 'status', 'paid_at', 'proof_path', 'notes', 'created_by'];
 

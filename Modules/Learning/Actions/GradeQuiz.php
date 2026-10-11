@@ -7,10 +7,10 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\QuizAttempt;
 
-/** Menilai jawaban kuis secara otomatis dan mencatat percobaannya. */
+/** Auto-grades quiz answers and records the attempt. */
 class GradeQuiz
 {
-    /** @param  array<int|string, array<int>|int|null>  $answers  question_id => indeks opsi */
+    /** @param  array<int|string, array<int>|int|null>  $answers  question_id => option index */
     public function handle(Lesson $lesson, User $student, array $answers): QuizAttempt
     {
         $questions = $lesson->questions()->get();

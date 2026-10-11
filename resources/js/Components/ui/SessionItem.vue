@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import { classColors } from '@/lib/format';
 import Icon from './Icon.vue';
 
-/** Baris satu sesi (data dari ClassSession::toItem). */
+/** One session row (data from ClassSession::toItem). */
 const props = defineProps({
     session: { type: Object, required: true },
     showTeacher: { type: Boolean, default: true },
@@ -30,14 +30,14 @@ const color = computed(() => classColors[props.session.class?.color] ?? classCol
             </p>
         </Link>
         <span v-if="session.status === 'completed'" class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-700">
-            <Icon name="check" :size="16" /> <span class="sr-only sm:not-sr-only">Selesai</span>
+            <Icon name="check" :size="16" /> <span class="sr-only sm:not-sr-only">Done</span>
         </span>
         <span v-else-if="session.status === 'cancelled' || session.status === 'rescheduled'" class="shrink-0 text-sm font-semibold text-muted">{{ session.status_label }}</span>
         <Link v-else-if="session.needs_report" :href="route('sessions.show', session.id)" class="btn-primary shrink-0 px-3 py-2">
-            <Icon name="clipboard-check" :size="16" /> <span class="sr-only sm:not-sr-only">Isi absensi</span>
+            <Icon name="clipboard-check" :size="16" /> <span class="sr-only sm:not-sr-only">Take attendance</span>
         </Link>
         <a v-else-if="session.zoom_url" :href="session.zoom_url" target="_blank" rel="noopener" class="btn-accent shrink-0 px-3 py-2">
-            <Icon name="video" :size="16" /> <span class="sr-only sm:not-sr-only">Masuk Zoom</span>
+            <Icon name="video" :size="16" /> <span class="sr-only sm:not-sr-only">Join Zoom</span>
         </a>
     </div>
 </template>

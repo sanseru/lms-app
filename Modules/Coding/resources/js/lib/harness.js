@@ -1,4 +1,4 @@
-// Pembungkus kode siswa untuk mode "fungsi". Harus sama dengan Modules/Coding/Grading/Harness.php.
+// Wraps student code for "function" mode. Must match Modules/Coding/Grading/Harness.php.
 export const pythonHarness = (code, fn, argsJson) =>
     `${code}\n\nimport json as __json\nprint('\\n__RESULT__' + __json.dumps(${fn}(*__json.loads(${JSON.stringify(argsJson)}))))\n`;
 

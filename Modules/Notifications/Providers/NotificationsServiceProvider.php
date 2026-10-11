@@ -16,10 +16,10 @@ use Modules\Notifications\Listeners\NotifyActivity;
 use Modules\Sessions\Events\SessionCompleted;
 
 /**
- * Notifikasi in-app (lonceng di header + halaman /notifikasi).
+ * In-app notifications (bell in the header + the /notifications page).
  *
- * Modul ini hanya mendengarkan event dan perubahan model modul lain,
- * sehingga modul sumber tidak perlu tahu notifikasi itu ada.
+ * This module only listens to other modules' events and model changes,
+ * so source modules do not need to know notifications exist.
  */
 class NotificationsServiceProvider extends ModuleServiceProvider
 {
@@ -42,7 +42,7 @@ class NotificationsServiceProvider extends ModuleServiceProvider
         Question::created(fn (Question $question) => $notify()->questionAsked($question));
         Answer::created(fn (Answer $answer) => $notify()->questionAnswered($answer));
 
-        // Lonceng di header: jumlah belum dibaca + 6 terbaru.
+        // Header bell: unread count + 6 latest.
         Inertia::share('notifications', function () {
             $user = auth()->user();
 

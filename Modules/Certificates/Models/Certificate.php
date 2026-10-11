@@ -47,7 +47,7 @@ class Certificate extends Model
         return $query->whereNull('revoked_at');
     }
 
-    /** Sertifikat yang boleh dilihat: milik sendiri, anak, siswa di kelas yang diajar, atau semua (admin). */
+    /** Visible certificates: your own, your child's, students in classes you teach, or all (admin). */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->hasRole('admin')) {
@@ -60,7 +60,7 @@ class Certificate extends Model
             ->orWhereIn('class_room_id', $user->teachingClasses()->select('id')));
     }
 
-    /** Nomor urut per bulan, mis. ALP/2026/10/0007. */
+    /** Running number per month, e.g. ALP/2026/10/0007. */
     public static function nextNumber(): string
     {
         $prefix = 'ALP/'.now()->format('Y/m').'/';

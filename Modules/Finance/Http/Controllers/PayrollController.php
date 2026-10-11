@@ -16,8 +16,8 @@ use Modules\Finance\Models\TeacherPayout;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Honor tutor: item honor tercatat otomatis dari sesi selesai,
- * admin merekap per periode menjadi slip lalu menandai dibayar.
+ * Tutor fees: fee items are recorded automatically from completed sessions;
+ * the admin bundles them per period into a pay slip, then marks it paid.
  */
 class PayrollController extends Controller
 {
@@ -106,10 +106,10 @@ class PayrollController extends Controller
         });
 
         if (! $payout) {
-            return back()->with('error', 'Tidak ada sesi yang belum direkap pada periode ini.');
+            return back()->with('error', 'There are no unbundled sessions in this period.');
         }
 
-        return to_route('finance.payroll.show', $payout)->with('success', 'Slip honor dibuat.');
+        return to_route('finance.payroll.show', $payout)->with('success', 'Pay slip created.');
     }
 
     public function show(Request $request, TeacherPayout $payout): Response
@@ -150,7 +150,7 @@ class PayrollController extends Controller
         $data = $request->validate([
             'paid_at' => ['required', 'date', 'before_or_equal:today'],
             'proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:4096'],
-        ], [], ['paid_at' => 'tanggal bayar', 'proof' => 'bukti transfer']);
+        ], [], ['paid_at' => 'payment date', 'proof' => 'transfer proof']);
 
         $payout->update([
             'status' => 'paid',
@@ -158,7 +158,7 @@ class PayrollController extends Controller
             'proof_path' => $request->file('proof')?->store("payout-proofs/{$payout->id}", 'local'),
         ]);
 
-        return back()->with('success', 'Honor ditandai sudah dibayar.');
+        return back()->with('success', 'Fees marked as paid.');
     }
 
     public function destroy(TeacherPayout $payout): RedirectResponse
@@ -170,7 +170,7 @@ class PayrollController extends Controller
             $payout->delete();
         });
 
-        return to_route('finance.payroll.index', ['month' => $payout->period_start->format('Y-m')])->with('success', 'Slip dihapus, sesi kembali ke daftar belum direkap.');
+        return to_route('finance.payroll.index', ['month' => $payout->period_start->format('Y-m')])->with('success', 'Pay slip deleted. Its sessions are back in the unbundled list.');
     }
 
     public function proof(Request $request, TeacherPayout $payout): StreamedResponse
@@ -181,7 +181,7 @@ class PayrollController extends Controller
         return Storage::disk('local')->response($payout->proof_path);
     }
 
-    /** Halaman guru: honor yang belum direkap dan slip miliknya. */
+    /** Teacher page: their unbundled fees and their own pay slips. */
     public function mine(Request $request): Response
     {
         $user = $request->user();

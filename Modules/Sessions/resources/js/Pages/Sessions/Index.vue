@@ -8,25 +8,25 @@ import SessionItem from '@/Components/ui/SessionItem.vue';
 const props = defineProps({ sessions: Object, tab: String, counts: Object });
 
 const tabs = [
-    ['needs_report', 'Perlu diisi'],
-    ['upcoming', 'Akan datang'],
-    ['completed', 'Selesai'],
-    ['flagged', 'Ditandai'],
-    ['cancelled', 'Batal'],
+    ['needs_report', 'Needs report'],
+    ['upcoming', 'Upcoming'],
+    ['completed', 'Completed'],
+    ['flagged', 'Flagged'],
+    ['cancelled', 'Cancelled'],
 ];
 const empty = {
-    needs_report: ['Semua absensi sudah diisi', 'Mantap! Tidak ada sesi yang tertinggal.'],
-    upcoming: ['Belum ada sesi terjadwal', 'Sesi dibuat otomatis dari jadwal mingguan kelas.'],
-    completed: ['Belum ada sesi selesai', null],
-    flagged: ['Tidak ada sesi yang ditandai', 'Guru bisa menandai sesi bermasalah saat mengisi absensi.'],
-    cancelled: ['Tidak ada sesi batal', null],
+    needs_report: ['All attendance is filled in', 'Great job! No sessions left behind.'],
+    upcoming: ['No scheduled sessions yet', 'Sessions are created automatically from the weekly class schedule.'],
+    completed: ['No completed sessions yet', null],
+    flagged: ['No flagged sessions', 'Teachers can flag a session with problems while filling in attendance.'],
+    cancelled: ['No cancelled sessions', null],
 };
 </script>
 
 <template>
-    <Head title="Sesi & Absensi" />
+    <Head title="Sessions & attendance" />
 
-    <PageHeader eyebrow="Akademik" title="Sesi & absensi" description="Isi absensi dan catatan setiap sesi dalam satu layar. Kuota siswa dan honor tutor ikut tercatat otomatis." />
+    <PageHeader eyebrow="Academic" title="Sessions & attendance" description="Fill in attendance and notes for each session on one screen. Student quotas and tutor fees are recorded automatically." />
 
     <div class="mb-4 flex gap-2 overflow-x-auto pb-1">
         <Link

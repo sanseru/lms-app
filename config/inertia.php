@@ -84,8 +84,8 @@ return [
 
     'testing' => [
 
-        // Halaman modul memakai format "Modul::Halaman" yang tidak dikenali
-        // pemeriksa bawaan; keberadaannya diuji di tests/Feature/ModulePagesTest.php.
+        // Module pages use the "Module::Page" format the built-in checker does
+        // not understand; their existence is tested in tests/Feature/ModulePagesTest.php.
         'ensure_pages_exist' => false,
 
         'page_paths' => [

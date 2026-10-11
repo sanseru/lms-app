@@ -17,8 +17,8 @@ const user = usePage().props.auth.user;
 </script>
 
 <template>
-    <Head title="Kelas Coding Online untuk Anak">
-        <meta name="description" content="Kelas coding online untuk anak 6–17 tahun via Zoom. Privat atau kelompok, tutor berpengalaman, laporan perkembangan untuk orang tua." />
+    <Head title="Online Coding Classes for Kids">
+        <meta name="description" content="Online coding classes on Zoom for kids aged 6–17. Private or small-group lessons with experienced teachers, plus progress reports for parents." />
     </Head>
     <div class="landing min-h-full bg-paper text-base text-ink">
         <LandingHeader :user="user" />

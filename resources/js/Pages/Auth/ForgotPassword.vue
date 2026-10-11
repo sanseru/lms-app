@@ -23,7 +23,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Forgot Password" />
+        <Head title="Forgot password" />
 
         <div class="mb-4 text-sm text-muted">
             Forgot your password? No problem. Just let us know your email
@@ -60,7 +60,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Email Password Reset Link
+                    Email password reset link
                 </PrimaryButton>
             </div>
         </form>

@@ -1,8 +1,8 @@
 import { extractResult, jsHarness, pythonHarness } from './harness';
 
 /**
- * Menjalankan kode siswa di browser. Python lewat Pyodide, JavaScript lewat Web Worker,
- * HTML/CSS di iframe sandbox. Kode tidak pernah dijalankan di server Laravel.
+ * Runs student code in the browser. Python via Pyodide, JavaScript via a Web Worker,
+ * HTML/CSS in a sandboxed iframe. Code never runs on the Laravel server.
  */
 let pyWorker = null;
 let pyReady = null;
@@ -29,7 +29,7 @@ function call(worker, message, timeoutMs, onTimeout) {
     });
 }
 
-/** Muat Pyodide lebih awal supaya tombol Jalankan terasa cepat. */
+/** Load Pyodide early so the Run button feels fast. */
 export function preparePython(indexURL) {
     if (!pyWorker) pyWorker = makePyWorker();
     if (!pyReady) {
@@ -47,7 +47,7 @@ function resetPython() {
     pyReady = null;
 }
 
-const timeoutResults = (jobs) => Object.fromEntries(jobs.map((j) => [j.key, { output: '', error: 'Waktu habis' }]));
+const timeoutResults = (jobs) => Object.fromEntries(jobs.map((j) => [j.key, { output: '', error: 'Time limit reached' }]));
 
 async function runJobs(language, jobs, { timeLimitMs, indexURL }) {
     const budget = timeLimitMs * Math.max(1, jobs.length) + 500;
@@ -71,14 +71,14 @@ async function runJobs(language, jobs, { timeLimitMs, indexURL }) {
     }
 }
 
-/** Jalankan bebas (tanpa tes): untuk tombol "Jalankan". */
+/** Free run (no tests): for the "Run" button. */
 export async function runFree(language, code, stdin, opts) {
     return (await runJobs(language, [{ key: 'free', code, stdin }], opts)).free;
 }
 
 /**
- * Jalankan semua tes input→output / fungsi.
- * @returns {Promise<Record<number, {output: string, error: string|null}>>} output mentah per id tes
+ * Run every input→output / function test.
+ * @returns {Promise<Record<number, {output: string, error: string|null}>>} raw output per test id
  */
 export async function runTests(exercise, code, tests, opts) {
     const jobs = tests.map((t) => {
@@ -91,7 +91,7 @@ export async function runTests(exercise, code, tests, opts) {
     return runJobs(exercise.language, jobs, opts);
 }
 
-// ---------- Pemeriksaan lokal (hanya tes yang terlihat; nilai resmi dari server) ----------
+// ---------- Local checks (visible tests only; the official score comes from the server) ----------
 
 const normLines = (s, cs) => {
     const lines = String(s ?? '').replace(/\r\n?/g, '\n').split('\n').map((l) => (cs ? l : l.toLowerCase()).trimEnd());
@@ -130,15 +130,15 @@ export function jsonEqual(expected, actual) {
     }
 }
 
-/** Ubah output mentah menjadi hasil per tes untuk tampilan (tes tersembunyi: belum diketahui). */
+/** Turn raw output into per-test results for display (hidden tests: not known yet). */
 export function localResults(exercise, tests, outputs) {
     return tests.map((t) => {
-        const raw = outputs[t.id] ?? { output: '', error: 'Tidak dijalankan' };
+        const raw = outputs[t.id] ?? { output: '', error: 'Not run' };
         const actual = exercise.mode === 'function' ? extractResult(raw.output) : raw.output;
         let passed = null;
         if (!t.is_hidden && t.expected != null) {
             passed = !raw.error && (exercise.mode === 'function' ? jsonEqual(t.expected, actual) : textEqual(t.expected, actual, exercise.case_sensitive));
         }
-        return { id: t.id, passed, hidden: t.is_hidden, error: raw.error === 'Waktu habis' ? 'Waktu habis. Mungkin ada perulangan yang tidak pernah berhenti.' : raw.error, expected: t.expected, actual, input: t.input, weight: t.weight };
+        return { id: t.id, passed, hidden: t.is_hidden, error: raw.error === 'Time limit reached' ? 'Time limit reached. Maybe a loop never stops?' : raw.error, expected: t.expected, actual, input: t.input, weight: t.weight };
     });
 }

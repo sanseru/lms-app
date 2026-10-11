@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Setiap Inertia::render('Modul::Halaman') di folder Modules harus punya file .vue-nya.
+ * Every Inertia::render('Module::Page') in Modules must have its .vue file.
  */
 test('every module inertia page exists', function () {
     $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(base_path('Modules')));

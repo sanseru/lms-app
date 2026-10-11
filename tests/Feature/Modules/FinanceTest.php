@@ -6,7 +6,7 @@ use Modules\Classes\Models\ClassRoom;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
 use Modules\Finance\Models\StudentPackage;
-use Modules\Finance\Support\Terbilang;
+use Modules\Finance\Support\AmountInWords;
 
 beforeEach(function () {
     Storage::fake('local');
@@ -22,7 +22,7 @@ function invoiceFor($student, int $amount = 350000): Invoice
     return Invoice::create([
         'number' => Invoice::nextNumber(),
         'student_id' => $student->id,
-        'title' => 'SPP Oktober',
+        'title' => 'October tuition',
         'amount' => $amount,
         'due_date' => now()->addDays(5),
     ]);
@@ -37,7 +37,7 @@ test('admin can bill every student in a class at once', function () {
     $class->students()->attach([$this->student->id => ['status' => 'active'], $other->id => ['status' => 'active']]);
 
     $this->actingAs($this->admin)->post('/finance/invoices', [
-        'target' => 'class', 'class_room_id' => $class->id, 'title' => 'SPP Oktober 2026',
+        'target' => 'class', 'class_room_id' => $class->id, 'title' => 'October 2026 tuition',
         'period' => '2026-10', 'amount' => 350000, 'due_date' => '2026-10-10',
     ])->assertRedirect(route('finance.invoices.index'));
 
@@ -51,7 +51,7 @@ test('guardian uploads transfer proof and admin verifies it', function () {
 
     $this->actingAs($this->guardian)->post("/finance/invoices/{$invoice->id}/payments", [
         'amount' => 350000, 'paid_at' => today()->toDateString(), 'method' => 'transfer', 'bank_name' => 'BCA',
-        'proof' => UploadedFile::fake()->image('bukti.jpg'),
+        'proof' => UploadedFile::fake()->image('proof.jpg'),
     ])->assertSessionHas('success');
 
     $payment = Payment::firstOrFail();
@@ -89,11 +89,11 @@ test('partial payments and rejections update the invoice correctly', function ()
     ])->assertSessionHasErrors('amount');
 
     $this->actingAs($this->guardian)->post("/finance/invoices/{$invoice->id}/payments", [
-        'amount' => 200000, 'paid_at' => today()->toDateString(), 'method' => 'transfer', 'proof' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
+        'amount' => 200000, 'paid_at' => today()->toDateString(), 'method' => 'transfer', 'proof' => UploadedFile::fake()->create('proof.pdf', 100, 'application/pdf'),
     ]);
     $pending = Payment::where('status', 'pending')->firstOrFail();
 
-    $this->actingAs($this->admin)->post("/finance/payments/{$pending->id}/reject", ['reason' => 'Nominal tidak masuk']);
+    $this->actingAs($this->admin)->post("/finance/payments/{$pending->id}/reject", ['reason' => 'Amount not received']);
 
     expect($pending->fresh()->status)->toBe('rejected')
         ->and($invoice->fresh())->status->toBe('partial')->paid_amount->toBe(100000);
@@ -149,41 +149,44 @@ test('finance overview summarises outstanding and pending payments', function ()
 test('guardian can print a receipt once a payment is verified', function () {
     $invoice = invoiceFor($this->student, 1250000);
 
-    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/kuitansi")->assertNotFound();
+    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/receipt")->assertNotFound();
 
     $this->actingAs($this->admin)->post("/finance/invoices/{$invoice->id}/payments", [
         'amount' => 1250000, 'paid_at' => today()->toDateString(), 'method' => 'cash',
     ]);
 
-    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/kuitansi")
+    $this->actingAs($this->guardian)->get("/finance/invoices/{$invoice->id}/receipt")
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('Finance::Invoices/Receipt')
-            ->where('receipt.number', "KWT-{$invoice->number}")
+            ->where('receipt.number', "RCP-{$invoice->number}")
             ->where('receipt.paid_in_full', true)
-            ->where('receipt.in_words', 'Satu juta dua ratus lima puluh ribu rupiah')
+            ->where('receipt.in_words', 'One million two hundred fifty thousand rupiah')
             ->where('receipt.payer', $this->guardian->name));
 
-    $this->actingAs(userWithRole('guardian'))->get("/finance/invoices/{$invoice->id}/kuitansi")->assertForbidden();
+    $this->actingAs(userWithRole('guardian'))->get("/finance/invoices/{$invoice->id}/receipt")->assertForbidden();
 });
 
-test('amounts are spelled out in Indonesian for receipts', function (int $amount, string $words) {
-    expect(Terbilang::rupiah($amount))->toBe($words);
+test('amounts are spelled out in English for receipts', function (int $amount, string $words) {
+    expect(AmountInWords::rupiah($amount))->toBe($words);
 })->with([
-    [0, 'Nol rupiah'],
-    [11, 'Sebelas rupiah'],
-    [115, 'Seratus lima belas rupiah'],
-    [1000, 'Seribu rupiah'],
-    [350000, 'Tiga ratus lima puluh ribu rupiah'],
-    [2001500, 'Dua juta seribu lima ratus rupiah'],
+    [0, 'Zero rupiah'],
+    [11, 'Eleven rupiah'],
+    [21, 'Twenty-one rupiah'],
+    [115, 'One hundred fifteen rupiah'],
+    [1000, 'One thousand rupiah'],
+    [150000, 'One hundred fifty thousand rupiah'],
+    [350000, 'Three hundred fifty thousand rupiah'],
+    [2001500, 'Two million one thousand five hundred rupiah'],
+    [1000000000, 'One billion rupiah'],
 ]);
 
 test('finance overview lists packages that are almost used up', function () {
     StudentPackage::create([
-        'student_id' => $this->student->id, 'name' => 'Paket 8 sesi', 'sessions_total' => 2, 'price' => 0,
+        'student_id' => $this->student->id, 'name' => '8-session package', 'sessions_total' => 2, 'price' => 0,
         'valid_days' => 90, 'status' => 'active', 'starts_at' => today(), 'expires_at' => today()->addDays(90),
     ]);
     StudentPackage::create([
-        'student_id' => userWithRole('student')->id, 'name' => 'Paket 16 sesi', 'sessions_total' => 16, 'price' => 0,
+        'student_id' => userWithRole('student')->id, 'name' => '16-session package', 'sessions_total' => 16, 'price' => 0,
         'valid_days' => 90, 'status' => 'active', 'starts_at' => today(), 'expires_at' => today()->addDays(90),
     ]);
 

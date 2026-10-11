@@ -17,11 +17,11 @@ class NotificationController extends Controller
             ->paginate(20)
             ->through(fn (DatabaseNotification $n) => self::toItem($n));
 
-        // Bukan 'notifications': nama itu dipakai prop bersama untuk lonceng di header.
+        // Not 'notifications': that name is the shared prop for the header bell.
         return Inertia::render('Notifications::Index', ['items' => $notifications]);
     }
 
-    /** Tandai dibaca lalu buka tautannya. */
+    /** Mark as read, then open its link. */
     public function open(Request $request, string $id): RedirectResponse
     {
         $notification = $request->user()->notifications()->findOrFail($id);

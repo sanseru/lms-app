@@ -6,12 +6,12 @@ use Illuminate\Console\Command;
 use Modules\Notifications\Support\Notify;
 use Modules\Sessions\Models\ClassSession;
 
-/** Ingatkan guru yang belum mengisi absensi dan catatan sesi yang sudah lewat. */
+/** Remind teachers who have not filled in attendance and notes for past sessions. */
 class RemindSessionReportsCommand extends Command
 {
-    protected $signature = 'sessions:remind-reports {--hours=2 : Jeda setelah sesi berakhir sebelum guru diingatkan}';
+    protected $signature = 'sessions:remind-reports {--hours=2 : Delay after a session ends before the teacher is reminded}';
 
-    protected $description = 'Kirim pengingat ke guru yang belum mengisi laporan sesi';
+    protected $description = 'Send reminders to teachers who have not filled in session reports';
 
     public function handle(): int
     {
@@ -26,8 +26,8 @@ class RemindSessionReportsCommand extends Command
             ->each(function (ClassSession $session) use (&$sent) {
                 Notify::send(
                     $session->teacher,
-                    "Laporan sesi {$session->classRoom?->name} belum diisi",
-                    'Sesi '.$session->starts_at->translatedFormat('l, d M H:i').'. Isi absensi dan catatan agar kuota, honor, dan laporan orang tua ikut tercatat.',
+                    "Session report for {$session->classRoom?->name} is not filled in yet",
+                    'Session on '.$session->starts_at->translatedFormat('l, d M H:i').'. Fill in attendance and notes so quotas, tutor fees and parent reports are recorded.',
                     route('sessions.show', $session),
                     'clipboard-check',
                     "report-reminder:{$session->id}",
@@ -35,7 +35,7 @@ class RemindSessionReportsCommand extends Command
                 $sent++;
             });
 
-        $this->info("{$sent} sesi diperiksa untuk pengingat.");
+        $this->info("{$sent} sessions checked for reminders.");
 
         return self::SUCCESS;
     }

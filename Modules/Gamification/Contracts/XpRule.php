@@ -6,9 +6,9 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 
 /**
- * Aturan pemberian XP. Modul lain bisa mendaftarkan aturan sendiri lewat
- * app(XpRules::class)->add(...). XP dihitung ulang dari data sumber, jadi
- * aturan cukup menjawab "kejadian apa saja yang sudah dicapai siswa ini".
+ * A rule for awarding XP. Other modules can register their own rules via
+ * app(XpRules::class)->add(...). XP is recalculated from the source data, so a
+ * rule only has to answer "which events has this student achieved".
  */
 interface XpRule
 {

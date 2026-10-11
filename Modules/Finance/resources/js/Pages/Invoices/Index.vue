@@ -13,15 +13,15 @@ import { rupiah } from '@/lib/format';
 const props = defineProps({ invoices: Object, filters: Object, statuses: Object, can: Object });
 
 const filters = useFilters({ search: props.filters.search ?? '', status: props.filters.status ?? '' }, 'finance.invoices.index');
-const tabs = { '': 'Semua', unpaid: 'Belum bayar', partial: 'Sebagian', overdue: 'Terlambat', pending: 'Perlu verifikasi', paid: 'Lunas', cancelled: 'Dibatalkan' };
+const tabs = { '': 'All', unpaid: 'Unpaid', partial: 'Partially paid', overdue: 'Overdue', pending: 'Needs verification', paid: 'Paid', cancelled: 'Cancelled' };
 </script>
 
 <template>
-    <Head title="Tagihan" />
+    <Head title="Invoices" />
 
-    <PageHeader eyebrow="Keuangan" :title="can.manage ? 'Tagihan' : 'Tagihan anak'" :description="can.manage ? 'Tagihan kursus per siswa.' : 'Lihat tagihan dan kirim bukti transfer.'">
+    <PageHeader eyebrow="Finance" :title="can.manage ? 'Invoices' : 'Child\'s invoices'" :description="can.manage ? 'Course invoices for each student.' : 'See invoices and send transfer proof.'">
         <template v-if="can.manage" #actions>
-            <Link :href="route('finance.invoices.create')" class="btn-accent"><Icon name="plus" :size="18" /> Buat tagihan</Link>
+            <Link :href="route('finance.invoices.create')" class="btn-accent"><Icon name="plus" :size="18" /> New invoice</Link>
         </template>
     </PageHeader>
 
@@ -39,18 +39,18 @@ const tabs = { '': 'Semua', unpaid: 'Belum bayar', partial: 'Sebagian', overdue:
 
     <div class="card overflow-hidden">
         <div class="border-b border-line p-4">
-            <SearchInput v-model="filters.search" placeholder="Cari nomor, judul, atau nama siswa…" />
+            <SearchInput v-model="filters.search" placeholder="Search by number, title, or student name…" />
         </div>
 
         <div v-if="invoices.data.length" class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-chip/60 text-xs font-bold uppercase tracking-wide text-muted">
                     <tr>
-                        <th class="px-5 py-3">Tagihan</th>
-                        <th class="px-5 py-3">Siswa</th>
-                        <th class="px-5 py-3 text-right">Nominal</th>
-                        <th class="px-5 py-3 text-right">Sisa</th>
-                        <th class="px-5 py-3">Jatuh tempo</th>
+                        <th class="px-5 py-3">Invoice</th>
+                        <th class="px-5 py-3">Student</th>
+                        <th class="px-5 py-3 text-right">Amount</th>
+                        <th class="px-5 py-3 text-right">Remaining</th>
+                        <th class="px-5 py-3">Due date</th>
                         <th class="px-5 py-3">Status</th>
                     </tr>
                 </thead>
@@ -72,7 +72,7 @@ const tabs = { '': 'Semua', unpaid: 'Belum bayar', partial: 'Sebagian', overdue:
                         <td class="px-5 py-3">
                             <div class="flex flex-wrap gap-1">
                                 <StatusBadge :status="inv.is_overdue ? 'overdue' : inv.status" />
-                                <StatusBadge v-if="inv.pending_payments" status="pending" :label="`${inv.pending_payments} bukti baru`" />
+                                <StatusBadge v-if="inv.pending_payments" status="pending" :label="`${inv.pending_payments} new proof(s)`" />
                             </div>
                         </td>
                     </tr>
@@ -80,7 +80,7 @@ const tabs = { '': 'Semua', unpaid: 'Belum bayar', partial: 'Sebagian', overdue:
             </table>
         </div>
 
-        <EmptyState v-else icon="receipt" title="Tidak ada tagihan" :description="filters.status || filters.search ? 'Coba ubah filter.' : 'Tagihan yang dibuat akan muncul di sini.'" />
+        <EmptyState v-else icon="receipt" title="No invoices" :description="filters.status || filters.search ? 'Try changing the filters.' : 'Invoices you create will show up here.'" />
 
         <Pagination :meta="invoices" />
     </div>

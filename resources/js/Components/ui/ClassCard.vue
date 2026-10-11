@@ -28,7 +28,7 @@ const color = computed(() => classColors[props.classRoom.color] ?? classColors.v
                 <p class="flex items-center gap-2"><Icon name="clock" :size="15" /> {{ classRoom.schedule }}</p>
                 <p v-if="classRoom.teacher" class="flex items-center gap-2"><Icon name="presentation" :size="15" /> {{ classRoom.teacher.name }}</p>
                 <p v-if="classRoom.students_count !== null" class="flex items-center gap-2">
-                    <Icon name="users" :size="15" /> {{ classRoom.students_count }}<span v-if="classRoom.capacity">/{{ classRoom.capacity }}</span> siswa
+                    <Icon name="users" :size="15" /> {{ classRoom.students_count }}<span v-if="classRoom.capacity">/{{ classRoom.capacity }}</span> {{ classRoom.capacity || classRoom.students_count !== 1 ? 'students' : 'student' }}
                 </p>
             </div>
             <div class="mt-auto pt-1">

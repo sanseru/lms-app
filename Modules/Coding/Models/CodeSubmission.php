@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CodeSubmission extends Model
 {
-    public const STATUSES = ['passed' => 'Benar', 'failed' => 'Belum tepat', 'error' => 'Ada error'];
+    public const STATUSES = ['passed' => 'Correct', 'failed' => 'Not quite', 'error' => 'Error'];
 
     protected $fillable = [
         'lesson_id', 'student_id', 'code', 'status', 'score', 'passed_tests', 'total_tests',
@@ -34,7 +34,7 @@ class CodeSubmission extends Model
             'score' => $this->score,
             'passed_tests' => $this->passed_tests,
             'total_tests' => $this->total_tests,
-            'at' => $this->created_at->translatedFormat('d M, H:i'),
+            'at' => $this->created_at->locale('en')->translatedFormat('d M, H:i'),
             'code' => $withCode ? $this->code : null,
         ];
     }

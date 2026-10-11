@@ -16,7 +16,7 @@ class LessonPolicy
         return $lesson->is_published && $user->can('view', $lesson->course);
     }
 
-    /** Mengerjakan kuis, mengumpulkan tugas, menandai selesai: hanya siswa di kelas kursus ini. */
+    /** Taking quizzes, submitting assignments, marking done: only students in a class using this course. */
     public function learn(User $user, Lesson $lesson): bool
     {
         return $user->hasRole('student')

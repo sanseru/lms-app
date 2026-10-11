@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         Model::preventLazyLoading(! $this->app->isProduction());
 
-        // Admin memiliki semua akses.
+        // Admins have every permission.
         Gate::before(fn ($user) => $user->hasRole('admin') ? true : null);
     }
 }

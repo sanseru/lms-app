@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AssignmentSubmission extends Model
 {
-    public const STATUSES = ['submitted' => 'Menunggu nilai', 'revision' => 'Perlu revisi', 'graded' => 'Dinilai'];
+    public const STATUSES = ['submitted' => 'Awaiting grade', 'revision' => 'Needs revision', 'graded' => 'Graded'];
 
     protected $fillable = [
         'lesson_id', 'student_id', 'body', 'link_url', 'file_path', 'file_name',
@@ -36,14 +36,14 @@ class AssignmentSubmission extends Model
         return $this->belongsTo(User::class, 'graded_by');
     }
 
-    /** Pengumpulan yang boleh dinilai user: admin semua, guru dari siswa kelasnya. */
+    /** Submissions the user may grade: admins all, teachers those from students in their classes. */
     public function scopeGradableBy(Builder $query, User $user): Builder
     {
         if ($user->hasRole('admin')) {
             return $query;
         }
 
-        // Siswa ada di kelas guru ini, dan kelas itu memakai kursus tugas ini.
+        // The student is in this teacher's class, and that class uses this assignment's course.
         return $query->whereExists(fn ($q) => $q->selectRaw('1')
             ->from('class_students')
             ->join('class_rooms', 'class_rooms.id', '=', 'class_students.class_room_id')
@@ -66,8 +66,8 @@ class AssignmentSubmission extends Model
             'file_url' => $this->file_path ? route('learning.submissions.file', $this) : null,
             'score' => $this->score,
             'feedback' => $this->feedback,
-            'submitted_at' => $this->submitted_at?->translatedFormat('d M Y, H:i'),
-            'graded_at' => $this->graded_at?->translatedFormat('d M Y, H:i'),
+            'submitted_at' => $this->submitted_at?->format('d M Y, H:i'),
+            'graded_at' => $this->graded_at?->format('d M Y, H:i'),
             'grader' => $this->relationLoaded('grader') ? $this->grader?->name : null,
             'student' => $this->relationLoaded('student') && $this->student ? ['id' => $this->student->id, 'name' => $this->student->name, 'initials' => $this->student->initials()] : null,
         ];

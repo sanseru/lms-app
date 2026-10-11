@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Satu soal coding = satu isi kursus (lessons.type = 'code').
+        // One coding exercise = one course content item (lessons.type = 'code').
         Schema::create('code_exercises', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lesson_id')->unique()->constrained()->cascadeOnDelete();
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('function_name', 60)->nullable();
             $table->json('hints')->nullable();
             $table->unsignedSmallInteger('time_limit_ms')->default(2000);
-            $table->unsignedTinyInteger('show_solution_after')->nullable(); // jumlah gagal sebelum solusi boleh dilihat
+            $table->unsignedTinyInteger('show_solution_after')->nullable(); // failed attempts before the solution can be seen
             $table->boolean('case_sensitive')->default(false);
             $table->string('concept', 40)->nullable();
             $table->unsignedTinyInteger('level')->nullable();
@@ -33,9 +33,9 @@ return new class extends Migration
             $table->foreignId('code_exercise_id')->constrained()->cascadeOnDelete();
             $table->unsignedSmallInteger('position')->default(0);
             $table->string('kind', 20)->default('io'); // io | function | exists | text | attr | count | style
-            $table->text('input')->nullable();         // stdin, argumen JSON, atau selector CSS
+            $table->text('input')->nullable();         // stdin, JSON arguments, or CSS selector
             $table->text('expected')->nullable();
-            $table->string('property', 60)->nullable(); // nama atribut / properti CSS
+            $table->string('property', 60)->nullable(); // attribute name / CSS property
             $table->boolean('is_hidden')->default(false);
             $table->unsignedTinyInteger('weight')->default(1);
             $table->string('fail_message')->nullable();

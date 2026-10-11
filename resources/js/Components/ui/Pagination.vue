@@ -7,7 +7,7 @@ defineProps({ meta: { type: Object, required: true } });
 <template>
     <div v-if="meta.last_page > 1" class="flex flex-col items-center justify-between gap-3 border-t border-line px-5 py-4 sm:flex-row">
         <p class="text-sm text-muted">
-            Menampilkan <b class="text-ink">{{ meta.from }}–{{ meta.to }}</b> dari <b class="text-ink">{{ meta.total }}</b>
+            Showing <b class="text-ink">{{ meta.from }}–{{ meta.to }}</b> of <b class="text-ink">{{ meta.total }}</b>
         </p>
         <nav class="flex flex-wrap gap-1">
             <template v-for="(link, i) in meta.links" :key="i">

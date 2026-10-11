@@ -12,7 +12,7 @@ class InvoicePolicy
         return $user->can('finance.manage') || $this->isGuardianOf($user, $invoice);
     }
 
-    /** Orang tua mengunggah bukti transfer. */
+    /** A parent uploads transfer proof. */
     public function pay(User $user, Invoice $invoice): bool
     {
         return in_array($invoice->status, ['unpaid', 'partial'])

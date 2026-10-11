@@ -2,7 +2,7 @@ import { router } from '@inertiajs/vue3';
 import { reactive, watch } from 'vue';
 
 /**
- * Filter tabel yang tersinkron ke query string (debounce untuk pencarian).
+ * Table filters synced to the query string (debounced for search).
  */
 export function useFilters(initial, routeName, params = {}) {
     const filters = reactive({ ...initial });

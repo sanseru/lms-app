@@ -29,11 +29,11 @@ class InvoiceRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'student_id' => 'siswa',
-            'class_room_id' => 'kelas',
-            'title' => 'judul tagihan',
-            'amount' => 'nominal',
-            'due_date' => 'jatuh tempo',
+            'student_id' => 'student',
+            'class_room_id' => 'class',
+            'title' => 'invoice title',
+            'amount' => 'amount',
+            'due_date' => 'due date',
         ];
     }
 }

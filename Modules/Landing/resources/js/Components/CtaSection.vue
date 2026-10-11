@@ -7,10 +7,10 @@ import { trialText, waLink } from '../site.js';
         <div class="relative grid items-center gap-8 overflow-hidden rounded-3xl bg-accent-500 p-8 text-ink sm:p-12 md:grid-cols-[1fr_auto]">
             <div class="pointer-events-none absolute -right-10 -top-10 select-none font-mono text-[12rem] font-bold leading-none text-accent-700/25" aria-hidden="true">{ }</div>
             <div class="relative min-w-0">
-                <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Coba satu kelas dulu, gratis.</h2>
-                <p class="mt-3 max-w-xl text-lg">Lihat sendiri bagaimana anak Anda belajar. Tidak ada kewajiban mendaftar setelahnya.</p>
+                <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Try a class first, for free.</h2>
+                <p class="mt-3 max-w-xl text-lg">See for yourself how your child learns. No obligation to sign up afterwards.</p>
             </div>
-            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn relative rounded-2xl bg-brand-900 px-7 py-4 text-lg text-white hover:bg-brand-800">Daftar via WhatsApp →</a>
+            <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn relative rounded-2xl bg-brand-900 px-7 py-4 text-lg text-white hover:bg-brand-800">Book on WhatsApp →</a>
         </div>
     </section>
 </template>

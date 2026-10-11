@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Sessions\Models\ClassSession;
 
-/** Honor tutor untuk satu sesi yang selesai diajar. */
+/** Tutor fee for one completed teaching session. */
 class PayrollItem extends Model
 {
     protected $fillable = ['teacher_id', 'class_session_id', 'teacher_payout_id', 'session_date', 'description', 'amount'];

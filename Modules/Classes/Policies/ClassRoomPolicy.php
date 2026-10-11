@@ -29,7 +29,7 @@ class ClassRoomPolicy
         return $user->can('classes.manage');
     }
 
-    /** Lihat link Zoom dan daftar siswa. */
+    /** View the Zoom link and student roster. */
     public function viewRoster(User $user, ClassRoom $class): bool
     {
         return $class->teacher_id === $user->id;

@@ -10,14 +10,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Classes\Models\ClassRoom;
 
 /**
- * Kursus = kurikulum berurutan (materi, kuis, tugas) yang dipakai satu atau
- * beberapa kelas. Siswa melihat kursus dari kelas yang ia ikuti.
+ * Course = an ordered curriculum (lessons, quizzes, assignments) used by one or
+ * more classes. Students see a course through the classes they are enrolled in.
  */
 class Course extends Model
 {
     use SoftDeletes;
 
-    public const STATUSES = ['draft' => 'Draf', 'published' => 'Terbit'];
+    public const STATUSES = ['draft' => 'Draft', 'published' => 'Published'];
 
     protected $fillable = ['title', 'subject', 'level', 'description', 'color', 'status', 'created_by'];
 
@@ -31,7 +31,7 @@ class Course extends Model
         return $this->hasMany(ClassRoom::class);
     }
 
-    /** Kursus yang boleh dibuka user: pengelola semua, lainnya lewat kelas. */
+    /** Courses the user may open: managers all, everyone else through their classes. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->can('learning.manage')) {

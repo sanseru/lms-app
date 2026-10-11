@@ -26,9 +26,9 @@ function learningSetup(array $course = []): array
 
 function makeQuiz(Course $course, array $attributes = []): Lesson
 {
-    $quiz = $course->lessons()->create($attributes + ['title' => 'Kuis 1', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70]);
+    $quiz = $course->lessons()->create($attributes + ['title' => 'Quiz 1', 'type' => 'quiz', 'position' => 1, 'pass_score' => 70]);
     $quiz->questions()->create(['position' => 1, 'prompt' => '1 + 1?', 'type' => 'single', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false]]]);
-    $quiz->questions()->create(['position' => 2, 'prompt' => 'Bilangan genap?', 'type' => 'multiple', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false], ['text' => '4', 'correct' => true]]]);
+    $quiz->questions()->create(['position' => 2, 'prompt' => 'Even numbers?', 'type' => 'multiple', 'points' => 1, 'options' => [['text' => '2', 'correct' => true], ['text' => '3', 'correct' => false], ['text' => '4', 'correct' => true]]]);
 
     return $quiz->fresh('questions');
 }
@@ -36,14 +36,14 @@ function makeQuiz(Course $course, array $attributes = []): Lesson
 test('teacher can create a course and a quiz with questions', function () {
     $teacher = userWithRole('teacher');
 
-    $this->actingAs($teacher)->post('/courses', ['title' => 'Scratch Dasar', 'subject' => 'Scratch', 'level' => 'beginner', 'color' => 'amber', 'status' => 'draft'])
+    $this->actingAs($teacher)->post('/courses', ['title' => 'Scratch Basics', 'subject' => 'Scratch', 'level' => 'beginner', 'color' => 'amber', 'status' => 'draft'])
         ->assertRedirect();
-    $course = Course::firstWhere('title', 'Scratch Dasar');
+    $course = Course::firstWhere('title', 'Scratch Basics');
 
     $this->actingAs($teacher)->post("/courses/{$course->id}/lessons", [
-        'title' => 'Kuis Scratch', 'type' => 'quiz', 'pass_score' => 60, 'is_published' => true,
+        'title' => 'Scratch quiz', 'type' => 'quiz', 'pass_score' => 60, 'is_published' => true,
         'questions' => [
-            ['prompt' => 'Karakter disebut?', 'type' => 'single', 'points' => 2, 'options' => [['text' => 'Sprite', 'correct' => true], ['text' => 'Stage', 'correct' => false]]],
+            ['prompt' => 'A character is called?', 'type' => 'single', 'points' => 2, 'options' => [['text' => 'Sprite', 'correct' => true], ['text' => 'Stage', 'correct' => false]]],
         ],
     ])->assertRedirect()->assertSessionHasNoErrors();
 
@@ -57,7 +57,7 @@ test('quiz question needs exactly one correct answer for single choice', functio
     [$teacher, , $course] = learningSetup();
 
     $this->actingAs($teacher)->post("/courses/{$course->id}/lessons", [
-        'title' => 'Kuis', 'type' => 'quiz',
+        'title' => 'Quiz', 'type' => 'quiz',
         'questions' => [
             ['prompt' => 'A?', 'type' => 'single', 'points' => 1, 'options' => [['text' => 'x', 'correct' => false], ['text' => 'y', 'correct' => false]]],
             ['prompt' => 'B?', 'type' => 'single', 'points' => 1, 'options' => [['text' => 'x', 'correct' => true], ['text' => 'y', 'correct' => true]]],
@@ -71,7 +71,7 @@ test('updating a quiz keeps, edits, and removes questions', function () {
     [$first] = $quiz->questions;
 
     $this->actingAs($teacher)->put("/lessons/{$quiz->id}", [
-        'title' => 'Kuis baru', 'type' => 'quiz', 'is_published' => true,
+        'title' => 'New quiz', 'type' => 'quiz', 'is_published' => true,
         'questions' => [['id' => $first->id, 'prompt' => '2 + 2?', 'type' => 'single', 'points' => 1, 'options' => [['text' => '4', 'correct' => true], ['text' => '5', 'correct' => false]]]],
     ])->assertSessionHasNoErrors();
 
@@ -82,9 +82,9 @@ test('updating a quiz keeps, edits, and removes questions', function () {
 
 test('students and parents only see published courses of their classes', function () {
     [, $student, $course] = learningSetup();
-    $draft = Course::create(['title' => 'Draf', 'subject' => 'X', 'level' => 'beginner', 'color' => 'sky', 'status' => 'draft']);
+    $draft = Course::create(['title' => 'Draft', 'subject' => 'X', 'level' => 'beginner', 'color' => 'sky', 'status' => 'draft']);
     ClassRoom::first()->update([]);
-    $other = Course::create(['title' => 'Lain', 'subject' => 'Y', 'level' => 'beginner', 'color' => 'sky', 'status' => 'published']);
+    $other = Course::create(['title' => 'Other', 'subject' => 'Y', 'level' => 'beginner', 'color' => 'sky', 'status' => 'published']);
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($student->id);
 
@@ -106,13 +106,13 @@ test('quiz is graded automatically and answer key stays hidden until passing', f
     $this->actingAs($student)->get("/lessons/{$quiz->id}")
         ->assertInertia(fn ($page) => $page->where('questions.0.options', ['2', '3'])->missing('answerKey'));
 
-    // Satu benar satu salah: 50, belum lulus, kunci belum dibuka.
+    // One right, one wrong: 50, not passed, key still hidden.
     $this->actingAs($student)->post("/lessons/{$quiz->id}/quiz", ['answers' => [$q1->id => 0, $q2->id => [0]]]);
     $this->actingAs($student)->get("/lessons/{$quiz->id}")
         ->assertInertia(fn ($page) => $page->where('result.score', 50)->where('result.passed', false)->where('result.reveal', false)->where("result.items.{$q1->id}.answer", null));
     expect(LessonProgress::where('student_id', $student->id)->exists())->toBeFalse();
 
-    // Semua benar (urutan pilihan ganda tidak berpengaruh).
+    // All right (order of multiple-choice answers does not matter).
     $this->actingAs($student)->post("/lessons/{$quiz->id}/quiz", ['answers' => [$q1->id => 0, $q2->id => [2, 0]]]);
     $this->actingAs($student)->get("/lessons/{$quiz->id}")
         ->assertInertia(fn ($page) => $page->where('result.score', 100)->where('result.reveal', true)->where("result.items.{$q2->id}.answer", [0, 2]));
@@ -135,26 +135,26 @@ test('quiz respects the attempt limit and only enrolled students can take it', f
 test('student submits an assignment and their teacher grades it', function () {
     Storage::fake('local');
     [$teacher, $student, $course] = learningSetup();
-    $task = $course->lessons()->create(['title' => 'Proyek', 'type' => 'assignment', 'position' => 1, 'max_score' => 100]);
+    $task = $course->lessons()->create(['title' => 'Project', 'type' => 'assignment', 'position' => 1, 'max_score' => 100]);
 
     $this->actingAs($student)->post("/lessons/{$task->id}/submission", [])->assertSessionHasErrors('body');
     $this->actingAs($student)->post("/lessons/{$task->id}/submission", [
-        'body' => 'Selesai', 'file' => UploadedFile::fake()->create('game.py', 4, 'text/x-python'),
+        'body' => 'Done', 'file' => UploadedFile::fake()->create('game.py', 4, 'text/x-python'),
     ])->assertSessionHasNoErrors();
 
     $submission = AssignmentSubmission::first();
     expect($submission->status)->toBe('submitted')->and($submission->file_name)->toBe('game.py');
     Storage::disk('local')->assertExists($submission->file_path);
 
-    // Guru lain tidak bisa menilai; guru kelas bisa.
+    // Another teacher cannot grade; the class teacher can.
     $this->actingAs(userWithRole('teacher'))->post("/submissions/{$submission->id}/grade", ['status' => 'graded', 'score' => 90])->assertForbidden();
     $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'graded', 'score' => 120])->assertSessionHasErrors('score');
-    $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'graded', 'score' => 90, 'feedback' => 'Mantap'])->assertSessionHasNoErrors();
+    $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'graded', 'score' => 90, 'feedback' => 'Great work'])->assertSessionHasNoErrors();
 
     expect($submission->fresh())->status->toBe('graded')->score->toBe(90)->graded_by->toBe($teacher->id);
 
-    // Sudah dinilai: tidak bisa kumpul ulang.
-    $this->actingAs($student)->post("/lessons/{$task->id}/submission", ['body' => 'Revisi'])->assertSessionHasErrors('body');
+    // Already graded: cannot resubmit.
+    $this->actingAs($student)->post("/lessons/{$task->id}/submission", ['body' => 'Revised'])->assertSessionHasErrors('body');
 
     $this->actingAs($student)->get("/submissions/{$submission->id}/file")->assertOk();
     $this->actingAs(userWithRole('student'))->get("/submissions/{$submission->id}/file")->assertForbidden();
@@ -162,12 +162,12 @@ test('student submits an assignment and their teacher grades it', function () {
 
 test('revision request lets the student resubmit and needs feedback', function () {
     [$teacher, $student, $course] = learningSetup();
-    $task = $course->lessons()->create(['title' => 'Proyek', 'type' => 'assignment', 'position' => 1]);
+    $task = $course->lessons()->create(['title' => 'Project', 'type' => 'assignment', 'position' => 1]);
     $this->actingAs($student)->post("/lessons/{$task->id}/submission", ['link_url' => 'https://scratch.mit.edu/projects/1']);
     $submission = AssignmentSubmission::first();
 
     $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'revision'])->assertSessionHasErrors('feedback');
-    $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'revision', 'feedback' => 'Tambahkan skor'])->assertSessionHasNoErrors();
+    $this->actingAs($teacher)->post("/submissions/{$submission->id}/grade", ['status' => 'revision', 'feedback' => 'Add a score'])->assertSessionHasNoErrors();
     $this->actingAs($student)->post("/lessons/{$task->id}/submission", ['link_url' => 'https://scratch.mit.edu/projects/2'])->assertSessionHasNoErrors();
 
     expect($submission->fresh())->status->toBe('submitted')->link_url->toBe('https://scratch.mit.edu/projects/2');
@@ -189,18 +189,18 @@ test('grading queue shows only submissions from the teachers own classes', funct
 
 test('progress report is visible to the student, their parent, and their teacher only', function () {
     [$teacher, $student, $course] = learningSetup();
-    $material = $course->lessons()->create(['title' => 'Intro', 'type' => 'material', 'position' => 1, 'body' => "# Halo\n\n<script>alert(1)</script>"]);
-    $course->lessons()->create(['title' => 'Lanjut', 'type' => 'material', 'position' => 2]);
+    $material = $course->lessons()->create(['title' => 'Intro', 'type' => 'material', 'position' => 1, 'body' => "# Hello\n\n<script>alert(1)</script>"]);
+    $course->lessons()->create(['title' => 'Next up', 'type' => 'material', 'position' => 2]);
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($student->id);
 
     $this->actingAs($student)->get("/lessons/{$material->id}")
-        ->assertInertia(fn ($page) => $page->where('lesson.body_html', fn ($html) => str_contains($html, '<h1>Halo</h1>') && ! str_contains($html, '<script>')));
+        ->assertInertia(fn ($page) => $page->where('lesson.body_html', fn ($html) => str_contains($html, '<h1>Hello</h1>') && ! str_contains($html, '<script>')));
     $this->actingAs($student)->post("/lessons/{$material->id}/complete")->assertSessionHas('success');
 
     $this->actingAs($guardian)->get('/progress')->assertRedirect("/progress/{$student->id}");
     $this->actingAs($guardian)->get("/progress/{$student->id}")
-        ->assertInertia(fn ($page) => $page->where('courses.0.percent', 50)->where('courses.0.next.title', 'Lanjut'));
+        ->assertInertia(fn ($page) => $page->where('courses.0.percent', 50)->where('courses.0.next.title', 'Next up'));
     $this->actingAs($teacher)->get("/progress/{$student->id}")->assertOk();
     $this->actingAs($student)->get("/progress/{$student->id}")->assertOk();
     $this->actingAs(userWithRole('guardian'))->get("/progress/{$student->id}")->assertForbidden();
@@ -211,10 +211,10 @@ test('lessons can be reordered and hidden drafts are not shown to students', fun
     [$teacher, $student, $course] = learningSetup();
     $a = $course->lessons()->create(['title' => 'A', 'type' => 'material', 'position' => 1]);
     $b = $course->lessons()->create(['title' => 'B', 'type' => 'material', 'position' => 2]);
-    $hidden = $course->lessons()->create(['title' => 'Rahasia', 'type' => 'material', 'position' => 3, 'is_published' => false]);
+    $hidden = $course->lessons()->create(['title' => 'Secret', 'type' => 'material', 'position' => 3, 'is_published' => false]);
 
     $this->actingAs($teacher)->post("/lessons/{$b->id}/move", ['direction' => 'up']);
-    expect($course->lessons()->pluck('title')->all())->toBe(['B', 'A', 'Rahasia']);
+    expect($course->lessons()->pluck('title')->all())->toBe(['B', 'A', 'Secret']);
 
     $this->actingAs($student)->get("/courses/{$course->id}")->assertInertia(fn ($page) => $page->has('lessons', 2));
     $this->actingAs($student)->get("/lessons/{$hidden->id}")->assertForbidden();
@@ -222,7 +222,7 @@ test('lessons can be reordered and hidden drafts are not shown to students', fun
 
 test('dashboards include learning summaries', function () {
     [$teacher, $student, $course] = learningSetup();
-    $task = $course->lessons()->create(['title' => 'Proyek', 'type' => 'assignment', 'position' => 1]);
+    $task = $course->lessons()->create(['title' => 'Project', 'type' => 'assignment', 'position' => 1]);
     $this->actingAs($student)->post("/lessons/{$task->id}/submission", ['body' => 'ok']);
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($student->id);

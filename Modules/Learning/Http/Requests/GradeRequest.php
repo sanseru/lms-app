@@ -25,6 +25,6 @@ class GradeRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['score' => 'nilai', 'feedback' => 'umpan balik'];
+        return ['score' => 'score', 'feedback' => 'feedback'];
     }
 }

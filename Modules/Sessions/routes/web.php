@@ -10,4 +10,4 @@ Route::put('sessions/{session}', [SessionController::class, 'update'])->name('se
 Route::post('sessions/{session}/reschedule', [SessionController::class, 'reschedule'])->name('sessions.reschedule');
 Route::post('sessions/{session}/cancel', [SessionController::class, 'cancel'])->name('sessions.cancel');
 Route::post('classes/{class}/sessions/generate', [SessionController::class, 'generate'])->name('classes.sessions.generate');
-Route::post('kalender', [CalendarController::class, 'regenerate'])->name('calendar.regenerate');
+Route::post('calendar', [CalendarController::class, 'regenerate'])->name('calendar.regenerate');

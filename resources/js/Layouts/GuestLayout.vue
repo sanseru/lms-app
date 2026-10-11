@@ -4,16 +4,16 @@ import Icon from '@/Components/ui/Icon.vue';
 
 <template>
     <div class="relative flex min-h-screen overflow-hidden bg-paper">
-        <!-- Panel ilustrasi -->
+        <!-- Illustration panel -->
         <div class="relative hidden w-1/2 flex-col justify-between panel-brand !rounded-none p-12 lg:flex">
             <img src="/images/logo-header.png" alt="Alprogmatics" class="h-14 w-fit rounded-xl bg-white/95 px-3 py-1.5" />
 
             <div class="relative z-10 max-w-md">
-                <h2 class=" text-4xl leading-tight font-extrabold tracking-tight">Belajar, berkarya, dan tumbuh bersama.</h2>
-                <p class="mt-4 text-brand-100">Satu tempat untuk kelas online, jadwal Zoom, progres belajar, dan pembayaran kursus.</p>
+                <h2 class=" text-4xl leading-tight font-extrabold tracking-tight">Learn, create and grow together.</h2>
+                <p class="mt-4 text-brand-100">One place for online classes, Zoom schedules, learning progress and course payments.</p>
 
                 <div class="mt-8 grid grid-cols-3 gap-3">
-                    <div v-for="item in [['code', 'Python'], ['rocket', 'Scratch'], ['sparkles', 'AI & Robotik']]" :key="item[1]" class="rounded-2xl bg-brand-800 p-4 ring-1 ring-white/10">
+                    <div v-for="item in [['code', 'Python'], ['rocket', 'Scratch'], ['sparkles', 'AI & Robotics']]" :key="item[1]" class="rounded-2xl bg-brand-800 p-4 ring-1 ring-white/10">
                         <Icon :name="item[0]" :size="22" class="text-accent-300" />
                         <p class="mt-2 text-sm font-semibold">{{ item[1] }}</p>
                     </div>

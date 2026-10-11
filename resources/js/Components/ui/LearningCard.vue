@@ -5,7 +5,7 @@ import { classColors } from '@/lib/format';
 import Icon from './Icon.vue';
 import ProgressBar from './ProgressBar.vue';
 
-/** Kartu progres kursus untuk dashboard siswa dan orang tua. */
+/** Course progress card for the student and parent dashboards. */
 const props = defineProps({ course: Object, linkNext: { type: Boolean, default: true } });
 const color = computed(() => classColors[props.course.color] ?? classColors.violet);
 const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pen', code: 'code' };
@@ -24,15 +24,15 @@ const icons = { material: 'book-open', quiz: 'list-checks', assignment: 'file-pe
             </div>
         </div>
         <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
-            <span>{{ course.completed }}/{{ course.total }} selesai</span>
-            <span v-if="course.quiz_avg !== null">Kuis rata-rata {{ course.quiz_avg }}</span>
-            <span v-if="course.pending_assignments" class="font-semibold text-accent-600">{{ course.pending_assignments }} tugas belum dikumpulkan</span>
+            <span>{{ course.completed }}/{{ course.total }} done</span>
+            <span v-if="course.quiz_avg !== null">Quiz average {{ course.quiz_avg }}</span>
+            <span v-if="course.pending_assignments" class="font-semibold text-accent-600">{{ course.pending_assignments }} {{ course.pending_assignments === 1 ? 'assignment' : 'assignments' }} not handed in</span>
         </div>
         <Link v-if="linkNext && course.next" :href="route('learning.lessons.show', course.next.id)" class="mt-3 flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2 text-sm transition hover:bg-brand-100">
             <Icon :name="icons[course.next.type]" :size="15" class="text-brand-600" />
             <span class="min-w-0 flex-1 truncate"><b class="text-brand-700">{{ course.next.type_label }}:</b> <span class="text-ink">{{ course.next.title }}</span></span>
             <Icon name="arrow-right" :size="15" class="text-brand-600" />
         </Link>
-        <p v-else-if="!course.next && course.total" class="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">Semua materi selesai 🎉</p>
+        <p v-else-if="!course.next && course.total" class="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">All lessons done!</p>
     </div>
 </template>

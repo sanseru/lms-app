@@ -6,15 +6,25 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Kumpulan menu sidebar yang didaftarkan oleh setiap modul.
+ * Sidebar menu items registered by each module.
  */
 class NavigationRegistry
 {
     /** @var array<int, NavItem> */
     protected array $items = [];
 
-    /** Urutan grup menu di sidebar. */
-    protected array $groupOrder = ['Utama', 'Akademik', 'Belajar', 'Pengguna', 'Keuangan', 'Lainnya'];
+    /** Order of the menu groups in the sidebar. */
+    protected array $groupOrder = ['Main', 'Academic', 'Learning', 'People', 'Finance', 'Other'];
+
+    /** Legacy Indonesian group names, mapped so modules that still use them land in the right group. */
+    protected array $groupAliases = [
+        'Utama' => 'Main',
+        'Akademik' => 'Academic',
+        'Belajar' => 'Learning',
+        'Pengguna' => 'People',
+        'Keuangan' => 'Finance',
+        'Lainnya' => 'Other',
+    ];
 
     public function add(NavItem ...$items): static
     {
@@ -24,7 +34,7 @@ class NavigationRegistry
     }
 
     /**
-     * Menu yang boleh dilihat user, dikelompokkan per grup.
+     * Menu items the user may see, grouped.
      *
      * @return array<int, array{label: string, items: array<int, array<string, string>>}>
      */
@@ -41,7 +51,7 @@ class NavigationRegistry
             ->sortBy('order');
 
         return $visible
-            ->groupBy('group')
+            ->groupBy(fn (NavItem $item) => $this->groupAliases[$item->group] ?? $item->group)
             ->sortBy(fn ($items, $group) => array_search($group, $this->groupOrder) === false ? 99 : array_search($group, $this->groupOrder))
             ->map(fn ($items, $group) => [
                 'label' => $group,

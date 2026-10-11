@@ -43,17 +43,17 @@ class BoardController extends Controller
         ]);
     }
 
-    /** Tautan hasil proyek (mis. link Scratch atau Replit) dan catatan siswa. */
+    /** Project result link (e.g. a Scratch or Replit link) and the student's note. */
     public function result(Request $request, Board $board): RedirectResponse
     {
         Gate::authorize('work', $board);
         $data = $request->validate([
             'result_url' => ['nullable', 'url', 'max:255'],
             'result_note' => ['nullable', 'string', 'max:2000'],
-        ], [], ['result_url' => 'tautan proyek', 'result_note' => 'catatan']);
+        ], [], ['result_url' => 'project link', 'result_note' => 'note']);
 
         $board->update($data);
 
-        return back()->with('success', 'Hasil proyek tersimpan.');
+        return back()->with('success', 'Project result saved.');
     }
 }

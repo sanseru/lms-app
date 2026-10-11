@@ -12,9 +12,9 @@ use Modules\Kanban\Policies\BoardPolicy;
 use Modules\Kanban\Policies\ProjectPolicy;
 
 /**
- * Modul Kanban proyek: guru membuat proyek untuk kelas beserta langkah bawaan,
- * setiap siswa mengerjakannya di papan kanban sendiri, guru mengecek kartu
- * di kolom "Minta dicek guru". Orang tua melihat papan anaknya.
+ * Project Kanban module: teachers create projects for a class with default steps,
+ * each student works on their own kanban board, and teachers review cards
+ * in the "Ready for review" column. Parents can see their child's board.
  */
 class KanbanServiceProvider extends ModuleServiceProvider
 {
@@ -39,9 +39,9 @@ class KanbanServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Proyek', 'kanban.projects.index', 'kanban', 'Belajar', 34, roles: ['admin', 'teacher'], active: 'kanban.*'),
-            new NavItem('Proyekku', 'kanban.projects.index', 'kanban', 'Belajar', 34, roles: ['student'], active: 'kanban.*'),
-            new NavItem('Proyek Anak', 'kanban.projects.index', 'kanban', 'Belajar', 34, roles: ['guardian'], active: 'kanban.*'),
+            new NavItem('Projects', 'kanban.projects.index', 'kanban', 'Learning', 34, roles: ['admin', 'teacher'], active: 'kanban.*'),
+            new NavItem('My projects', 'kanban.projects.index', 'kanban', 'Learning', 34, roles: ['student'], active: 'kanban.*'),
+            new NavItem("Child's projects", 'kanban.projects.index', 'kanban', 'Learning', 34, roles: ['guardian'], active: 'kanban.*'),
         );
     }
 }

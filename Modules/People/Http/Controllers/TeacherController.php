@@ -57,7 +57,7 @@ class TeacherController extends Controller
     {
         $teacher = $save->teacher($request->validated());
 
-        return to_route('people.teachers.index')->with('success', "Guru {$teacher->name} berhasil ditambahkan.");
+        return to_route('people.teachers.index')->with('success', "Teacher {$teacher->name} added.");
     }
 
     public function edit(User $teacher): Response
@@ -89,7 +89,7 @@ class TeacherController extends Controller
         abort_unless($teacher->hasRole(Role::Teacher->value), 404);
         $save->teacher($request->validated(), $teacher);
 
-        return to_route('people.teachers.index')->with('success', "Data {$teacher->name} berhasil diperbarui.");
+        return to_route('people.teachers.index')->with('success', "{$teacher->name}'s details updated.");
     }
 
     public function destroy(User $teacher): RedirectResponse
@@ -97,11 +97,11 @@ class TeacherController extends Controller
         abort_unless($teacher->hasRole(Role::Teacher->value), 404);
 
         if ($teacher->teachingClasses()->where('status', 'active')->exists()) {
-            return back()->with('error', 'Guru masih mengajar kelas aktif. Pindahkan kelasnya terlebih dahulu.');
+            return back()->with('error', 'This teacher still teaches active classes. Reassign those classes first.');
         }
 
         $teacher->delete();
 
-        return back()->with('success', "Guru {$teacher->name} dihapus.");
+        return back()->with('success', "Teacher {$teacher->name} deleted.");
     }
 }

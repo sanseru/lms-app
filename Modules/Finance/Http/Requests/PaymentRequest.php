@@ -11,7 +11,7 @@ class PaymentRequest extends FormRequest
     {
         $invoice = $this->route('invoice');
 
-        // Dicek eksplisit karena admin melewati policy lewat Gate::before.
+        // Checked explicitly because admins bypass policies via Gate::before.
         return in_array($invoice->status, ['unpaid', 'partial'])
             && $this->user()->can('pay', $invoice);
     }
@@ -35,16 +35,16 @@ class PaymentRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'amount' => 'nominal',
-            'paid_at' => 'tanggal transfer',
-            'proof' => 'bukti transfer',
+            'amount' => 'amount',
+            'paid_at' => 'transfer date',
+            'proof' => 'transfer proof',
             'bank_name' => 'bank',
-            'account_name' => 'nama pemilik rekening',
+            'account_name' => 'account holder name',
         ];
     }
 
     public function messages(): array
     {
-        return ['amount.max' => 'Nominal melebihi sisa tagihan.'];
+        return ['amount.max' => 'The amount is more than what is left to pay.'];
     }
 }

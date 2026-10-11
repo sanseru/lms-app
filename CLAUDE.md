@@ -1,6 +1,6 @@
 # Panduan kerja di repo ini
 
-- Bahasa UI dan pesan validasi: Indonesia. Locale `id`, zona waktu `Asia/Jakarta`.
+- Bahasa UI, pesan validasi, notifikasi, dan data demo: **Inggris**. Locale `en`, zona waktu `Asia/Jakarta`, mata uang Rupiah. Dokumentasi di `docs/` dan komentar boleh bahasa Indonesia, tetapi teks baru yang dilihat pengguna wajib bahasa Inggris. Segmen URL juga bahasa Inggris (nama route tidak berubah).
 - Arsitektur modular monolith: fitur baru masuk ke `Modules/<Nama>` (lihat README bagian "Struktur modul"), bukan ke `app/`.
 - `app/` hanya untuk infrastruktur bersama: `User`, `Support/Modules`, `Support/Navigation`, middleware, auth Breeze.
 - Hak akses: deklarasikan permission di `permissions()` provider modul, tegakkan dengan middleware `can:` atau Policy. Admin lolos semua cek lewat `Gate::before`, jadi aturan status bisnis (mis. tagihan lunas tidak bisa dibayar) harus dicek eksplisit, bukan hanya di policy.

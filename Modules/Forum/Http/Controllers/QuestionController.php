@@ -72,7 +72,7 @@ class QuestionController extends Controller
     public function create(Request $request): Response
     {
         $classes = $this->askableClasses($request->user());
-        abort_if($classes->isEmpty(), 403, 'Kamu belum terdaftar di kelas mana pun.');
+        abort_if($classes->isEmpty(), 403, 'You are not enrolled in any class yet.');
 
         $lesson = $request->integer('lesson') ? Lesson::find($request->integer('lesson')) : null;
         $class = $lesson ? $classes->firstWhere('course_id', $lesson->course_id) : $classes->firstWhere('id', $request->integer('class'));
@@ -95,7 +95,7 @@ class QuestionController extends Controller
             'image_path' => $request->file('image')?->store("forum/{$data['class_room_id']}", 'local'),
         ]);
 
-        return to_route('forum.questions.show', $question)->with('success', 'Pertanyaan terkirim. Guru dan teman sekelas bisa membantu menjawab.');
+        return to_route('forum.questions.show', $question)->with('success', 'Question sent. Your teacher and classmates can help answer it.');
     }
 
     public function show(Request $request, Question $question): Response
@@ -161,7 +161,7 @@ class QuestionController extends Controller
 
         $question->update($data + ['anonymous' => $request->boolean('anonymous')]);
 
-        return to_route('forum.questions.show', $question)->with('success', 'Pertanyaan diperbarui.');
+        return to_route('forum.questions.show', $question)->with('success', 'Question updated.');
     }
 
     public function destroy(Question $question): RedirectResponse
@@ -175,7 +175,7 @@ class QuestionController extends Controller
         $question->votes()->delete();
         $question->delete();
 
-        return to_route('forum.questions.index')->with('success', 'Pertanyaan dihapus.');
+        return to_route('forum.questions.index')->with('success', 'Question deleted.');
     }
 
     public function image(Question $question): StreamedResponse
@@ -191,20 +191,20 @@ class QuestionController extends Controller
         Gate::authorize('pin', $question);
         $question->update(['pinned' => ! $question->pinned]);
 
-        return back()->with('success', $question->pinned ? 'Pertanyaan disematkan di atas daftar.' : 'Sematan dilepas.');
+        return back()->with('success', $question->pinned ? 'Question pinned to the top of the list.' : 'Question unpinned.');
     }
 
-    /** Tandai selesai tanpa memilih jawaban, atau buka lagi. */
+    /** Mark as resolved without picking an answer, or reopen it. */
     public function resolve(Question $question): RedirectResponse
     {
         Gate::authorize('resolve', $question);
         $reopen = $question->resolved_at !== null;
         $question->update(['resolved_at' => $reopen ? null : now(), 'accepted_answer_id' => $reopen ? null : $question->accepted_answer_id]);
 
-        return back()->with('success', $reopen ? 'Pertanyaan dibuka lagi.' : 'Pertanyaan ditandai terjawab.');
+        return back()->with('success', $reopen ? 'Question reopened.' : 'Question marked as answered.');
     }
 
-    /** Ringkasan kecil untuk kartu "Tanya guru" di halaman pelajaran. */
+    /** Small summary for the "Ask your teacher" card on the lesson page. */
     public function lessonSummary(Request $request, Lesson $lesson): JsonResponse
     {
         $user = $request->user();

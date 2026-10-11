@@ -12,17 +12,17 @@ use Modules\Classes\Models\ClassRoom;
 use Modules\Sessions\Models\SessionAttendance;
 
 /**
- * Kuota sesi milik siswa. Pemakaian dihitung dari absensi yang menunjuk ke paket ini,
- * bukan dari counter, sehingga koreksi absensi otomatis mengembalikan kuota.
+ * A student's session quota. Usage is counted from attendance pointing at this package,
+ * not from a counter, so attendance corrections give quota back automatically.
  */
 class StudentPackage extends Model
 {
     public const STATUSES = [
-        'pending_payment' => 'Menunggu pembayaran',
-        'active' => 'Aktif',
-        'used_up' => 'Habis',
-        'expired' => 'Kedaluwarsa',
-        'cancelled' => 'Dibatalkan',
+        'pending_payment' => 'Awaiting payment',
+        'active' => 'Active',
+        'used_up' => 'Used up',
+        'expired' => 'Expired',
+        'cancelled' => 'Cancelled',
     ];
 
     protected $fillable = ['student_id', 'package_id', 'class_room_id', 'invoice_id', 'name', 'sessions_total', 'price', 'valid_days', 'starts_at', 'expires_at', 'status'];
@@ -52,7 +52,7 @@ class StudentPackage extends Model
         return $this->hasMany(SessionAttendance::class, 'student_package_id');
     }
 
-    /** Paket yang bisa dipakai untuk sesi pada tanggal tertentu. */
+    /** Packages usable for a session on a given date. */
     public function scopeUsableOn(Builder $query, $date): Builder
     {
         return $query->where('status', 'active')
@@ -81,7 +81,7 @@ class StudentPackage extends Model
         ]);
     }
 
-    /** Sinkronkan status aktif/habis setelah pemakaian berubah. */
+    /** Sync the active/used-up status after usage changes. */
     public function refreshUsage(): void
     {
         if (! in_array($this->status, ['active', 'used_up'])) {

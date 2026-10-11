@@ -41,13 +41,13 @@ class ClassRoomRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'nama kelas',
-            'subject' => 'mata pelajaran',
-            'teacher_id' => 'guru',
-            'schedule_days' => 'hari',
-            'start_time' => 'jam mulai',
-            'end_time' => 'jam selesai',
-            'zoom_url' => 'link Zoom',
+            'name' => 'class name',
+            'subject' => 'subject',
+            'teacher_id' => 'teacher',
+            'schedule_days' => 'days',
+            'start_time' => 'start time',
+            'end_time' => 'end time',
+            'zoom_url' => 'Zoom link',
         ];
     }
 
@@ -61,7 +61,7 @@ class ClassRoomRequest extends FormRequest
             $teacherId = $this->integer('teacher_id') ?: null;
 
             if ($teacherId && ! User::find($teacherId)?->hasRole(Role::Teacher->value)) {
-                $validator->errors()->add('teacher_id', 'User yang dipilih bukan guru.');
+                $validator->errors()->add('teacher_id', 'The selected user is not a teacher.');
 
                 return;
             }
@@ -76,7 +76,7 @@ class ClassRoomRequest extends FormRequest
                 );
 
                 if ($conflict) {
-                    $validator->errors()->add('teacher_id', "Jadwal guru bentrok dengan kelas {$conflict->name} ({$conflict->scheduleLabel()}).");
+                    $validator->errors()->add('teacher_id', "The teacher's schedule clashes with class {$conflict->name} ({$conflict->scheduleLabel()}).");
                 }
             }
         });

@@ -8,8 +8,8 @@ use Modules\Kanban\Models\Project;
 use Modules\Kanban\Models\TemplateTask;
 
 /**
- * Pastikan setiap siswa aktif di kelas punya papan, dan setiap papan memuat
- * semua langkah bawaan guru. Aman dijalankan berulang kali.
+ * Make sure every active student in the class has a board, and every board holds
+ * all of the teacher's default steps. Safe to run repeatedly.
  */
 class SyncBoards
 {

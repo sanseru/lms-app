@@ -15,7 +15,7 @@ use Modules\Classes\Models\ClassRoom;
 use Modules\Finance\Http\Requests\InvoiceRequest;
 use Modules\Finance\Models\Invoice;
 use Modules\Finance\Models\Payment;
-use Modules\Finance\Support\Terbilang;
+use Modules\Finance\Support\AmountInWords;
 use Modules\Identity\Enums\Role;
 
 class InvoiceController extends Controller
@@ -74,7 +74,7 @@ class InvoiceController extends Controller
             : collect([$data['student_id']]);
 
         if ($studentIds->isEmpty()) {
-            return back()->with('error', 'Kelas ini belum memiliki siswa aktif.');
+            return back()->with('error', 'This class has no active students yet.');
         }
 
         DB::transaction(function () use ($studentIds, $data, $request) {
@@ -93,7 +93,7 @@ class InvoiceController extends Controller
             }
         });
 
-        return to_route('finance.invoices.index')->with('success', "{$studentIds->count()} tagihan berhasil dibuat.");
+        return to_route('finance.invoices.index')->with('success', "{$studentIds->count()} invoice(s) created.");
     }
 
     public function show(Request $request, Invoice $invoice): Response
@@ -133,7 +133,7 @@ class InvoiceController extends Controller
         ]);
     }
 
-    /** Kuitansi untuk pembayaran yang sudah diverifikasi (siap cetak / simpan PDF). */
+    /** Receipt for verified payments (ready to print / save as PDF). */
     public function receipt(Invoice $invoice): Response
     {
         Gate::authorize('view', $invoice);
@@ -144,7 +144,7 @@ class InvoiceController extends Controller
 
         return Inertia::render('Finance::Invoices/Receipt', [
             'receipt' => [
-                'number' => 'KWT-'.$invoice->number,
+                'number' => 'RCP-'.$invoice->number,
                 'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->number,
                 'title' => $invoice->title,
@@ -157,13 +157,13 @@ class InvoiceController extends Controller
                 'paid_amount' => $invoice->paid_amount,
                 'remaining' => $invoice->remaining(),
                 'paid_in_full' => $invoice->status === 'paid',
-                'in_words' => Terbilang::rupiah($invoice->paid_amount),
+                'in_words' => AmountInWords::rupiah($invoice->paid_amount),
                 'date' => ($payments->last()?->verified_at ?? now())->translatedFormat('d F Y'),
                 'verifier' => $payments->last()?->verifier?->name,
                 'payments' => $payments->map(fn (Payment $p) => [
                     'id' => $p->id,
                     'paid_at' => $p->paid_at->translatedFormat('d M Y'),
-                    'method' => $p->method === 'cash' ? 'Tunai' : trim('Transfer '.$p->bank_name),
+                    'method' => $p->method === 'cash' ? 'Cash' : trim('Transfer '.$p->bank_name),
                     'amount' => $p->amount,
                 ]),
             ],
@@ -174,12 +174,12 @@ class InvoiceController extends Controller
     public function cancel(Invoice $invoice): RedirectResponse
     {
         if ($invoice->paid_amount > 0) {
-            return back()->with('error', 'Tagihan yang sudah ada pembayarannya tidak bisa dibatalkan.');
+            return back()->with('error', 'An invoice that already has payments cannot be cancelled.');
         }
 
         $invoice->update(['status' => 'cancelled']);
 
-        return back()->with('success', 'Tagihan dibatalkan.');
+        return back()->with('success', 'Invoice cancelled.');
     }
 
     private function row(Invoice $invoice): array

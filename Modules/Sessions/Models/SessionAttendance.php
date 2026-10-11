@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class SessionAttendance extends Model
 {
     public const STATUSES = [
-        'present' => 'Hadir',
-        'excused' => 'Izin',
-        'sick' => 'Sakit',
-        'absent' => 'Alpa',
+        'present' => 'Present',
+        'excused' => 'Excused',
+        'sick' => 'Sick',
+        'absent' => 'Absent',
     ];
 
     protected $fillable = ['class_session_id', 'student_id', 'status', 'note', 'counts_quota', 'student_package_id'];

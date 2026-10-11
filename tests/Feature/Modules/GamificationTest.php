@@ -50,7 +50,7 @@ test('xp is synced from activity, idempotent, and revoked when the source disapp
 test('badges unlock from rule counts', function () {
     $s = xpSetup();
     LessonProgress::markDone($s['lessons'][0]->id, $s['a']->id);
-    $this->actingAs($s['a'])->post('/tanya', ['class_room_id' => $s['class']->id, 'title' => 'Pertanyaan pertamaku', 'body' => 'Halo', 'visibility' => 'class']);
+    $this->actingAs($s['a'])->post('/questions', ['class_room_id' => $s['class']->id, 'title' => 'Pertanyaan pertamaku', 'body' => 'Halo', 'visibility' => 'class']);
 
     $badges = collect(app(Achievements::class)->summary($s['a'])['badges'])->keyBy('key');
 
@@ -61,10 +61,10 @@ test('badges unlock from rule counts', function () {
 
 test('accepted forum answers give xp to the helper', function () {
     $s = xpSetup();
-    $this->actingAs($s['a'])->post('/tanya', ['class_room_id' => $s['class']->id, 'title' => 'Tolong bantu ya', 'body' => '?', 'visibility' => 'class']);
+    $this->actingAs($s['a'])->post('/questions', ['class_room_id' => $s['class']->id, 'title' => 'Tolong bantu ya', 'body' => '?', 'visibility' => 'class']);
     $q = Question::first();
-    $this->actingAs($s['b'])->post("/tanya/{$q->id}/jawaban", ['body' => 'Begini caranya']);
-    $this->actingAs($s['a'])->post('/tanya/jawaban/'.$q->answers()->first()->id.'/terbaik');
+    $this->actingAs($s['b'])->post("/questions/{$q->id}/answers", ['body' => 'Begini caranya']);
+    $this->actingAs($s['a'])->post('/questions/answers/'.$q->answers()->first()->id.'/accept');
 
     app(SyncXp::class)->handle($s['b']);
     expect(XpEvent::where('user_id', $s['b']->id)->where('rule', 'forum_answer_accepted')->sum('points'))->toEqual(20);
@@ -75,26 +75,26 @@ test('student sees own achievements and class leaderboard; others are protected'
     LessonProgress::markDone($s['lessons'][0]->id, $s['b']->id);
     app(SyncXp::class)->handle($s['b']);
 
-    $this->actingAs($s['a'])->get('/prestasi')->assertOk()
+    $this->actingAs($s['a'])->get('/achievements')->assertOk()
         ->assertInertia(fn ($p) => $p->component('Gamification::Achievements')->where('self', true)
             ->where('leaderboards.0.top.0.id', $s['b']->id)->where('leaderboards.0.top.0.name', explode(' ', $s['b']->name)[0]));
 
-    $this->actingAs($s['a'])->get("/prestasi/siswa/{$s['b']->id}")->assertForbidden();
-    $this->actingAs($s['teacher'])->get("/prestasi/siswa/{$s['b']->id}")->assertOk();
-    $this->actingAs(userWithRole('teacher'))->get("/prestasi/siswa/{$s['b']->id}")->assertForbidden();
+    $this->actingAs($s['a'])->get("/achievements/student/{$s['b']->id}")->assertForbidden();
+    $this->actingAs($s['teacher'])->get("/achievements/student/{$s['b']->id}")->assertOk();
+    $this->actingAs(userWithRole('teacher'))->get("/achievements/student/{$s['b']->id}")->assertForbidden();
 
     $guardian = userWithRole('guardian');
     $guardian->children()->attach($s['b']->id, ['relationship' => 'ibu']);
-    $this->actingAs($guardian)->get('/prestasi')->assertRedirect("/prestasi/siswa/{$s['b']->id}");
+    $this->actingAs($guardian)->get('/achievements')->assertRedirect("/achievements/student/{$s['b']->id}");
 });
 
 test('teacher sees xp table for their class and the student dashboard shows the level', function () {
     $s = xpSetup();
     LessonProgress::markDone($s['lessons'][0]->id, $s['a']->id);
 
-    $this->actingAs($s['teacher'])->get('/prestasi/kelas')->assertOk()
+    $this->actingAs($s['teacher'])->get('/achievements/classes')->assertOk()
         ->assertInertia(fn ($p) => $p->has('rows', 2)->where('rows.0.id', $s['a']->id)->where('rows.0.level.xp', 10));
-    $this->actingAs($s['a'])->get('/prestasi/kelas')->assertForbidden();
+    $this->actingAs($s['a'])->get('/achievements/classes')->assertForbidden();
     $this->actingAs($s['a'])->get('/dashboard')->assertInertia(fn ($p) => $p->where('achievements.level.xp', 10));
 });
 

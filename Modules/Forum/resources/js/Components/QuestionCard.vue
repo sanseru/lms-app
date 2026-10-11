@@ -13,7 +13,7 @@ defineProps({ question: { type: Object, required: true }, compact: { type: Boole
         :class="question.pinned ? 'border-amber-200 bg-amber-50/60' : 'border-line bg-white'"
         class="group flex gap-4 rounded-2xl border p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5"
     >
-        <!-- Angka jawaban -->
+        <!-- Answer count -->
         <div
             :class="{
                 'bg-emerald-500 text-white': question.status === 'resolved',
@@ -24,17 +24,17 @@ defineProps({ question: { type: Object, required: true }, compact: { type: Boole
         >
             <Icon v-if="question.status === 'resolved'" name="circle-check" :size="18" />
             <span class="font-display text-xl leading-tight font-black">{{ question.answers_count }}</span>
-            <span class="text-xs font-semibold">jawaban</span>
+            <span class="text-xs font-semibold">{{ question.answers_count === 1 ? 'answer' : 'answers' }}</span>
         </div>
 
         <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
-                <span v-if="question.pinned" class="inline-flex items-center gap-1 font-bold text-amber-700"><Icon name="pin" :size="12" /> Disematkan</span>
+                <span v-if="question.pinned" class="inline-flex items-center gap-1 font-bold text-amber-700"><Icon name="pin" :size="12" /> Pinned</span>
                 <span class="inline-flex items-center gap-1.5 font-semibold">
                     <span :class="(classColors[question.class.color] ?? classColors.violet).dot" class="size-2 rounded-full" />{{ question.class.name }}
                 </span>
                 <span v-if="question.lesson" class="truncate">· {{ question.lesson.title }}</span>
-                <span v-if="question.visibility === 'private'" class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 font-semibold text-brand-700"><Icon name="lock" :size="11" /> Hanya guru</span>
+                <span v-if="question.visibility === 'private'" class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 font-semibold text-brand-700"><Icon name="lock" :size="11" /> Teacher only</span>
             </div>
             <p class="mt-1 font-display text-base font-bold text-ink group-hover:text-brand-700 sm:text-lg">{{ question.title }}</p>
             <p v-if="!compact" class="mt-1 line-clamp-2 text-sm text-muted">{{ question.excerpt }}</p>
@@ -44,11 +44,11 @@ defineProps({ question: { type: Object, required: true }, compact: { type: Boole
                     <span class="font-semibold text-ink">{{ question.author.name }}</span>
                     <span>{{ question.created_at }}</span>
                 </span>
-                <span v-if="question.votes_count" class="inline-flex items-center gap-1"><Icon name="hand" :size="13" /> {{ question.votes_count }} juga bingung</span>
-                <span v-if="question.has_code" class="inline-flex items-center gap-1"><Icon name="code" :size="13" /> kode</span>
-                <span v-if="question.has_image" class="inline-flex items-center gap-1"><Icon name="image" :size="13" /> gambar</span>
-                <span class="inline-flex items-center gap-1 sm:hidden"><Icon name="message-circle" :size="13" /> {{ question.answers_count }} jawaban</span>
-                <span v-if="question.staff_answered" class="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="badge-check" :size="13" /> Dijawab guru</span>
+                <span v-if="question.votes_count" class="inline-flex items-center gap-1"><Icon name="hand" :size="13" /> {{ question.votes_count }} also stuck</span>
+                <span v-if="question.has_code" class="inline-flex items-center gap-1"><Icon name="code" :size="13" /> code</span>
+                <span v-if="question.has_image" class="inline-flex items-center gap-1"><Icon name="image" :size="13" /> image</span>
+                <span class="inline-flex items-center gap-1 sm:hidden"><Icon name="message-circle" :size="13" /> {{ question.answers_count }} {{ question.answers_count === 1 ? 'answer' : 'answers' }}</span>
+                <span v-if="question.staff_answered" class="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="badge-check" :size="13" /> Teacher answered</span>
             </div>
         </div>
     </Link>

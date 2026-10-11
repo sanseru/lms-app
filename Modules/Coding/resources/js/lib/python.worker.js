@@ -1,5 +1,5 @@
-// Menjalankan Python di browser dengan Pyodide (WebAssembly). Satu worker per halaman;
-// bila kode terlalu lama, halaman mematikan worker ini dan membuat yang baru.
+// Runs Python in the browser with Pyodide (WebAssembly). One worker per page;
+// if code takes too long, the page kills this worker and creates a new one.
 let pyodide = null;
 
 async function boot(indexURL) {
@@ -13,7 +13,7 @@ import sys, builtins
 def __kid_input(prompt=''):
     line = sys.stdin.readline()
     if not line:
-        raise EOFError('Input sudah habis: program meminta input lebih banyak dari yang diberikan')
+        raise EOFError('No more input left: the program asked for more input than it was given')
     return line.rstrip('\\n')
 builtins.input = __kid_input
 `;
@@ -23,7 +23,7 @@ function friendly(err) {
     const lines = text.trim().split('\n');
     const last = lines[lines.length - 1];
     const lineNo = [...text.matchAll(/File "<exec>", line (\d+)/g)].pop()?.[1];
-    return lineNo ? `Baris ${lineNo}: ${last}` : last;
+    return lineNo ? `Line ${lineNo}: ${last}` : last;
 }
 
 async function runOne(code, stdin) {

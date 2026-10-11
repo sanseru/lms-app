@@ -58,7 +58,7 @@ class ExerciseRequest extends FormRequest
     {
         return [function (Validator $validator) {
             if ($this->input('mode') === 'parsons' && count(array_filter(preg_split('/\R/', (string) $this->input('solution_code')), fn ($l) => trim($l) !== '')) < 2) {
-                $validator->errors()->add('solution_code', 'Soal susun baris butuh minimal 2 baris kode.');
+                $validator->errors()->add('solution_code', 'An arrange-the-lines exercise needs at least 2 lines of code.');
             }
 
             foreach ($this->input('tests', []) ?? [] as $i => $test) {
@@ -66,20 +66,20 @@ class ExerciseRequest extends FormRequest
 
                 if ($kind === 'function') {
                     if (! is_array(json_decode((string) ($test['input'] ?? ''), true)) || ! array_is_list(json_decode((string) $test['input'], true))) {
-                        $validator->errors()->add("tests.$i.input", 'Argumen harus berupa daftar JSON, mis. [3, 4] atau ["halo"].');
+                        $validator->errors()->add("tests.$i.input", 'Arguments must be a JSON list, e.g. [3, 4] or ["hello"].');
                     }
                     json_decode((string) ($test['expected'] ?? ''));
                     if (json_last_error() !== JSON_ERROR_NONE) {
-                        $validator->errors()->add("tests.$i.expected", 'Hasil harus berupa nilai JSON, mis. 12, "teks", atau [1, 2].');
+                        $validator->errors()->add("tests.$i.expected", 'The result must be a JSON value, e.g. 12, "text" or [1, 2].');
                     }
                 }
 
                 if (in_array($kind, ['attr', 'style'], true) && blank($test['property'] ?? null)) {
-                    $validator->errors()->add("tests.$i.property", 'Isi nama atribut atau properti CSS.');
+                    $validator->errors()->add("tests.$i.property", 'Enter an attribute name or CSS property.');
                 }
 
                 if (in_array($kind, ['text', 'style', 'count'], true) && blank($test['expected'] ?? null)) {
-                    $validator->errors()->add("tests.$i.expected", 'Isi nilai yang diharapkan.');
+                    $validator->errors()->add("tests.$i.expected", 'Enter the expected value.');
                 }
             }
         }];
@@ -88,9 +88,9 @@ class ExerciseRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'title' => 'judul', 'body' => 'cerita soal', 'language' => 'bahasa', 'mode' => 'jenis penilaian',
-            'solution_code' => 'solusi', 'function_name' => 'nama fungsi', 'time_limit_ms' => 'batas waktu',
-            'tests' => 'tes', 'tests.*.input' => 'input', 'tests.*.expected' => 'hasil yang diharapkan', 'tests.*.weight' => 'bobot',
+            'title' => 'title', 'body' => 'exercise story', 'language' => 'language', 'mode' => 'grading type',
+            'solution_code' => 'solution', 'function_name' => 'function name', 'time_limit_ms' => 'time limit',
+            'tests' => 'tests', 'tests.*.input' => 'input', 'tests.*.expected' => 'expected result', 'tests.*.weight' => 'weight',
         ];
     }
 }

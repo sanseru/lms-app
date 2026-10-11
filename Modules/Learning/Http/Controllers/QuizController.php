@@ -20,18 +20,18 @@ class QuizController extends Controller
         $tries = $lesson->attempts()->where('student_id', $user->id)->count();
 
         if ($lesson->max_attempts && $tries >= $lesson->max_attempts) {
-            return back()->with('error', 'Kesempatan mengerjakan kuis ini sudah habis.');
+            return back()->with('error', 'You have no attempts left for this quiz.');
         }
 
         $data = $request->validate([
             'answers' => ['required', 'array'],
             'answers.*' => ['nullable'],
-        ], [], ['answers' => 'jawaban']);
+        ], [], ['answers' => 'answers']);
 
         $attempt = $grade->handle($lesson, $user, $data['answers']);
 
         return back()->with($attempt->passed ? 'success' : 'error', $attempt->passed
-            ? "Hebat! Nilai kamu {$attempt->score}. Kuis lulus."
-            : "Nilai kamu {$attempt->score}. Butuh {$lesson->passScore()} untuk lulus, coba lagi ya.");
+            ? "Great job! You scored {$attempt->score}. Quiz passed."
+            : "You scored {$attempt->score}. You need {$lesson->passScore()} to pass, so give it another try.");
     }
 }

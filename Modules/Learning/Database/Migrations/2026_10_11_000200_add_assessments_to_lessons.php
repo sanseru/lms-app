@@ -8,12 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Misi Pemanasan (pre-test) dan Misi Akhir (post-test) adalah kuis yang ditandai.
+        // Warm-up Mission (pre-test) and Final Mission (post-test) are flagged quizzes.
         Schema::table('lessons', function (Blueprint $table) {
             $table->string('assessment', 10)->nullable()->after('type'); // pre | post
         });
 
-        // Konsep soal (mis. "perulangan") untuk laporan kenaikan per konsep.
+        // Question concept (e.g. "loops") for the per-concept gain report.
         Schema::table('quiz_questions', function (Blueprint $table) {
             $table->string('concept', 40)->nullable()->after('type');
         });

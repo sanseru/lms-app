@@ -13,12 +13,12 @@ class CodeExercise extends Model
 
     public const MODES = [
         'io' => 'Input → output',
-        'function' => 'Fungsi',
-        'html' => 'Cek HTML/CSS',
-        'parsons' => 'Susun baris kode',
+        'function' => 'Function',
+        'html' => 'HTML/CSS check',
+        'parsons' => 'Arrange code lines',
     ];
 
-    /** Mode yang boleh dipakai tiap bahasa. */
+    /** Modes allowed for each language. */
     public const MODES_BY_LANGUAGE = [
         'python' => ['io', 'function', 'parsons'],
         'javascript' => ['io', 'function', 'parsons'],
@@ -26,11 +26,11 @@ class CodeExercise extends Model
     ];
 
     public const HTML_RULES = [
-        'exists' => 'Elemen ada',
-        'text' => 'Teks elemen berisi',
-        'attr' => 'Atribut elemen',
-        'count' => 'Jumlah elemen minimal',
-        'style' => 'Gaya CSS elemen',
+        'exists' => 'Element exists',
+        'text' => 'Element text contains',
+        'attr' => 'Element attribute',
+        'count' => 'Minimum element count',
+        'style' => 'Element CSS style',
     ];
 
     protected $fillable = [
@@ -53,7 +53,7 @@ class CodeExercise extends Model
         return $this->hasMany(CodeTest::class)->orderBy('position')->orderBy('id');
     }
 
-    /** Sidik isi yang dinilai: berubah bila solusi atau tes berubah, sehingga perlu diuji ulang. */
+    /** Fingerprint of the graded content: changes when the solution or tests change, so it must be re-verified. */
     public function contentHash(): string
     {
         $tests = $this->tests()->get()->map->only('kind', 'input', 'expected', 'property', 'weight')->all();
@@ -66,7 +66,7 @@ class CodeExercise extends Model
         return $this->mode === 'parsons' || ($this->verified_hash !== null && $this->verified_hash === $this->contentHash());
     }
 
-    /** Baris solusi untuk soal Parsons (baris kosong dibuang, indentasi dipertahankan). */
+    /** Solution lines for a Parsons exercise (blank lines dropped, indentation kept). */
     public function parsonsLines(): array
     {
         return collect(preg_split('/\R/', $this->solution_code))

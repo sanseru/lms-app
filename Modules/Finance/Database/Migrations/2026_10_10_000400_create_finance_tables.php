@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('class_room_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
-            $table->date('period')->nullable()->comment('Bulan tagihan (tanggal 1)');
+            $table->date('period')->nullable()->comment('Billing month (1st of the month)');
             $table->unsignedBigInteger('amount')->comment('Rupiah');
             $table->unsignedBigInteger('paid_amount')->default(0);
             $table->date('due_date');

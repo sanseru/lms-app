@@ -12,16 +12,16 @@ use Illuminate\Support\Carbon;
 use Modules\Classes\Models\ClassRoom;
 
 /**
- * Satu pertemuan Zoom terjadwal. Pusat data untuk absensi, catatan,
- * pemotongan kuota, dan honor tutor.
+ * One scheduled Zoom meeting. The hub for attendance, notes,
+ * quota deduction and tutor fees.
  */
 class ClassSession extends Model
 {
     public const STATUSES = [
-        'scheduled' => 'Terjadwal',
-        'completed' => 'Selesai',
-        'cancelled' => 'Batal',
-        'rescheduled' => 'Dipindah',
+        'scheduled' => 'Scheduled',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'rescheduled' => 'Rescheduled',
     ];
 
     protected $fillable = [
@@ -55,31 +55,31 @@ class ClassSession extends Model
         return $this->hasMany(SessionAttendance::class);
     }
 
-    /** Sesi asal yang digantikan sesi ini. */
+    /** The original session this one replaces. */
     public function replaces(): BelongsTo
     {
         return $this->belongsTo(self::class, 'replaces_session_id');
     }
 
-    /** Sesi pengganti untuk sesi ini (bila dipindah atau dibatalkan). */
+    /** The replacement for this session (when rescheduled or cancelled). */
     public function replacement(): HasOne
     {
         return $this->hasOne(self::class, 'replaces_session_id');
     }
 
-    /** Absensi hanya untuk sesi yang benar-benar berlangsung (bukan batal atau dipindah). */
+    /** Attendance only applies to sessions that actually run (not cancelled or rescheduled). */
     public function isReportable(): bool
     {
         return in_array($this->status, ['scheduled', 'completed']);
     }
 
-    /** Sesi terjadwal bisa dipindah; sesi batal bisa diganti. Masing-masing hanya sekali. */
+    /** Scheduled sessions can be moved; cancelled ones can be replaced. Each only once. */
     public function canBeRescheduled(): bool
     {
         return in_array($this->status, ['scheduled', 'cancelled']) && ! $this->replacement()->exists();
     }
 
-    /** Sesi lain milik guru yang waktunya bertumpuk. */
+    /** Another session of the same teacher that overlaps in time. */
     public static function clashFor(?int $teacherId, Carbon $startsAt, Carbon $endsAt, ?int $ignoreId = null): ?self
     {
         if (! $teacherId) {
@@ -108,7 +108,7 @@ class ClassSession extends Model
         });
     }
 
-    /** Sesi lampau yang belum diisi absensinya. */
+    /** Past sessions with no attendance filled in yet. */
     public function scopeNeedsReport(Builder $query): Builder
     {
         return $query->where('status', 'scheduled')->where('ends_at', '<', now());

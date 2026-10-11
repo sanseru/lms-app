@@ -8,7 +8,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Modules\Gamification\Contracts\XpRule;
 
-/** Aturan XP dari satu query yang mengembalikan kolom source_id dan at. */
+/** An XP rule built from one query that returns source_id and at columns. */
 class QueryRule implements XpRule
 {
     /** @param  Closure(User): Builder|\Illuminate\Database\Eloquent\Builder  $query */

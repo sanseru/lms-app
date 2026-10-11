@@ -13,19 +13,19 @@ const filters = useFilters({ search: props.filters.search ?? '', status: props.f
 </script>
 
 <template>
-    <Head title="Kursus & Materi" />
+    <Head title="Courses & lessons" />
 
-    <PageHeader eyebrow="Belajar" title="Kursus & materi" description="Susun kurikulum berisi materi, kuis, dan tugas, lalu pasang ke kelas. Siswa di kelas itu otomatis bisa mengaksesnya.">
+    <PageHeader eyebrow="Learning" title="Courses & lessons" description="Build a curriculum of lessons, quizzes and assignments, then attach it to a class. Students in that class get access automatically.">
         <template #actions>
-            <Link :href="route('learning.courses.create')" class="btn-accent"><Icon name="plus" :size="18" /> Kursus baru</Link>
+            <Link :href="route('learning.courses.create')" class="btn-accent"><Icon name="plus" :size="18" /> New course</Link>
         </template>
     </PageHeader>
 
     <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <SearchInput v-model="filters.search" placeholder="Cari judul atau pelajaran…" />
+        <SearchInput v-model="filters.search" placeholder="Search title or subject…" />
         <div class="flex flex-wrap gap-2">
             <button
-                v-for="(label, key) in { '': 'Semua', ...statuses }"
+                v-for="(label, key) in { '': 'All', ...statuses }"
                 :key="key"
                 :class="filters.status === key ? 'bg-brand-600 text-white' : 'bg-white text-muted ring-1 ring-line hover:text-ink'"
                 class="rounded-full px-4 py-2 text-sm font-semibold transition"
@@ -46,16 +46,16 @@ const filters = useFilters({ search: props.filters.search ?? '', status: props.f
                 <h3 class="mt-0.5 font-display text-lg font-bold text-ink group-hover:text-brand-600">{{ c.title }}</h3>
                 <p v-if="c.description" class="mt-1 line-clamp-2 text-sm text-muted">{{ c.description }}</p>
                 <div class="mt-4 flex items-center gap-4 text-sm text-muted">
-                    <span class="flex items-center gap-1.5"><Icon name="book-open" :size="15" /> {{ c.lessons_count }} materi</span>
-                    <span class="flex items-center gap-1.5"><Icon name="school" :size="15" /> {{ c.classes_count }} kelas</span>
+                    <span class="flex items-center gap-1.5"><Icon name="book-open" :size="15" /> {{ c.lessons_count }} {{ c.lessons_count === 1 ? 'lesson' : 'lessons' }}</span>
+                    <span class="flex items-center gap-1.5"><Icon name="school" :size="15" /> {{ c.classes_count }} {{ c.classes_count === 1 ? 'class' : 'classes' }}</span>
                 </div>
             </div>
         </Link>
     </div>
 
     <div v-else class="card">
-        <EmptyState icon="book-open" title="Belum ada kursus" description="Buat kursus pertama, isi dengan materi, kuis, dan tugas, lalu pasang ke kelas.">
-            <Link :href="route('learning.courses.create')" class="btn-primary"><Icon name="plus" :size="18" /> Kursus baru</Link>
+        <EmptyState icon="book-open" title="No courses yet" description="Create your first course, fill it with lessons, quizzes and assignments, then attach it to a class.">
+            <Link :href="route('learning.courses.create')" class="btn-primary"><Icon name="plus" :size="18" /> New course</Link>
         </EmptyState>
     </div>
 </template>

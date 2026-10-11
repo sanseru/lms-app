@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Classes\Models\ClassRoom;
 
-/** Proyek untuk satu kelas; setiap siswa mendapat papan kanban sendiri. */
+/** A project for one class; every student gets their own kanban board. */
 class Project extends Model
 {
     protected $fillable = ['class_room_id', 'created_by', 'title', 'description', 'emoji', 'due_date', 'requires_review', 'status'];
@@ -52,7 +52,7 @@ class Project extends Model
                 ->orWhereIn('class_room_id', ClassRoom::query()->whereHas('students', fn ($s) => $s->whereIn('users.id', $user->children()->select('users.id')))->select('id')))));
     }
 
-    /** Guru kelas atau admin. */
+    /** The class teacher or an admin. */
     public function isStaff(User $user): bool
     {
         return $user->hasRole('admin') || $this->classRoom->teacher_id === $user->id;

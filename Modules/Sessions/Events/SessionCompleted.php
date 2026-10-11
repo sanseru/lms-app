@@ -6,8 +6,8 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Modules\Sessions\Models\ClassSession;
 
 /**
- * Dipicu setiap kali absensi sesi selesai disimpan (termasuk koreksi).
- * Listener harus idempoten: modul Finance memotong kuota dan mencatat honor dari sini.
+ * Fired every time a session's attendance is saved (including corrections).
+ * Listeners must be idempotent: the Finance module deducts quota and records tutor fees from here.
  */
 class SessionCompleted
 {

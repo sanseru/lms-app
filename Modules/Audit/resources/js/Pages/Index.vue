@@ -23,13 +23,13 @@ const filters = useFilters(
 );
 
 const fieldLabels = {
-    name: 'Nama', username: 'Username', email: 'Email', phone: 'Telepon', status: 'Status', password: 'Kata sandi',
-    rate_per_session: 'Honor per sesi', bank_name: 'Bank', bank_account: 'No. rekening',
-    amount: 'Jumlah', due_date: 'Jatuh tempo', title: 'Judul', rejection_reason: 'Alasan ditolak',
-    price: 'Harga', sessions_count: 'Jumlah sesi', valid_days: 'Masa berlaku (hari)', is_active: 'Dijual',
-    sessions_total: 'Kuota sesi', expires_at: 'Berlaku s/d', total: 'Total', bonus: 'Bonus', deduction: 'Potongan',
-    score: 'Nilai', starts_at: 'Mulai', teacher_id: 'Guru', cancel_reason: 'Alasan batal',
-    schedule_days: 'Hari', start_time: 'Jam mulai', end_time: 'Jam selesai', revoked_at: 'Dicabut',
+    name: 'Name', username: 'Username', email: 'Email', phone: 'Phone', status: 'Status', password: 'Password',
+    rate_per_session: 'Fee per session', bank_name: 'Bank', bank_account: 'Account number',
+    amount: 'Amount', due_date: 'Due date', title: 'Title', rejection_reason: 'Rejection reason',
+    price: 'Price', sessions_count: 'Number of sessions', valid_days: 'Valid for (days)', is_active: 'On sale',
+    sessions_total: 'Session quota', expires_at: 'Valid until', total: 'Total', bonus: 'Bonus', deduction: 'Deduction',
+    score: 'Score', starts_at: 'Starts', teacher_id: 'Teacher', cancel_reason: 'Cancellation reason',
+    schedule_days: 'Days', start_time: 'Start time', end_time: 'End time', revoked_at: 'Revoked',
 };
 
 const show = (change, value) => {
@@ -39,7 +39,7 @@ const show = (change, value) => {
     const date = String(value).match(/^(\d{4})-(\d{2})-(\d{2})(?: (\d{2}):(\d{2}))?$/);
     if (date) {
         const [, y, m, d, hh, mm] = date;
-        const text = new Date(y, m - 1, d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        const text = new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         return hh ? `${text} ${hh}:${mm}` : text;
     }
     return String(value);
@@ -57,36 +57,36 @@ const reset = () => Object.assign(filters, { search: '', category: '', event: ''
 </script>
 
 <template>
-    <Head title="Jejak Audit" />
+    <Head title="Audit log" />
 
-    <PageHeader eyebrow="Lainnya" title="Jejak audit" description="Catatan siapa mengubah apa dan kapan untuk tagihan, pembayaran, honor, nilai, kehadiran, jadwal, dan akun. Catatan tidak bisa diubah atau dihapus." />
+    <PageHeader eyebrow="Other" title="Audit log" description="A record of who changed what and when for invoices, payments, tutor fees, grades, attendance, schedules and accounts. Entries cannot be changed or deleted." />
 
     <div v-if="failedLogins >= 5" class="mb-5 flex items-start gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
         <Icon name="alert-triangle" :size="18" class="mt-0.5 shrink-0" />
-        <p><strong>{{ failedLogins }} percobaan masuk gagal</strong> dalam 24 jam terakhir. Periksa apakah ada yang mencoba menebak kata sandi.</p>
+        <p><strong>{{ failedLogins }} failed sign-in attempts</strong> in the last 24 hours. Check whether someone is trying to guess a password.</p>
     </div>
 
     <div class="card overflow-hidden">
         <div class="grid gap-3 border-b border-line p-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="lg:col-span-2 [&>label]:max-w-none"><SearchInput v-model="filters.search" placeholder="Cari objek, mis. nomor tagihan…" /></div>
-            <select v-model="filters.category" class="field" aria-label="Kategori">
-                <option value="">Semua kategori</option>
+            <div class="lg:col-span-2 [&>label]:max-w-none"><SearchInput v-model="filters.search" placeholder="Search records, e.g. an invoice number…" /></div>
+            <select v-model="filters.category" class="field" aria-label="Category">
+                <option value="">All categories</option>
                 <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
             </select>
-            <select v-model="filters.event" class="field" aria-label="Kejadian">
-                <option value="">Semua kejadian</option>
+            <select v-model="filters.event" class="field" aria-label="Event">
+                <option value="">All events</option>
                 <option v-for="(label, key) in events" :key="key" :value="key">{{ label }}</option>
             </select>
-            <select v-model="filters.user" class="field" aria-label="Pelaku">
-                <option value="">Semua pelaku</option>
+            <select v-model="filters.user" class="field" aria-label="User">
+                <option value="">All users</option>
                 <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
             </select>
             <label class="flex items-center gap-2 text-sm text-muted">
-                <span class="w-12 shrink-0">Dari</span>
+                <span class="w-12 shrink-0">From</span>
                 <input v-model="filters.from" type="date" class="field min-w-0" />
             </label>
             <label class="flex items-center gap-2 text-sm text-muted">
-                <span class="w-12 shrink-0">Sampai</span>
+                <span class="w-12 shrink-0">To</span>
                 <input v-model="filters.to" type="date" class="field min-w-0" />
             </label>
         </div>
@@ -104,7 +104,7 @@ const reset = () => Object.assign(filters, { search: '', category: '', event: ''
                     </div>
                     <p class="mt-1 font-semibold break-words text-ink">{{ a.label ?? '–' }}</p>
                     <p class="text-sm text-muted">
-                        oleh <span class="font-semibold text-ink">{{ a.causer ?? 'Sistem' }}</span>
+                        by <span class="font-semibold text-ink">{{ a.causer ?? 'System' }}</span>
                         <span v-if="a.ip"> · {{ a.ip }}</span>
                     </p>
                     <dl v-if="a.changes.length" class="mt-2 grid gap-1 rounded-xl bg-chip/60 p-3 text-sm">
@@ -113,7 +113,7 @@ const reset = () => Object.assign(filters, { search: '', category: '', event: ''
                             <dd class="text-ink">
                                 <template v-if="a.event === 'updated'">
                                     <span class="text-muted line-through">{{ show(c, c.from) }}</span>
-                                    <span class="mx-1 text-muted" aria-label="menjadi">→</span>
+                                    <span class="mx-1 text-muted" aria-label="changed to">→</span>
                                 </template>
                                 <span class="font-semibold">{{ show(c, c.to) }}</span>
                             </dd>
@@ -122,8 +122,8 @@ const reset = () => Object.assign(filters, { search: '', category: '', event: ''
                 </div>
             </li>
         </ol>
-        <EmptyState v-else icon="shield-check" title="Belum ada catatan" description="Perubahan pada data penting akan muncul di sini.">
-            <button v-if="Object.values(filters).some(Boolean)" class="btn-ghost" @click="reset">Hapus filter</button>
+        <EmptyState v-else icon="shield-check" title="No entries yet" description="Changes to important data will show up here.">
+            <button v-if="Object.values(filters).some(Boolean)" class="btn-ghost" @click="reset">Clear filters</button>
         </EmptyState>
         <Pagination :meta="activities" />
     </div>

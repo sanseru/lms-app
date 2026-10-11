@@ -7,12 +7,12 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Str;
 
 /**
- * Kirim notifikasi in-app ke satu atau beberapa user.
+ * Send an in-app notification to one or more users.
  *
- * Modul lain cukup memanggil Notify::send(); baris disimpan di tabel
- * notifications bawaan Laravel sehingga kanal lain (WhatsApp, email)
- * nanti bisa membaca dari tabel yang sama. Dengan $key, kejadian yang
- * sama tidak menghasilkan notifikasi ganda untuk user yang sama.
+ * Other modules just call Notify::send(); rows are stored in Laravel's
+ * notifications table so other channels (WhatsApp, email) can read the
+ * same table later. With $key, the same event never produces a
+ * duplicate notification for the same user.
  *
  * @param  User|iterable<User>  $users
  */
@@ -39,7 +39,7 @@ class Notify
                     'dedupe_key' => $key,
                 ]);
             } catch (UniqueConstraintViolationException) {
-                // Sudah dikirim oleh proses lain bersamaan.
+                // Already sent by a concurrent process.
             }
         }
     }

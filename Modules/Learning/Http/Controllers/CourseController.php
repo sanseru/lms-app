@@ -25,8 +25,12 @@ class CourseController extends Controller
                 return to_route('learning.progress.index');
             }
 
+            $courses = $progress->forStudent($user);
+
             return Inertia::render('Learning::Courses/Mine', [
-                'courses' => $progress->forStudent($user),
+                'courses' => $courses,
+                'selected' => $request->integer('course') ?: $courses->first()['id'] ?? null,
+                'nextSessions' => $this->nextSessions($courses->flatMap(fn ($c) => collect($c['classes'])->pluck('id'))->unique()->all()),
             ]);
         }
 
@@ -55,7 +59,7 @@ class CourseController extends Controller
     {
         $course = Course::create($request->validated() + ['created_by' => $request->user()->id]);
 
-        return to_route('learning.courses.show', $course)->with('success', 'Kursus dibuat. Tambahkan materi pertama.');
+        return to_route('learning.courses.show', $course)->with('success', 'Course created. Add the first lesson.');
     }
 
     public function show(Request $request, Course $course, StudentProgress $progress): Response
@@ -97,7 +101,7 @@ class CourseController extends Controller
     {
         $course->update($request->validated());
 
-        return to_route('learning.courses.show', $course)->with('success', 'Kursus diperbarui.');
+        return to_route('learning.courses.show', $course)->with('success', 'Course updated.');
     }
 
     public function destroy(Course $course): RedirectResponse
@@ -105,16 +109,16 @@ class CourseController extends Controller
         $course->classes()->update(['course_id' => null]);
         $course->delete();
 
-        return to_route('learning.courses.index')->with('success', 'Kursus dihapus.');
+        return to_route('learning.courses.index')->with('success', 'Course deleted.');
     }
 
-    /** Pasang kursus ini sebagai kurikulum sebuah kelas. */
+    /** Attach this course as a class's curriculum. */
     public function attachClass(Request $request, Course $course): RedirectResponse
     {
-        $data = $request->validate(['class_room_id' => ['required', 'exists:class_rooms,id']], [], ['class_room_id' => 'kelas']);
+        $data = $request->validate(['class_room_id' => ['required', 'exists:class_rooms,id']], [], ['class_room_id' => 'class']);
         ClassRoom::whereKey($data['class_room_id'])->update(['course_id' => $course->id]);
 
-        return back()->with('success', 'Kelas sekarang memakai kursus ini.');
+        return back()->with('success', 'The class now uses this course.');
     }
 
     public function detachClass(Course $course, ClassRoom $class): RedirectResponse
@@ -122,7 +126,30 @@ class CourseController extends Controller
         abort_unless($class->course_id === $course->id, 404);
         $class->forceFill(['course_id' => null])->saveQuietly();
 
-        return back()->with('success', 'Kelas dilepas dari kursus.');
+        return back()->with('success', 'Class removed from the course.');
+    }
+
+    /**
+     * Next scheduled meeting per class, when the Sessions module is enabled.
+     *
+     * @param  array<int, int>  $classIds
+     * @return array<int, array{starts_at: string, zoom_url: ?string}>
+     */
+    private function nextSessions(array $classIds): array
+    {
+        if (! $classIds || ! (new ClassRoom)->isRelation('sessions')) {
+            return [];
+        }
+
+        return ClassRoom::query()->whereKey($classIds)
+            ->with(['sessions' => fn ($q) => $q->where('status', 'scheduled')->where('starts_at', '>=', now()->subHour())->orderBy('starts_at')])
+            ->get()
+            ->filter(fn ($class) => $class->sessions->isNotEmpty())
+            ->mapWithKeys(fn ($class) => [$class->id => [
+                'starts_at' => $class->sessions->first()->starts_at->toIso8601String(),
+                'zoom_url' => $class->sessions->first()->zoom_url ?: $class->zoom_url,
+            ]])
+            ->all();
     }
 
     private function formOptions(): array

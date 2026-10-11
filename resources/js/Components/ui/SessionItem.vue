@@ -32,7 +32,7 @@ const color = computed(() => classColors[props.session.class?.color] ?? classCol
         <span v-if="session.status === 'completed'" class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-600">
             <Icon name="check" :size="16" /> <span class="hidden sm:inline">Selesai</span>
         </span>
-        <span v-else-if="session.status === 'cancelled'" class="shrink-0 text-sm font-semibold text-muted">Batal</span>
+        <span v-else-if="session.status === 'cancelled' || session.status === 'rescheduled'" class="shrink-0 text-sm font-semibold text-muted">{{ session.status_label }}</span>
         <Link v-else-if="session.needs_report" :href="route('sessions.show', session.id)" class="btn-primary shrink-0 px-3 py-2">
             <Icon name="clipboard-check" :size="16" /> <span class="hidden sm:inline">Isi absensi</span>
         </Link>

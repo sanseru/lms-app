@@ -13,3 +13,6 @@ Schedule::command('sessions:generate')->dailyAt('01:00');
 
 // XP dihitung ulang setiap malam (juga otomatis saat siswa membuka halaman prestasi).
 Schedule::command('xp:sync')->dailyAt('01:30');
+
+// Guru yang belum mengisi laporan sesi diingatkan lewat notifikasi.
+Schedule::command('sessions:remind-reports')->hourly();

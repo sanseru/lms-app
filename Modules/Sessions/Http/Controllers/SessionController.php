@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Classes\Models\ClassRoom;
 use Modules\Sessions\Actions\CompleteSession;
 use Modules\Sessions\Actions\GenerateSessions;
+use Modules\Sessions\Actions\RescheduleSession;
+use Modules\Sessions\Http\Requests\RescheduleRequest;
 use Modules\Sessions\Http\Requests\SessionReportRequest;
 use Modules\Sessions\Models\ClassSession;
 use Modules\Sessions\Models\SessionAttendance;
@@ -33,7 +36,7 @@ class SessionController extends Controller
             ->when($tab === 'upcoming', fn ($q) => $q->where('status', 'scheduled')->where('ends_at', '>=', now())->orderBy('starts_at'))
             ->when($tab === 'completed', fn ($q) => $q->where('status', 'completed')->orderByDesc('starts_at'))
             ->when($tab === 'flagged', fn ($q) => $q->where('flagged', true)->orderByDesc('starts_at'))
-            ->when($tab === 'cancelled', fn ($q) => $q->where('status', 'cancelled')->orderByDesc('starts_at'))
+            ->when($tab === 'cancelled', fn ($q) => $q->whereIn('status', ['cancelled', 'rescheduled'])->orderByDesc('starts_at'))
             ->paginate(20)
             ->withQueryString()
             ->through(fn (ClassSession $s) => $s->toItem());
@@ -51,9 +54,9 @@ class SessionController extends Controller
     public function show(Request $request, ClassSession $session): Response
     {
         Gate::authorize('view', $session);
-        $session->load(['classRoom.students.studentProfile', 'teacher:id,name', 'attendances']);
+        $session->load(['classRoom.students.studentProfile', 'teacher:id,name', 'attendances', 'replaces', 'replacement']);
         $user = $request->user();
-        $canReport = $session->status !== 'cancelled' && $user->can('report', $session);
+        $canReport = $session->isReportable() && $user->can('report', $session);
         $isStaff = $canReport || $user->can('classes.manage');
 
         $attendance = $session->attendances->keyBy('student_id');
@@ -69,6 +72,8 @@ class SessionController extends Controller
                 'recording_url' => $session->recording_url,
                 'cancel_reason' => $session->cancel_reason,
                 'completed_at' => $session->completed_at?->translatedFormat('d M Y H:i'),
+                'replaces' => $session->replaces ? self::link($session->replaces) : null,
+                'replacement' => $session->replacement ? self::link($session->replacement) : null,
             ],
             'students' => $session->classRoom->students
                 ->when($visibleStudentIds, fn ($c) => $c->whereIn('id', $visibleStudentIds))
@@ -85,6 +90,7 @@ class SessionController extends Controller
             'can' => [
                 'report' => $canReport,
                 'cancel' => $session->status === 'scheduled' && $user->can('cancel', $session),
+                'reschedule' => $session->canBeRescheduled() && $user->can('reschedule', $session),
                 'staff' => $isStaff,
             ],
         ]);
@@ -107,6 +113,29 @@ class SessionController extends Controller
         $session->update(['status' => 'cancelled', 'cancel_reason' => $data['reason']]);
 
         return back()->with('success', 'Sesi dibatalkan. Kuota siswa tidak terpotong.');
+    }
+
+    /** Pindah jadwal sesi, atau buat sesi pengganti untuk sesi yang dibatalkan. */
+    public function reschedule(RescheduleRequest $request, ClassSession $session, RescheduleSession $reschedule): RedirectResponse
+    {
+        $data = $request->validated();
+        $new = $reschedule->handle(
+            $session,
+            Carbon::parse("{$data['date']} {$data['start_time']}"),
+            Carbon::parse("{$data['date']} {$data['end_time']}"),
+            $data['reason'],
+        );
+
+        return to_route('sessions.show', $new)->with('success', 'Sesi pengganti dibuat '.$new->starts_at->translatedFormat('l, d M Y H:i').'.');
+    }
+
+    private static function link(ClassSession $s): array
+    {
+        return [
+            'id' => $s->id,
+            'label' => $s->starts_at->translatedFormat('l, d M Y').' · '.$s->starts_at->format('H:i').'–'.$s->ends_at->format('H:i'),
+            'status_label' => ClassSession::STATUSES[$s->status],
+        ];
     }
 
     public function generate(Request $request, ClassRoom $class, GenerateSessions $generator): RedirectResponse

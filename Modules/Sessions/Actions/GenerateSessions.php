@@ -54,10 +54,10 @@ class GenerateSessions
         return $created;
     }
 
-    /** Hapus sesi mendatang yang belum berjalan, lalu buat ulang (dipakai saat jadwal kelas diubah). */
+    /** Hapus sesi mendatang yang belum berjalan, lalu buat ulang (dipakai saat jadwal kelas diubah). Sesi pengganti dipertahankan. */
     public function regenerateUpcoming(ClassRoom $class): int
     {
-        $class->sessions()->where('status', 'scheduled')->where('starts_at', '>', now())->delete();
+        $class->sessions()->where('status', 'scheduled')->whereNull('replaces_session_id')->where('starts_at', '>', now())->delete();
 
         return $this->forClass($class, now(), now()->addWeeks(config('sessions.generate_weeks_ahead')));
     }

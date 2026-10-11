@@ -36,6 +36,7 @@ Route::prefix('finance')->name('finance.')->group(function () {
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('invoices/{invoice}/kuitansi', [InvoiceController::class, 'receipt'])->name('invoices.receipt');
     Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
     Route::get('payments/{payment}/proof', [PaymentController::class, 'proof'])->name('payments.proof');
 });

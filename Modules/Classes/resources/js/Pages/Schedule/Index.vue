@@ -1,12 +1,24 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import Icon from '@/Components/ui/Icon.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
 import { classColors } from '@/lib/format';
 
-const props = defineProps({ days: Array, week: Object });
-const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((s) => s.status !== 'cancelled').length, 0));
+const props = defineProps({ days: Array, week: Object, calendarUrl: String });
+
+const copied = ref(false);
+const copyCalendar = async () => {
+    try {
+        await navigator.clipboard.writeText(props.calendarUrl);
+        copied.value = true;
+        setTimeout(() => (copied.value = false), 2000);
+    } catch {
+        /* clipboard tidak tersedia */
+    }
+};
+const makeCalendar = () => router.post(route('calendar.regenerate'), {}, { preserveScroll: true });
+const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((s) => !['cancelled', 'rescheduled'].includes(s.status)).length, 0));
 </script>
 
 <template>
@@ -45,7 +57,7 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
                     :key="s.id"
                     :href="route('sessions.show', s.id)"
                     :class="[
-                        s.status === 'cancelled' ? 'bg-chip ring-line opacity-60' : [classColors[s.class.color]?.bg, classColors[s.class.color]?.ring],
+                        ['cancelled', 'rescheduled'].includes(s.status) ? 'bg-chip ring-line opacity-60' : [classColors[s.class.color]?.bg, classColors[s.class.color]?.ring],
                     ]"
                     class="block rounded-xl p-3 ring-1 transition ring-inset hover:-translate-y-0.5"
                 >
@@ -54,11 +66,29 @@ const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((
                         <span v-if="s.status === 'completed'" class="text-emerald-600" title="Selesai"><Icon name="check" :size="14" /></span>
                         <span v-else-if="s.needs_report" class="size-2 rounded-full bg-amber-500" title="Absensi belum diisi" />
                     </div>
-                    <p class="mt-0.5 text-sm leading-snug font-bold text-ink" :class="s.status === 'cancelled' && 'line-through'">{{ s.class.name }}</p>
+                    <p class="mt-0.5 text-sm leading-snug font-bold text-ink" :class="['cancelled', 'rescheduled'].includes(s.status) && 'line-through'">{{ s.class.name }}</p>
                     <p v-if="s.teacher" class="mt-1 truncate text-xs text-muted">{{ s.teacher.name }}</p>
                 </Link>
                 <p v-if="!day.sessions.length" class="m-auto text-xs text-muted/70">Tidak ada kelas</p>
             </div>
         </section>
+    </div>
+
+    <div class="card mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600"><Icon name="calendar-days" /></span>
+        <div class="min-w-0 flex-1">
+            <h2 class="font-display font-bold text-ink">Tampilkan jadwal di kalender HP</h2>
+            <p class="text-sm text-muted">
+                Langganan tautan ini di Google Calendar (Tambah kalender → Dari URL), Apple Calendar, atau Outlook. Jadwal dan link Zoom ikut diperbarui otomatis.
+            </p>
+            <p v-if="calendarUrl" class="mt-2 truncate rounded-lg bg-chip px-3 py-1.5 font-mono text-xs text-ink">{{ calendarUrl }}</p>
+        </div>
+        <div class="flex shrink-0 flex-wrap gap-2">
+            <template v-if="calendarUrl">
+                <button class="btn-primary" @click="copyCalendar"><Icon name="link" :size="16" /> {{ copied ? 'Tersalin' : 'Salin tautan' }}</button>
+                <button class="btn-ghost" title="Tautan lama tidak berlaku lagi" @click="makeCalendar">Buat ulang</button>
+            </template>
+            <button v-else class="btn-primary" @click="makeCalendar"><Icon name="plus" :size="16" /> Buat tautan kalender</button>
+        </div>
     </div>
 </template>

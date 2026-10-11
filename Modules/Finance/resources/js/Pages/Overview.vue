@@ -7,7 +7,7 @@ import PageHeader from '@/Components/ui/PageHeader.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
 import { compactRupiah, rupiah } from '@/lib/format';
 
-const props = defineProps({ stats: Object, months: Array, pending: Array });
+const props = defineProps({ stats: Object, months: Array, pending: Array, lowQuota: Array });
 
 const max = computed(() => Math.max(1, ...props.months.flatMap((m) => [m.billed, m.received])));
 </script>
@@ -69,5 +69,32 @@ const max = computed(() => Math.max(1, ...props.months.flatMap((m) => [m.billed,
             </ul>
             <EmptyState v-else icon="badge-check" title="Semua beres" description="Tidak ada bukti transfer yang menunggu." />
         </div>
+    </div>
+
+    <div class="card mt-6 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
+            <div>
+                <h2 class="font-display font-bold text-ink">Paket hampir habis</h2>
+                <p class="text-sm text-muted">Sisa kuota 2 sesi atau kurang, atau kedaluwarsa dalam 14 hari. Waktunya tawarkan perpanjangan.</p>
+            </div>
+            <Link :href="route('finance.packages.index')" class="btn-ghost px-3 py-2"><Icon name="ticket" :size="16" /> Kelola paket</Link>
+        </div>
+        <ul v-if="lowQuota.length" class="divide-y divide-line">
+            <li v-for="p in lowQuota" :key="p.id" class="flex flex-wrap items-center gap-3 px-5 py-3">
+                <span
+                    :class="p.remaining === 0 ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'"
+                    class="grid size-10 place-items-center rounded-xl font-display text-lg font-extrabold"
+                    :title="`Sisa ${p.remaining} sesi`"
+                >
+                    {{ p.remaining }}
+                </span>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate font-semibold text-ink">{{ p.student?.name }}</p>
+                    <p class="text-xs text-muted">{{ p.name }}<template v-if="p.class"> · {{ p.class }}</template> · terpakai {{ p.used }}/{{ p.total }}</p>
+                </div>
+                <span v-if="p.expires_at" :class="p.expiring ? 'text-rose-600' : 'text-muted'" class="text-xs font-semibold">Berlaku s.d. {{ p.expires_at }}</span>
+            </li>
+        </ul>
+        <EmptyState v-else icon="ticket" title="Kuota aman" description="Belum ada paket siswa yang hampir habis." />
     </div>
 </template>

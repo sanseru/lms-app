@@ -4,7 +4,12 @@ import { Head, Link } from '@inertiajs/vue3';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import Avatar from '@/Components/ui/Avatar.vue';
+import WorldLayout from '@/Layouts/WorldLayout.vue';
+import { enterPageFullscreen } from '@/lib/fullscreen';
 import CourseMap from '../../Components/CourseMap.vue';
+
+// The course map is the whole screen, like the client prototype (no sidebar).
+defineOptions({ layout: WorldLayout });
 
 const props = defineProps({
     courses: Array,
@@ -66,17 +71,17 @@ const sessionLabel = (iso) =>
             </Link>
         </nav>
 
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
-            <!-- Front panel: the class the student is taking right now -->
-            <aside class="space-y-4 lg:sticky lg:top-24">
-                <section class="panel-brand p-6">
+        <div class="space-y-6">
+            <!-- Summary strip: the class the student is taking right now, above the full-width map -->
+            <div class="grid gap-4 lg:grid-cols-3 lg:items-stretch">
+                <section class="panel-brand p-6 lg:col-span-1">
                     <p class="text-[11px] font-extrabold tracking-[0.12em] text-brand-100 uppercase">{{ klass ? 'Your class' : 'Your course' }}</p>
                     <h1 class="mt-1 font-display text-2xl leading-tight font-extrabold tracking-tight">{{ klass?.name ?? course.title }}</h1>
                     <p class="mt-1 text-sm text-brand-100">
                         <template v-if="program">{{ program.name }} · Level {{ levelNumber }}: {{ course.title }}</template>
                         <template v-else>{{ course.title }} · {{ course.level_label }}</template>
                     </p>
-                    <p v-if="course.description" class="mt-3 line-clamp-4 text-sm text-white/85">{{ course.description }}</p>
+                    <p v-if="course.description" class="mt-3 line-clamp-2 text-sm text-white/85">{{ course.description }}</p>
 
                     <div class="mt-5">
                         <div class="flex items-end justify-between text-sm">
@@ -88,7 +93,7 @@ const sessionLabel = (iso) =>
                         </div>
                     </div>
 
-                    <Link v-if="course.next" :href="route('learning.lessons.show', course.next.id)" class="btn-accent mt-5 w-full">
+                    <Link v-if="course.next" :href="route('learning.lessons.show', course.next.id)" class="btn-accent mt-5 w-full" @click.capture="enterPageFullscreen">
                         {{ course.completed ? 'Continue' : 'Start' }}: {{ course.next.title }}
                         <Icon name="arrow-right" :size="16" />
                     </Link>
@@ -124,7 +129,8 @@ const sessionLabel = (iso) =>
                     <p v-if="course.classes.length > 1" class="text-xs text-muted">Also in: {{ course.classes.slice(1).map((c) => c.name).join(', ') }}</p>
                 </section>
 
-                <Link :href="route('learning.courses.show', course.id)" class="flex items-center justify-between rounded-2xl px-1 text-sm font-bold text-brand-600 hover:text-brand-700">
+                <div class="flex flex-col gap-3">
+                <Link :href="route('learning.courses.show', course.id)" class="card flex items-center justify-between p-4 text-sm font-bold text-brand-600 hover:text-brand-700">
                     See the lesson list and scores <Icon name="arrow-right" :size="16" />
                 </Link>
                 <Link :href="route('learning.courses.explore')" class="card flex items-center gap-3 p-4 text-sm transition hover:shadow-md">
@@ -132,10 +138,11 @@ const sessionLabel = (iso) =>
                     <span class="min-w-0 flex-1"><b class="block text-ink">Explore other courses</b><span class="text-muted">See what else you can learn next.</span></span>
                     <Icon name="arrow-right" :size="16" class="text-muted" />
                 </Link>
-            </aside>
+                </div>
+            </div>
 
             <!-- The learning path -->
-            <section aria-labelledby="map-title">
+            <section aria-labelledby="map-title" class="mx-auto w-full max-w-3xl">
                 <h2 id="map-title" class="sr-only">Learning path for {{ course.title }}</h2>
                 <!-- A program: every level in order, one map each; locked levels wait behind a castle -->
                 <div v-if="program" class="space-y-6">

@@ -43,7 +43,8 @@ Di **Home** kamu melihat:
 
 Buka **Course**. Kursus disusun seperti di sekolah musik: **program** (mis. Python) terdiri dari beberapa **level** (Python Start 1, Python Start 2, …), setiap level berisi **Lesson** bernomor, dan setiap Lesson berisi beberapa **task** (teori, kuis, tugas, coding).
 
-- Tombol di paling atas memilih program (mis. **Python**, **Scratch**) lengkap dengan persentase selesai.
+- Halaman peta memenuhi layar tanpa menu samping. Bar atas berisi **Home** (kembali ke Beranda), **Explore courses**, lonceng notifikasi, dan tombol layar penuh.
+- Tombol di bawahnya memilih program (mis. **Python**, **Scratch**) lengkap dengan persentase selesai.
 - Panel **Your class** menampilkan kelasmu, program dan level (mis. **Python · Level 1**), dan berapa task sudah selesai. Tombol oranye (**Start: ...** atau **Continue: ...**) langsung membawamu ke task berikutnya.
 - Kartu di bawahnya berisi **Teacher**, jadwal kelas, **Next class**, tombol **Join on Zoom**, **Quiz average**, dan **Assignments to hand in**.
 - Di kanan ada peta yang berkelok dari **START · nama level** di atas sampai kastel di bawah. Tulisan di bawah START menunjukkan berapa Lesson sudah selesai (mis. **3/4 lessons completed**).
@@ -83,7 +84,7 @@ Tertarik? Klik **I'm interested**. Guru, admin, dan orang tuamu akan diberi tahu
 
 ## Belajar materi, kuis, dan tugas
 
-Saat kamu membuka pelajaran, aplikasi masuk ke **mode fokus**: menu samping dan header disembunyikan supaya kamu bisa berkonsentrasi.
+Saat kamu membuka pelajaran, aplikasi masuk ke **mode fokus**: menu samping dan header disembunyikan supaya kamu bisa berkonsentrasi. Kalau kamu memulai dari peta (klik Lesson, task, **Start lesson**, **Continue**, atau tombol oranye **Continue: …**), browser langsung masuk **layar penuh** dan tetap layar penuh saat kamu pindah task. Tekan Esc atau tombol layar penuh di bar atas untuk keluar.
 
 - Bar gelap di atas berisi tombol panah kiri (**Back to the course map**) untuk kembali ke peta belajar, nama kursus, Lesson yang sedang dibuka (mis. **Lesson 2: Variables**), dan posisi task (mis. **Task 2 of 3**).
 - Di tengah bar ada satu lingkaran untuk setiap task di Lesson itu. Lingkaran hijau bercentang sudah selesai, lingkaran putih adalah pelajaran yang sedang dibuka. Klik lingkaran mana pun untuk pindah pelajaran.

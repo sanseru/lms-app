@@ -20,6 +20,7 @@ const done = computed(() => new Set(page.props.done ?? []));
 const position = computed(() => outline.value.findIndex((l) => l.id === lesson.value?.id));
 
 // The whole page can go fullscreen as well (the code editor has its own button).
+// It targets the document, the same element the course map uses when a student starts a task.
 const root = ref(null);
 const canFullscreen = ref(false);
 const { active: fullscreen, toggle } = useFullscreen(root);
@@ -28,6 +29,7 @@ const { active: fullscreen, toggle } = useFullscreen(root);
 const stepper = ref(null);
 const scrollToCurrent = () => nextTick(() => stepper.value?.querySelector('[aria-current="step"]')?.scrollIntoView({ block: 'nearest', inline: 'center' }));
 onMounted(() => {
+    root.value = document.documentElement;
     canFullscreen.value = !!document.fullscreenEnabled;
     scrollToCurrent();
 });
@@ -35,7 +37,7 @@ watch(() => lesson.value?.id, scrollToCurrent);
 </script>
 
 <template>
-    <div ref="root" class="flex min-h-full flex-col bg-paper" :class="fullscreen && 'h-full overflow-y-auto'">
+    <div class="flex min-h-full flex-col bg-paper">
         <Head><meta name="theme-color" content="#1d2934" /></Head>
         <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:shadow-lg">Skip to content</a>
 

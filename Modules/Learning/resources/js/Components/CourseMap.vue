@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, Castle, Check, Code, FilePen, Flag, ListChecks, Lock, Target } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
+import { enterPageFullscreen } from '@/lib/fullscreen';
 
 /**
  * Winding learning path from START at the top to the castle at the bottom.
@@ -20,7 +21,7 @@ const props = defineProps({
 
 const STEP = 150;
 const PAD = 160;
-const TAIL = 250;
+const TAIL = 290;
 
 const typeIcons = { material: BookOpen, quiz: ListChecks, assignment: FilePen, code: Code };
 const typeIcon = (lesson) => (lesson.assessment === 'pre' ? Flag : lesson.assessment === 'post' ? Target : typeIcons[lesson.type] ?? BookOpen);
@@ -66,7 +67,7 @@ const nodes = computed(() =>
 );
 
 const height = computed(() => PAD + STEP * Math.max(0, groups.value.length - 1) + TAIL);
-const finish = computed(() => ({ x: 50, y: height.value - 120 }));
+const finish = computed(() => ({ x: 50, y: height.value - 110 }));
 
 /** Smooth S-curves between consecutive points (same idea as the prototype's map). */
 const trail = (points) => {
@@ -145,7 +146,7 @@ const open = ref(null);
                                 'bg-white text-muted shadow-[0_6px_0_var(--color-line)] ring-1 ring-line hover:text-brand-600': node.state === 'upcoming',
                             }"
                             class="relative grid size-20 place-items-center rounded-full transition hover:-translate-y-0.5 focus-visible:ring-4 focus-visible:ring-brand-300 focus-visible:outline-none sm:size-[5.5rem]"
-                            @click="node.group.unit && (open = node)"
+                            @click.capture="node.group.unit ? (open = node) : enterPageFullscreen()"
                         >
                             <span class="flex flex-col items-center leading-none">
                                 <component :is="typeIcon(node.group.lessons[0])" v-if="!node.group.unit" :size="20" aria-hidden="true" />
@@ -205,6 +206,7 @@ const open = ref(null);
                     <li v-for="(task, i) in open.group.lessons" :key="task.id">
                         <Link
                             :href="route('learning.lessons.show', task.id)"
+                            @click.capture="enterPageFullscreen"
                             :class="task.done ? 'border-success bg-success-soft' : task.id === firstOpen(open.group).id ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-100' : 'border-line bg-white hover:border-brand-300'"
                             class="flex h-full flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition"
                         >
@@ -217,7 +219,7 @@ const open = ref(null);
                         </Link>
                     </li>
                 </ol>
-                <Link :href="route('learning.lessons.show', firstOpen(open.group).id)" class="btn-accent mt-5 w-full">
+                <Link :href="route('learning.lessons.show', firstOpen(open.group).id)" class="btn-accent mt-5 w-full" @click.capture="enterPageFullscreen">
                     {{ open.group.done ? 'Review this lesson' : open.group.doneCount ? 'Continue' : 'Start lesson' }}
                 </Link>
             </div>

@@ -1,5 +1,7 @@
 # Panduan kerja di repo ini
 
+Agent baru: baca dulu [`AI_CONTEXT.md`](AI_CONTEXT.md) untuk konteks lengkap dan daftar tugas berikutnya.
+
 - Bahasa UI, pesan validasi, notifikasi, dan data demo: **Inggris**. Locale `en`, zona waktu `Asia/Jakarta`, mata uang Rupiah. Dokumentasi di `docs/` dan komentar boleh bahasa Indonesia, tetapi teks baru yang dilihat pengguna wajib bahasa Inggris. Segmen URL juga bahasa Inggris (nama route tidak berubah).
 - Arsitektur modular monolith: fitur baru masuk ke `Modules/<Nama>` (lihat README bagian "Struktur modul"), bukan ke `app/`.
 - `app/` hanya untuk infrastruktur bersama: `User`, `Support/Modules`, `Support/Navigation`, middleware, auth Breeze.

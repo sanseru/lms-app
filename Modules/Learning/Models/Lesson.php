@@ -11,7 +11,7 @@ use Modules\Learning\Support\LessonTypes;
 
 class Lesson extends Model
 {
-    public const TYPES = ['material' => 'Lesson', 'quiz' => 'Quiz', 'assignment' => 'Assignment'];
+    public const TYPES = ['material' => 'Theory', 'quiz' => 'Quiz', 'assignment' => 'Assignment'];
 
     public const ICONS = ['material' => 'book-open', 'quiz' => 'list-checks', 'assignment' => 'file-pen'];
 
@@ -34,7 +34,7 @@ class Lesson extends Model
     }
 
     protected $fillable = [
-        'course_id', 'position', 'title', 'type', 'body', 'video_url', 'duration_minutes',
+        'course_id', 'unit_id', 'position', 'title', 'type', 'body', 'video_url', 'duration_minutes',
         'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'is_published', 'assessment',
     ];
 
@@ -46,6 +46,12 @@ class Lesson extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    /** The numbered lesson on the map this item belongs to (it shows there as one of its tasks). */
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(CourseUnit::class, 'unit_id');
     }
 
     public function questions(): HasMany
@@ -109,6 +115,7 @@ class Lesson extends Model
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'unit_id' => $this->unit_id,
             'type' => $this->type,
             'type_label' => self::types()[$this->type] ?? $this->type,
             'icon' => self::iconFor($this->type),

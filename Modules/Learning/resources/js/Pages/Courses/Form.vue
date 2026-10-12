@@ -6,7 +6,7 @@ import Icon from '@/Components/ui/Icon.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
 import { classColors } from '@/lib/format';
 
-const props = defineProps({ course: Object, levels: Object, colors: Array, statuses: Object });
+const props = defineProps({ course: Object, levels: Object, colors: Array, statuses: Object, programs: { type: Array, default: () => [] } });
 const c = props.course ?? {};
 
 const form = useForm({
@@ -16,6 +16,8 @@ const form = useForm({
     description: c.description ?? '',
     color: c.color ?? 'violet',
     status: c.status ?? 'draft',
+    program_id: c.program_id ?? '',
+    level_order: c.level_order ?? '',
 });
 
 const submit = () => (props.course ? form.put(route('learning.courses.update', props.course.id)) : form.post(route('learning.courses.store')));
@@ -68,6 +70,21 @@ const submit = () => (props.course ? form.put(route('learning.courses.update', p
                     </button>
                 </div>
             </Field>
+        </FormSection>
+
+        <FormSection title="Program and level" description="Put this course in a program (e.g. Python) as one of its levels. Students finish level 1 before level 2 opens for them.">
+            <Field id="program_id" label="Program" :error="form.errors.program_id" hint="Leave empty for a course that stands on its own.">
+                <select id="program_id" v-model="form.program_id" class="field">
+                    <option value="">No program</option>
+                    <option v-for="p in programs" :key="p.id" :value="p.id">{{ p.name }}</option>
+                </select>
+            </Field>
+            <Field id="level_order" label="Level number" :error="form.errors.level_order" :hint="form.program_id ? '1 for the first level, 2 for the next, and so on.' : 'Only used inside a program.'">
+                <input id="level_order" v-model="form.level_order" type="number" min="1" max="99" class="field" :disabled="!form.program_id" placeholder="e.g. 1" />
+            </Field>
+            <p v-if="!programs.length" class="text-sm text-muted sm:col-span-2">
+                No programs yet. <Link :href="route('learning.programs.index')" class="font-semibold text-brand-600 hover:underline">Create one on the Programs page</Link>.
+            </p>
         </FormSection>
 
         <div class="flex justify-end gap-2 pt-6">

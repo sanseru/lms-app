@@ -11,6 +11,7 @@ use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
 use Modules\Learning\Support\LessonTypes;
+use Modules\Learning\Support\LevelAccess;
 
 /**
  * A student's learning summary per course: progress, best quiz score,
@@ -19,7 +20,7 @@ use Modules\Learning\Support\LessonTypes;
  */
 class StudentProgress
 {
-    public function __construct(private LessonTypes $types) {}
+    public function __construct(private LessonTypes $types, private LevelAccess $access) {}
 
     /**
      * Warm-up Mission vs Final Mission: the first attempt score of each,
@@ -72,12 +73,14 @@ class StudentProgress
     {
         $courses = Course::query()
             ->where('status', 'published')
-            ->whereHas('classes.students', fn ($q) => $q->whereKey($student->id))
+            ->whereIn('id', $this->access->courseIds($student))
             ->with([
+                'program:id,name,color',
+                'units',
                 'lessons' => fn ($q) => $q->where('is_published', true),
                 'classes' => fn ($q) => $q->whereHas('students', fn ($q) => $q->whereKey($student->id))->with('teacher')->orderBy('name'),
             ])
-            ->orderBy('title')
+            ->orderBy('program_id')->orderBy('level_order')->orderBy('title')
             ->get();
 
         $lessonIds = $courses->flatMap->lessons->pluck('id');
@@ -114,6 +117,12 @@ class StudentProgress
             return [
                 ...$course->toCard(),
                 'classes' => $course->classes->map->toCard()->values(),
+                'program' => $course->program?->only('id', 'name', 'color'),
+                // Numbered lessons on the map; only those with published items, in the order of their first item.
+                'units' => $course->units
+                    ->filter(fn ($u) => $lessons->contains('unit_id', $u->id))
+                    ->sortBy(fn ($u) => $lessons->firstWhere('unit_id', $u->id)['position'])
+                    ->map(fn ($u) => ['id' => $u->id, 'title' => $u->title])->values(),
                 'lessons' => $lessons->values(),
                 'total' => $total,
                 'completed' => $completed,

@@ -20,7 +20,8 @@ test('the student course page shows the class they take and the learning path wi
 
     $this->actingAs($student)->get('/courses')->assertOk()
         ->assertInertia(fn ($p) => $p->component('Learning::Courses/Mine')
-            ->where('selected', $course->id)
+            // No course in the URL: the page picks the level to work on now.
+            ->where('selected', null)
             ->where('courses.0.classes.0.name', 'Python Saturday')
             ->where('courses.0.classes.0.teacher.name', 'Budi Santoso')
             ->where('courses.0.classes.0.zoom_url', 'https://zoom.us/j/1')
@@ -29,6 +30,8 @@ test('the student course page shows the class they take and the learning path wi
             ->where('courses.0.next.title', 'Variables')
             ->where('courses.0.percent', 33)
             ->has('nextSessions'));
+
+    $this->actingAs($student)->get("/courses?course={$course->id}")->assertInertia(fn ($p) => $p->where('selected', $course->id));
 });
 
 test('the course page only lists classes the student is enrolled in', function () {

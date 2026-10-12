@@ -14,6 +14,8 @@ const page = usePage();
 const course = computed(() => page.props.course);
 const lesson = computed(() => page.props.lesson);
 const outline = computed(() => page.props.outline ?? []);
+// Set when the item belongs to a numbered lesson; the dots are then that lesson's tasks.
+const unit = computed(() => page.props.unit ?? null);
 const done = computed(() => new Set(page.props.done ?? []));
 const position = computed(() => outline.value.findIndex((l) => l.id === lesson.value?.id));
 
@@ -49,18 +51,22 @@ watch(() => lesson.value?.id, scrollToCurrent);
                 </Link>
                 <div class="hidden min-w-0 md:block md:w-48 lg:w-60">
                     <p class="truncate text-xs font-semibold text-white/70">{{ course.title }}</p>
-                    <p v-if="position >= 0" class="text-sm font-bold">Lesson {{ position + 1 }} of {{ outline.length }}</p>
+                    <template v-if="unit">
+                        <p class="truncate text-sm font-bold">Lesson {{ unit.number }}<template v-if="unit.title">: {{ unit.title }}</template></p>
+                        <p v-if="position >= 0" class="text-xs text-white/70">Task {{ position + 1 }} of {{ outline.length }}</p>
+                    </template>
+                    <p v-else-if="position >= 0" class="text-sm font-bold">Lesson {{ position + 1 }} of {{ outline.length }}</p>
                 </div>
 
                 <!-- One dot per lesson: done, current, or still to do -->
-                <nav class="min-w-0 flex-1" aria-label="Lessons in this course">
+                <nav class="min-w-0 flex-1" :aria-label="unit ? 'Tasks in this lesson' : 'Lessons in this course'">
                     <ol ref="stepper" class="no-scrollbar flex items-center gap-1.5 overflow-x-auto px-1 py-2 md:justify-center">
                         <li v-for="(item, i) in outline" :key="item.id" class="shrink-0">
                             <Link
                                 :href="route('learning.lessons.show', item.id)"
                                 :aria-current="item.id === lesson.id ? 'step' : undefined"
                                 :title="`${i + 1}. ${item.title}`"
-                                :aria-label="`Lesson ${i + 1}: ${item.title}${done.has(item.id) ? ' (done)' : ''}`"
+                                :aria-label="`${unit ? 'Task' : 'Lesson'} ${i + 1}: ${item.title}${done.has(item.id) ? ' (done)' : ''}`"
                                 :class="[
                                     item.id === lesson.id
                                         ? 'bg-white text-ink ring-4 ring-white/25'

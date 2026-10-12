@@ -60,8 +60,12 @@ class LessonController extends Controller
         $learn = $user->can('learn', $lesson);
         $course = $lesson->course;
 
-        $siblings = $course->lessons()->when(! $manage, fn ($q) => $q->where('is_published', true))->get(['id', 'title', 'type', 'position']);
+        $siblings = $course->lessons()->when(! $manage, fn ($q) => $q->where('is_published', true))->get(['id', 'title', 'type', 'position', 'unit_id']);
         $index = $siblings->search(fn ($l) => $l->id === $lesson->id);
+
+        // Inside a numbered lesson the outline is its tasks; Previous/Next still walk the whole course.
+        $unitOrder = $siblings->pluck('unit_id')->filter()->unique()->values();
+        $outline = $lesson->unit_id ? $siblings->where('unit_id', $lesson->unit_id)->values() : $siblings;
 
         $data = [
             'course' => $course->toCard(),
@@ -74,7 +78,12 @@ class LessonController extends Controller
                 'time_limit_minutes' => $lesson->type === 'quiz' ? $lesson->time_limit_minutes : null,
                 'max_score' => $lesson->type === 'assignment' ? $lesson->maxScore() : null,
             ],
-            'outline' => $siblings->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
+            'unit' => $lesson->unit_id ? [
+                'id' => $lesson->unit_id,
+                'title' => $lesson->loadMissing('unit')->unit?->title,
+                'number' => $unitOrder->search($lesson->unit_id) + 1,
+            ] : null,
+            'outline' => $outline->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
             'done' => $learn ? LessonProgress::where('lesson_id', $lesson->id)->where('student_id', $user->id)->pluck('lesson_id') : [],
             'prev' => $index > 0 ? $siblings[$index - 1]->only('id', 'title') : null,
             'next' => $index !== false && $index < $siblings->count() - 1 ? $siblings[$index + 1]->only('id', 'title') : null,

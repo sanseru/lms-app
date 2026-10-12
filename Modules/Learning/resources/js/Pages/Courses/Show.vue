@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import ConfirmDialog from '@/Components/ui/ConfirmDialog.vue';
@@ -11,13 +11,36 @@ import { useConfirm } from '@/composables/useConfirm';
 import { classColors } from '@/lib/format';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 
-const props = defineProps({ course: Object, lessons: Array, progress: Object, classes: Array, availableClasses: Array, pendingTotal: Number, interests: { type: Array, default: () => [] }, can: Object });
+const props = defineProps({ course: Object, lessons: Array, progress: Object, classes: Array, availableClasses: Array, pendingTotal: Number, interests: { type: Array, default: () => [] }, units: { type: Array, default: () => [] }, can: Object });
 
 const color = computed(() => classColors[props.course.color] ?? classColors.violet);
 const confirm = useConfirm();
 const attach = useForm({ class_room_id: '' });
 const attachClass = () => attach.post(route('learning.courses.classes.store', props.course.id), { preserveScroll: true, onSuccess: () => attach.reset() });
 const move = (lesson, direction) => router.post(route('learning.lessons.move', lesson.id), { direction }, { preserveScroll: true });
+
+// Numbered lessons on the map, in the order of their first task (empty ones last).
+const orderedUnits = computed(() => {
+    const first = (u) => props.lessons.findIndex((l) => l.unit_id === u.id);
+    return [...props.units]
+        .sort((a, b) => (first(a) === -1 ? 1e9 : first(a)) - (first(b) === -1 ? 1e9 : first(b)) || a.id - b.id)
+        .map((u, i) => ({ ...u, number: i + 1, tasks: props.lessons.filter((l) => l.unit_id === u.id).length }));
+});
+const unitLabel = (id) => {
+    const u = orderedUnits.value.find((x) => x.id === id);
+    return u ? `Lesson ${u.number}${u.title ? `: ${u.title}` : ''}` : null;
+};
+const assignUnit = (lesson, value) => router.put(route('learning.lessons.unit', lesson.id), { unit_id: value || null }, { preserveScroll: true });
+
+const unitForm = useForm({ title: '' });
+const addUnit = () => unitForm.post(route('learning.units.store', props.course.id), { preserveScroll: true, onSuccess: () => unitForm.reset() });
+const renaming = ref(null);
+const renameForm = useForm({ title: '' });
+const startRename = (u) => {
+    renameForm.title = u.title;
+    renaming.value = u.id;
+};
+const rename = () => renameForm.put(route('learning.units.update', renaming.value), { preserveScroll: true, onSuccess: () => (renaming.value = null) });
 
 const counts = computed(() => ({
     material: props.lessons.filter((l) => l.type === 'material').length,
@@ -42,7 +65,7 @@ const counts = computed(() => ({
                 <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ course.title }}</h1>
                 <p v-if="course.description" class="mt-2 text-white">{{ course.description }}</p>
                 <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-white">
-                    <span>{{ counts.material }} {{ counts.material === 1 ? 'lesson' : 'lessons' }}</span><span>{{ counts.quiz }} {{ counts.quiz === 1 ? 'quiz' : 'quizzes' }}</span><span>{{ counts.assignment }} {{ counts.assignment === 1 ? 'assignment' : 'assignments' }}</span><span v-if="counts.code">{{ counts.code }} coding {{ counts.code === 1 ? 'exercise' : 'exercises' }}</span>
+                    <span>{{ counts.material }} theory</span><span>{{ counts.quiz }} {{ counts.quiz === 1 ? 'quiz' : 'quizzes' }}</span><span>{{ counts.assignment }} {{ counts.assignment === 1 ? 'assignment' : 'assignments' }}</span><span v-if="counts.code">{{ counts.code }} coding {{ counts.code === 1 ? 'exercise' : 'exercises' }}</span>
                 </p>
             </div>
             <div v-if="can.manage" class="flex flex-wrap gap-2">
@@ -66,7 +89,7 @@ const counts = computed(() => ({
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
                 <h2 class="font-display font-bold text-ink">Course content</h2>
                 <div v-if="can.manage" class="flex flex-wrap gap-2">
-                    <Link :href="route('learning.lessons.create', { course: course.id, type: 'material' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="book-open" :size="14" /> Lesson</Link>
+                    <Link :href="route('learning.lessons.create', { course: course.id, type: 'material' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="book-open" :size="14" /> Theory</Link>
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'quiz' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="list-checks" :size="14" /> Quiz</Link>
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'assignment' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="file-pen" :size="14" /> Assignment</Link>
                     <Link :href="route('learning.lessons.create', { course: course.id, type: 'code' })" class="btn-ghost px-3 py-1.5 text-xs"><Icon name="code" :size="14" /> Coding</Link>
@@ -80,6 +103,7 @@ const counts = computed(() => ({
                     <Link :href="route('learning.lessons.show', lesson.id)" class="min-w-0 flex-1">
                         <span class="block truncate font-semibold text-ink hover:text-brand-600">{{ lesson.title }}</span>
                         <span class="flex flex-wrap items-center gap-x-3 text-xs text-muted">
+                            <span v-if="!can.manage && unitLabel(lesson.unit_id)" class="font-semibold text-brand-600">{{ unitLabel(lesson.unit_id) }}</span>
                             <span>{{ lesson.type_label }}</span>
                             <span v-if="lesson.duration_minutes">{{ lesson.duration_minutes }} min</span>
                             <span v-if="lesson.type === 'quiz' && lesson.questions_count !== null">{{ lesson.questions_count }} {{ lesson.questions_count === 1 ? 'question' : 'questions' }}</span>
@@ -92,6 +116,17 @@ const counts = computed(() => ({
                     </Link>
                     <Badge v-if="can.manage && !lesson.is_published" tone="gray">Draft</Badge>
                     <Badge v-if="lesson.pending_count" tone="amber">{{ lesson.pending_count }} to grade</Badge>
+                    <!-- Which numbered lesson on the map this item is a task of -->
+                    <select
+                        v-if="can.manage && units.length"
+                        :value="lesson.unit_id ?? ''"
+                        class="field hidden w-40 py-1.5 text-xs sm:block"
+                        :aria-label="`Lesson for ${lesson.title}`"
+                        @change="assignUnit(lesson, $event.target.value)"
+                    >
+                        <option value="">Not in a lesson</option>
+                        <option v-for="u in orderedUnits" :key="u.id" :value="u.id">Lesson {{ u.number }}: {{ u.title }}</option>
+                    </select>
                     <div v-if="can.manage" class="flex shrink-0 gap-1">
                         <button :disabled="i === 0" class="rounded-lg p-1.5 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" aria-label="Move up" @click="move(lesson, 'up')"><Icon name="arrow-up" :size="15" /></button>
                         <button :disabled="i === lessons.length - 1" class="rounded-lg p-1.5 text-muted hover:bg-chip hover:text-ink disabled:opacity-30" aria-label="Move down" @click="move(lesson, 'down')"><Icon name="arrow-down" :size="15" /></button>
@@ -118,6 +153,42 @@ const counts = computed(() => ({
                 <span class="flex-1 text-sm"><b class="text-ink">{{ pendingTotal }} {{ pendingTotal === 1 ? 'assignment' : 'assignments' }}</b> <span class="text-muted">waiting to be graded</span></span>
                 <Icon name="arrow-right" :size="18" class="text-amber-700" />
             </Link>
+
+            <!-- Numbered lessons on the student map; course items become their tasks -->
+            <div v-if="can.manage" class="card p-5">
+                <h2 class="font-display font-bold text-ink">Lessons on the map</h2>
+                <p class="mb-3 text-sm text-muted">Group items into numbered lessons (Lesson 1, Lesson 2, …). Students see one circle per lesson and its items as tasks. Items not in a lesson show as their own circle.</p>
+                <ol v-if="orderedUnits.length" class="space-y-2">
+                    <li v-for="u in orderedUnits" :key="u.id" class="rounded-xl border border-line p-3">
+                        <form v-if="renaming === u.id" class="flex gap-2" @submit.prevent="rename">
+                            <input v-model="renameForm.title" class="field flex-1 py-1.5 text-sm" maxlength="120" required :aria-label="`New name for lesson ${u.number}`" />
+                            <button class="btn-primary px-3 py-1.5 text-xs" :disabled="renameForm.processing">Save</button>
+                            <button type="button" class="btn-ghost px-3 py-1.5 text-xs" @click="renaming = null">Cancel</button>
+                        </form>
+                        <div v-else class="flex items-center gap-2">
+                            <span class="grid size-7 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-extrabold text-brand-700">{{ u.number }}</span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block truncate text-sm font-semibold text-ink">{{ u.title }}</span>
+                                <span class="block text-xs text-muted">{{ u.tasks }} {{ u.tasks === 1 ? 'task' : 'tasks' }}</span>
+                            </span>
+                            <button type="button" class="rounded-lg p-1.5 text-muted hover:bg-chip hover:text-ink" :aria-label="`Rename lesson ${u.number}`" @click="startRename(u)"><Icon name="pencil" :size="14" /></button>
+                            <button
+                                type="button"
+                                class="rounded-lg p-1.5 text-muted hover:bg-rose-50 hover:text-rose-600"
+                                :aria-label="`Remove lesson ${u.number}`"
+                                @click="confirm.ask({ title: `Remove Lesson ${u.number}?`, message: 'Its tasks stay in the course and show as their own circles.', url: route('learning.units.destroy', u.id), confirmText: 'Remove' })"
+                            >
+                                <Icon name="x" :size="14" />
+                            </button>
+                        </div>
+                    </li>
+                </ol>
+                <form class="mt-3 flex gap-2" @submit.prevent="addUnit">
+                    <input v-model="unitForm.title" class="field flex-1 py-2 text-sm" maxlength="120" required placeholder="e.g. Variables and input" aria-label="New lesson name" />
+                    <button class="btn-primary px-3 py-2 text-sm" :disabled="unitForm.processing" aria-label="Add lesson"><Icon name="plus" :size="16" /></button>
+                </form>
+                <p v-if="unitForm.errors.title" class="mt-1 text-sm text-rose-600">{{ unitForm.errors.title }}</p>
+            </div>
 
             <div v-if="can.manage" class="card p-5">
                 <h2 class="font-display font-bold text-ink">Used in classes</h2>

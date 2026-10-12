@@ -4,6 +4,7 @@ namespace Modules\Learning\Policies;
 
 use App\Models\User;
 use Modules\Learning\Models\Lesson;
+use Modules\Learning\Support\LevelAccess;
 
 class LessonPolicy
 {
@@ -16,12 +17,12 @@ class LessonPolicy
         return $lesson->is_published && $user->can('view', $lesson->course);
     }
 
-    /** Taking quizzes, submitting assignments, marking done: only students in a class using this course. */
+    /** Taking quizzes, submitting assignments, marking done: students in a class using this course, or who unlocked this level. */
     public function learn(User $user, Lesson $lesson): bool
     {
         return $user->hasRole('student')
             && $lesson->is_published
             && $lesson->course->status === 'published'
-            && $user->enrolledClasses()->where('course_id', $lesson->course_id)->exists();
+            && app(LevelAccess::class)->allows($user, $lesson->course_id);
     }
 }

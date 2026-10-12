@@ -71,11 +71,42 @@ Kursus adalah kurikulum yang bisa dipakai beberapa kelas sekaligus. Setiap kelas
 
 ![Halaman kursus](img/guru-kursus.png)
 
-### Membuat kursus
+### Program, level, Lesson, dan task
+
+Struktur belajar mengikuti prototipe klien:
+
+| Lapis | Contoh | Di aplikasi |
+|---|---|---|
+| Program | Python | Menu **Programs** |
+| Level | Python Start 1, Python Start 2, … | Satu **course** per level |
+| Lesson | Lesson 1: Getting started | Kartu **Lessons on the map** di halaman course |
+| Task | Theory, Quiz, Assignment, Coding | Isi course (tombol **Theory**, **Quiz**, **Assignment**, **Coding**) |
+
+Siswa naik level **step by step**: level berikutnya terbuka sendiri setelah semua task di level sebelumnya selesai, tanpa pindah kelas. Siswa yang ditempatkan langsung di kelas level 2 tetap bisa membuka level 1.
+
+![Halaman Programs: program Python dengan level-levelnya](img/guru-program.png)
+
+1. Buka **Programs** → **New program**. Isi **Name** (mis. "Python"), **Color**, dan **Description**, lalu **Save**.
+2. Daftar **Courses without a program** di bawah menampilkan course yang belum masuk program. Klik untuk mengeditnya.
+
+### Membuat kursus (level)
+
+![Form course dengan bagian Program and level](img/guru-kursus-form.png)
 
 1. **Courses & lessons → New course**.
 2. Isi **Course title**, **Subject**, **Level**, **Description**, **Cover color**, dan **Status** (**Draft** atau **Published**).
-3. **Save**, lalu di halaman kursus bagian **Used in classes**, pilih kelas (**Choose a class…**) dan klik tombol **+** untuk memasang. Kelas yang sudah memakai kursus lain ditandai **(switch course)**; memilihnya akan mengganti kursus kelas itu. Klik tombol **×** di samping kelas untuk melepasnya (**Detach**). Progres siswa tetap tersimpan.
+3. Di bagian **Program and level**, pilih **Program** dan isi **Level number** (1 untuk level pertama, 2 untuk berikutnya, dst.). Kosongkan **Program** untuk course yang berdiri sendiri.
+4. **Save**, lalu di halaman kursus bagian **Used in classes**, pilih kelas (**Choose a class…**) dan klik tombol **+** untuk memasang. Kelas yang sudah memakai kursus lain ditandai **(switch course)**; memilihnya akan mengganti kursus kelas itu. Klik tombol **×** di samping kelas untuk melepasnya (**Detach**). Progres siswa tetap tersimpan.
+
+### Lesson di peta
+
+Di halaman course, kartu **Lessons on the map** mengelompokkan isi course menjadi Lesson bernomor. Siswa melihat satu lingkaran per Lesson dan isinya sebagai task.
+
+1. Ketik nama Lesson (mis. "Variables and input") lalu klik **+**. Nomor Lesson mengikuti urutan task pertamanya.
+2. Di daftar **Course content**, pilih Lesson untuk setiap item lewat menu di barisnya (**Not in a lesson** untuk mengeluarkannya). Urutan task di dalam Lesson mengikuti panah naik/turun.
+3. Ikon pensil mengganti nama Lesson; ikon **×** menghapusnya (task-nya tetap ada di course).
+
+Item yang tidak masuk Lesson tampil sebagai lingkaran sendiri di peta, sehingga course lama tetap berjalan. Task "Mixed" di prototipe (pilihan ganda dan coding dalam satu task) dibuat sebagai dua task berurutan dalam Lesson yang sama.
 
 ### Siswa yang tertarik
 

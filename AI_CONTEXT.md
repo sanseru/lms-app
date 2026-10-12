@@ -207,6 +207,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 8. Audit log is append-only.
 9. Entire UI in English; `docs/` in Indonesian; URL segments English; route names unchanged.
 10. Monthly report and certificates are printed to PDF from the browser (no server PDF library).
+11. Learning structure follows the client prototype: **Program → level (course) → Lesson (`course_units`) → task (lesson item)**. Students move up levels step by step: the next level unlocks when every published item of the previous one is done, without changing class (`Modules/Learning/Support/LevelAccess.php`). "Mixed" tasks (multiple choice + code in one task) are split into separate tasks.
 
 ---
 

@@ -39,19 +39,23 @@ Di **Home** kamu melihat:
 
 ## Course: peta belajar
 
-![Halaman Course: panel kelas di kiri dan peta belajar berkelok dari START sampai Finish di kanan](img/siswa-materi.png)
+![Halaman Course: panel kelas di kiri, peta Lesson bernomor dari START sampai kastel level berikutnya di kanan](img/siswa-materi.png)
 
-Buka **Course**. Halaman ini berisi peta belajar kursusmu.
+Buka **Course**. Kursus disusun seperti di sekolah musik: **program** (mis. Python) terdiri dari beberapa **level** (Python Start 1, Python Start 2, …), setiap level berisi **Lesson** bernomor, dan setiap Lesson berisi beberapa **task** (teori, kuis, tugas, coding).
 
-- Kalau kamu ikut lebih dari satu kursus, pilih kursusnya di tombol-tombol paling atas (lengkap dengan persentase selesai).
-- Panel **Your class** menampilkan nama kelas, kursus, dan berapa pelajaran sudah selesai. Tombol oranye (**Start: ...** atau **Continue: ...**) langsung membawamu ke pelajaran berikutnya.
-- Kartu di bawahnya berisi **Teacher**, jadwal kelas, **Next class**, tombol **Join on Zoom**, **Quiz average**, dan **Assignments to hand in** (tugas yang belum dikumpulkan).
-- Di kanan ada peta yang berkelok dari **START** di atas sampai kastel **Finish** di bawah. Setiap lingkaran adalah satu pelajaran, diberi nomor dan ikon jenisnya (materi, kuis, tugas, coding, misi).
-  - Lingkaran dengan centang hijau sudah selesai, dan jalurnya ikut berwarna.
-  - Lingkaran yang menyala dengan label **Up next** (atau **Start here** untuk pelajaran pertama) adalah yang harus kamu kerjakan sekarang.
-  - Lingkaran putih belum dikerjakan.
-  - Di sebelah lingkaran tertulis judul pelajaran, jenisnya, dan nilai terbaikmu (untuk kuis dan coding).
-- Klik lingkaran mana pun untuk membuka pelajarannya. Kalau semua pelajaran selesai, kastel berubah kuning dan tertulis **Course complete!**
+- Tombol di paling atas memilih program (mis. **Python**, **Scratch**) lengkap dengan persentase selesai.
+- Panel **Your class** menampilkan kelasmu, program dan level (mis. **Python · Level 1**), dan berapa task sudah selesai. Tombol oranye (**Start: ...** atau **Continue: ...**) langsung membawamu ke task berikutnya.
+- Kartu di bawahnya berisi **Teacher**, jadwal kelas, **Next class**, tombol **Join on Zoom**, **Quiz average**, dan **Assignments to hand in**.
+- Di kanan ada peta yang berkelok dari **START · nama level** di atas sampai kastel di bawah. Tulisan di bawah START menunjukkan berapa Lesson sudah selesai (mis. **3/4 lessons completed**).
+  - Setiap lingkaran bernomor adalah satu Lesson. Di sampingnya tertulis judul Lesson dan berapa task yang sudah selesai.
+  - Lingkaran dengan centang hijau sudah selesai. Lingkaran yang menyala dengan label **Up next** (atau **Start here**) adalah yang harus kamu kerjakan sekarang.
+  - Klik lingkaran Lesson untuk membuka daftar task-nya, lalu klik task atau tombol **Start lesson** / **Continue**.
+
+![Popup Lesson: daftar task dengan tanda selesai](img/siswa-lesson-tugas.png)
+
+**Naik level step by step.** Kastel di ujung peta menunjukkan level berikutnya (**Next: …**). Level itu terkunci (ikon gembok) sampai semua task di level sekarang selesai, lalu terbuka sendiri dan petanya muncul di bawah. Kamu tidak perlu pindah kelas. Level yang masih terkunci tampil sebagai kartu abu-abu **Locked**.
+
+Beberapa kursus lama belum dibagi menjadi Lesson; di sana setiap lingkaran adalah satu task.
 
 Klik **See the lesson list and scores** untuk melihat daftar pelajaran dalam bentuk tabel. Kartu **Explore other courses** di bawahnya membuka katalog kursus.
 
@@ -67,8 +71,9 @@ Halaman ini menampilkan **Your progress** (persentase dan rata-rata kuis), lalu 
 
 Ingin tahu kursus apa lagi yang bisa kamu pelajari? Klik **Explore other courses** di halaman Course (alamatnya `/courses/explore`).
 
+- Kursus dikelompokkan per program (Python, Scratch, Web Development) dan diurutkan per level. Level berikutnya di programmu yang belum terbuka diberi label **Locked** dengan keterangan **Finish … to unlock**.
 - Panel **Your course** di kiri menampilkan kursusmu sekarang dan progresnya. **Continue course** membawamu kembali ke peta belajar.
-- Di kanan ada semua kursus yang sudah terbit. Pilih **All** atau satu mata pelajaran untuk menyaring. Kursus yang sudah kamu ikuti diberi label **Your course** lengkap dengan persentase selesai.
+- Di kanan ada semua kursus yang sudah terbit. Pilih **All** atau satu program untuk menyaring. Kursus yang sudah kamu ikuti diberi label **Your course** lengkap dengan persentase selesai.
 - Klik kursus lain untuk melihat isinya: deskripsi, jumlah pelajaran, dan daftar **What you will learn**. Pelajarannya masih terkunci (ikon gembok) sampai kamu masuk kelas yang memakai kursus itu.
 
 ![Pratinjau kursus lain dengan daftar pelajaran yang masih terkunci dan tombol I'm interested](img/siswa-pratinjau-kursus.png)
@@ -79,8 +84,8 @@ Tertarik? Klik **I'm interested**. Guru, admin, dan orang tuamu akan diberi tahu
 
 Saat kamu membuka pelajaran, aplikasi masuk ke **mode fokus**: menu samping dan header disembunyikan supaya kamu bisa berkonsentrasi.
 
-- Bar gelap di atas berisi tombol panah kiri (**Back to the course map**) untuk kembali ke peta belajar, nama kursus, dan posisi pelajaran (mis. **Lesson 4 of 10**).
-- Di tengah bar ada satu lingkaran untuk setiap pelajaran. Lingkaran hijau bercentang sudah selesai, lingkaran putih adalah pelajaran yang sedang dibuka. Klik lingkaran mana pun untuk pindah pelajaran.
+- Bar gelap di atas berisi tombol panah kiri (**Back to the course map**) untuk kembali ke peta belajar, nama kursus, Lesson yang sedang dibuka (mis. **Lesson 2: Variables**), dan posisi task (mis. **Task 2 of 3**).
+- Di tengah bar ada satu lingkaran untuk setiap task di Lesson itu. Lingkaran hijau bercentang sudah selesai, lingkaran putih adalah pelajaran yang sedang dibuka. Klik lingkaran mana pun untuk pindah pelajaran.
 - Tombol panah empat arah di kanan bar membuat halaman memenuhi layar (**Fullscreen**). Tekan lagi atau tombol Esc untuk keluar.
 - Gunakan **Previous** dan **Next** di bagian bawah untuk pindah ke pelajaran sebelum atau sesudahnya.
 

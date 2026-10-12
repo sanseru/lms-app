@@ -231,7 +231,7 @@ test('mission gain compares the first attempts of pre and post tests', function 
 
     [, $student, $course] = codingSetup();
     $make = function (string $role) use ($course) {
-        $lesson = $course->lessons()->create(['title' => $role, 'type' => 'quiz', 'assessment' => $role, 'position' => 1]);
+        $lesson = $course->lessons()->create(['title' => $role, 'type' => 'quiz', 'assessment' => $role, 'position' => 1, 'pass_score' => 0]); // missions are diagnostic, any try completes them
         $lesson->questions()->create(['prompt' => 'a', 'type' => 'single', 'concept' => 'loops', 'options' => [['text' => 'y', 'correct' => true], ['text' => 'n', 'correct' => false]]]);
         $lesson->questions()->create(['prompt' => 'b', 'type' => 'single', 'concept' => 'variables', 'options' => [['text' => 'y', 'correct' => true], ['text' => 'n', 'correct' => false]]]);
 

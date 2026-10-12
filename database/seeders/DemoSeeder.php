@@ -18,6 +18,7 @@ use Modules\Kanban\Database\Seeders\KanbanDemoSeeder;
 use Modules\Lab\Database\Seeders\LabDemoSeeder;
 use Modules\Leads\Database\Seeders\LeadsDemoSeeder;
 use Modules\Learning\Database\Seeders\LearningDemoSeeder;
+use Modules\Learning\Database\Seeders\ProgramsDemoSeeder;
 use Modules\People\Actions\SavePerson;
 use Modules\Sessions\Actions\CompleteSession;
 use Modules\Sessions\Actions\GenerateSessions;
@@ -120,6 +121,7 @@ class DemoSeeder extends Seeder
 
         (new LearningDemoSeeder)->run($admin, $classes);
         (new CodingDemoSeeder)->run();
+        (new ProgramsDemoSeeder)->run();
         (new ForumDemoSeeder)->run();
         (new KanbanDemoSeeder)->run();
         (new CertificatesDemoSeeder)->run();

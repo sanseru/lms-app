@@ -53,6 +53,7 @@ class LearningServiceProvider extends ModuleServiceProvider
     {
         $nav->add(
             new NavItem('Courses & lessons', 'learning.courses.index', 'book-open', 'Learning', 30, roles: ['admin', 'teacher'], active: 'learning.courses.*|learning.lessons.*'),
+            new NavItem('Programs', 'learning.programs.index', 'layers', 'Learning', 29, roles: ['admin', 'teacher'], active: 'learning.programs.*'),
             new NavItem('Grading', 'learning.grading.index', 'file-pen', 'Learning', 31, roles: ['admin', 'teacher']),
             new NavItem('Course', 'learning.courses.index', 'book-open', 'Learning', 30, roles: ['student'], active: 'learning.courses.*|learning.lessons.*|learning.progress.*'),
             new NavItem('Learning progress', 'learning.progress.index', 'graduation-cap', 'Learning', 30, roles: ['guardian'], active: 'learning.*'),

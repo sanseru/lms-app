@@ -3,9 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Learning\Http\Controllers\CourseCatalogController;
 use Modules\Learning\Http\Controllers\CourseController;
+use Modules\Learning\Http\Controllers\CourseUnitController;
 use Modules\Learning\Http\Controllers\GradingController;
+use Modules\Learning\Http\Controllers\LessonAccessController;
 use Modules\Learning\Http\Controllers\LessonController;
 use Modules\Learning\Http\Controllers\LessonReportController;
+use Modules\Learning\Http\Controllers\ProgramController;
 use Modules\Learning\Http\Controllers\ProgressController;
 use Modules\Learning\Http\Controllers\QuizController;
 use Modules\Learning\Http\Controllers\SubmissionController;
@@ -19,6 +22,20 @@ Route::name('learning.')->group(function () {
         Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         Route::post('courses/{course}/classes', [CourseController::class, 'attachClass'])->name('courses.classes.store');
         Route::delete('courses/{course}/classes/{class}', [CourseController::class, 'detachClass'])->name('courses.classes.destroy');
+
+        Route::get('classes/{class}/lessons', [LessonAccessController::class, 'show'])->name('access.show');
+        Route::put('classes/{class}/lessons', [LessonAccessController::class, 'update'])->name('access.update');
+        Route::put('classes/{class}/lessons/all', [LessonAccessController::class, 'all'])->name('access.all');
+
+        Route::get('programs', [ProgramController::class, 'index'])->name('programs.index');
+        Route::post('programs', [ProgramController::class, 'store'])->name('programs.store');
+        Route::put('programs/{program}', [ProgramController::class, 'update'])->name('programs.update');
+        Route::delete('programs/{program}', [ProgramController::class, 'destroy'])->name('programs.destroy');
+
+        Route::post('courses/{course}/units', [CourseUnitController::class, 'store'])->name('units.store');
+        Route::put('units/{unit}', [CourseUnitController::class, 'update'])->name('units.update');
+        Route::delete('units/{unit}', [CourseUnitController::class, 'destroy'])->name('units.destroy');
+        Route::put('lessons/{lesson}/unit', [CourseUnitController::class, 'assign'])->name('lessons.unit');
 
         Route::get('courses/{course}/lessons/create', [LessonController::class, 'create'])->name('lessons.create');
         Route::post('courses/{course}/lessons', [LessonController::class, 'store'])->name('lessons.store');

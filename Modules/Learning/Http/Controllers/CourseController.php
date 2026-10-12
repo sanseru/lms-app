@@ -13,10 +13,12 @@ use Modules\Learning\Actions\StudentProgress;
 use Modules\Learning\Http\Requests\CourseRequest;
 use Modules\Learning\Models\AssignmentSubmission;
 use Modules\Learning\Models\Course;
+use Modules\Learning\Models\Program;
+use Modules\Learning\Support\LevelAccess;
 
 class CourseController extends Controller
 {
-    public function index(Request $request, StudentProgress $progress): Response|RedirectResponse
+    public function index(Request $request, StudentProgress $progress, LevelAccess $access): Response|RedirectResponse
     {
         $user = $request->user();
 
@@ -27,9 +29,14 @@ class CourseController extends Controller
 
             $courses = $progress->forStudent($user);
 
+            // Every level of the student's programs, locked ones included, for the stacked map.
+            $states = $access->programs($user);
+            $names = Program::whereIn('id', $states->pluck('program_id'))->get()->keyBy('id');
+
             return Inertia::render('Learning::Courses/Mine', [
                 'courses' => $courses,
-                'selected' => $request->integer('course') ?: $courses->first()['id'] ?? null,
+                'programs' => $states->map(fn ($p) => $names[$p['program_id']]->toCard() + ['levels' => $p['levels']])->sortBy('position')->values(),
+                'selected' => $request->integer('course') ?: null,
                 'nextSessions' => $this->nextSessions($courses->flatMap(fn ($c) => collect($c['classes'])->pluck('id'))->unique()->all()),
             ]);
         }
@@ -86,8 +93,9 @@ class CourseController extends Controller
             ->map(fn ($l) => $l->toItem() + ['pending_count' => $manage ? $l->pending_count : null]);
 
         return Inertia::render('Learning::Courses/Show', [
-            'course' => $course->toCard(),
+            'course' => $course->toCard() + ['program' => $course->program?->only('id', 'name')],
             'lessons' => $mine['lessons'] ?? $lessons,
+            'units' => $course->units()->get(['id', 'title']),
             'progress' => isset($mine) ? collect($mine)->only('total', 'completed', 'percent', 'quiz_avg', 'assignment_avg', 'next') : null,
             'classes' => $manage ? $course->classes()->with('teacher')->withCount('students')->get()->map->toCard() : [],
             'availableClasses' => $manage
@@ -103,7 +111,7 @@ class CourseController extends Controller
 
     public function edit(Course $course): Response
     {
-        return Inertia::render('Learning::Courses/Form', $this->formOptions() + ['course' => $course->only('id', 'title', 'subject', 'level', 'description', 'color', 'status')]);
+        return Inertia::render('Learning::Courses/Form', $this->formOptions() + ['course' => $course->only('id', 'title', 'subject', 'level', 'description', 'color', 'status', 'program_id', 'level_order')]);
     }
 
     public function update(CourseRequest $request, Course $course): RedirectResponse
@@ -163,6 +171,9 @@ class CourseController extends Controller
 
     private function formOptions(): array
     {
-        return ['levels' => ClassRoom::LEVELS, 'colors' => ClassRoom::COLORS, 'statuses' => Course::STATUSES];
+        return [
+            'levels' => ClassRoom::LEVELS, 'colors' => ClassRoom::COLORS, 'statuses' => Course::STATUSES,
+            'programs' => Program::orderBy('position')->orderBy('name')->get(['id', 'name']),
+        ];
     }
 }

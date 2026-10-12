@@ -93,6 +93,8 @@ class ClassRoomController extends Controller
             'can' => [
                 'manage' => $user->can('update', $class),
                 'roster' => $canRoster,
+                // Open lessons early for this class (Learning module): its teacher or an admin.
+                'lessonAccess' => $class->course_id && ($user->hasRole('admin') || $class->teacher_id === $user->id),
             ],
         ]);
     }

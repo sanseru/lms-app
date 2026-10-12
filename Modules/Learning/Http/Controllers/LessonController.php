@@ -17,7 +17,9 @@ use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\LessonReport;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
+use Modules\Learning\Support\LessonGate;
 use Modules\Learning\Support\LessonTypes;
+use Modules\Learning\Support\LevelAccess;
 
 class LessonController extends Controller
 {
@@ -52,16 +54,27 @@ class LessonController extends Controller
         return to_route('learning.lessons.show', $lesson)->with('success', Lesson::types()[$lesson->type].' added.');
     }
 
-    public function show(Request $request, Lesson $lesson): Response
+    public function show(Request $request, Lesson $lesson, LevelAccess $levels, LessonGate $gate): Response|RedirectResponse
     {
         Gate::authorize('view', $lesson);
         $user = $request->user();
+
+        // Lessons open one after another; a locked one sends the student back to the map.
+        if ($user->hasRole('student') && $user->cannot('learning.manage') && $levels->allows($user, $lesson->course_id) && $gate->isLocked($user, $lesson)) {
+            return to_route('learning.courses.index', ['course' => $lesson->course_id])
+                ->with('error', 'Finish the lesson before this one first, or ask your teacher to open it for your class.');
+        }
+
         $manage = $user->can('learning.manage');
         $learn = $user->can('learn', $lesson);
         $course = $lesson->course;
 
-        $siblings = $course->lessons()->when(! $manage, fn ($q) => $q->where('is_published', true))->get(['id', 'title', 'type', 'position']);
+        $siblings = $course->lessons()->when(! $manage, fn ($q) => $q->where('is_published', true))->get(['id', 'title', 'type', 'position', 'unit_id']);
         $index = $siblings->search(fn ($l) => $l->id === $lesson->id);
+
+        // Inside a numbered lesson the outline is its tasks; Previous/Next still walk the whole course.
+        $unitOrder = $siblings->pluck('unit_id')->filter()->unique()->values();
+        $outline = $lesson->unit_id ? $siblings->where('unit_id', $lesson->unit_id)->values() : $siblings;
 
         $data = [
             'course' => $course->toCard(),
@@ -74,7 +87,12 @@ class LessonController extends Controller
                 'time_limit_minutes' => $lesson->type === 'quiz' ? $lesson->time_limit_minutes : null,
                 'max_score' => $lesson->type === 'assignment' ? $lesson->maxScore() : null,
             ],
-            'outline' => $siblings->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
+            'unit' => $lesson->unit_id ? [
+                'id' => $lesson->unit_id,
+                'title' => $lesson->loadMissing('unit')->unit?->title,
+                'number' => $unitOrder->search($lesson->unit_id) + 1,
+            ] : null,
+            'outline' => $outline->map(fn ($l) => ['id' => $l->id, 'title' => $l->title, 'type' => $l->type, 'icon' => Lesson::iconFor($l->type)]),
             'done' => $learn ? LessonProgress::where('lesson_id', $lesson->id)->where('student_id', $user->id)->pluck('lesson_id') : [],
             'prev' => $index > 0 ? $siblings[$index - 1]->only('id', 'title') : null,
             'next' => $index !== false && $index < $siblings->count() - 1 ? $siblings[$index + 1]->only('id', 'title') : null,

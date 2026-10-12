@@ -56,3 +56,14 @@ export function useFullscreen(target) {
 
     return { active, native, enter, exit, toggle };
 }
+
+/**
+ * Go fullscreen for the whole page when a student starts working (called from a click,
+ * which browsers require). Inertia keeps the same document between pages, so the
+ * fullscreen lasts while the student moves between tasks; Esc leaves it.
+ */
+export function enterPageFullscreen() {
+    const root = document.documentElement;
+    if (document.fullscreenElement || !document.fullscreenEnabled || !root.requestFullscreen) return;
+    root.requestFullscreen().catch(() => {});
+}

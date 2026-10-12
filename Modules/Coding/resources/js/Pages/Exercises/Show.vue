@@ -10,6 +10,7 @@ import { useFullscreen } from '@/lib/fullscreen';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import LessonReport from '@/Components/ui/LessonReport.vue';
 import CodeEditor from '../../Components/CodeEditor.vue';
+import CodeLabel from '../../Components/CodeLabel.vue';
 import ParsonsBoard from '../../Components/ParsonsBoard.vue';
 import TestResultList from '../../Components/TestResultList.vue';
 import { buildSrcdoc, checkHtml } from '../../lib/htmlCheck';
@@ -230,7 +231,7 @@ const { active: fullscreen, native: nativeFullscreen, toggle: toggleFullscreen }
             <div v-if="ex.rules?.length" class="card p-5">
                 <h2 class="mb-3 font-display font-bold text-ink">Code rules</h2>
                 <ul class="space-y-1.5 text-sm text-ink">
-                    <li v-for="(r, i) in ex.rules" :key="i" class="flex items-start gap-2"><Icon name="list-checks" :size="15" class="mt-0.5 text-brand-500" /> {{ r.label }}</li>
+                    <li v-for="(r, i) in ex.rules" :key="i" class="flex items-start gap-2"><Icon name="list-checks" :size="15" class="mt-0.5 text-brand-500" /> <CodeLabel :text="r.label" /></li>
                 </ul>
                 <p class="mt-2 text-xs text-muted">Checked when you submit.</p>
             </div>
@@ -280,7 +281,7 @@ const { active: fullscreen, native: nativeFullscreen, toggle: toggleFullscreen }
             <div v-if="scoreBanner && can.learn" :class="scoreBanner.status === 'passed' ? 'bg-emerald-700' : 'bg-amber-700'" role="status" class="flex items-center gap-4 rounded-3xl p-5 text-white">
                 <span class="grid size-16 place-items-center rounded-full bg-white/20 font-display text-2xl font-black ring-4 ring-white/40 tabular-nums">{{ scoreBanner.score }}</span>
                 <div>
-                    <p class="font-display text-xl font-extrabold">{{ scoreBanner.status === 'passed' ? 'All tests passed! 🎉' : scoreBanner.status === 'error' ? 'There is an error, let\'s fix it' : 'So close! Try again' }}</p>
+                    <p class="font-display text-xl font-extrabold">{{ scoreBanner.status === 'passed' ? 'All tests passed!' : scoreBanner.status === 'error' ? 'There is an error, let\'s fix it' : 'So close! Try again' }}</p>
                     <p class="text-sm text-white">{{ scoreBanner.passed_tests }} of {{ scoreBanner.total_tests }} tests passed · graded {{ scoreBanner.at }}</p>
                 </div>
             </div>

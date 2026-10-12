@@ -11,10 +11,10 @@ import ReviewActions from '../../Components/ReviewActions.vue';
 const props = defineProps({ project: Object, board: Object, cards: Array, columns: Object, can: Object, nav: Object });
 
 const style = {
-    todo: { emoji: '📝', head: 'bg-slate-100 text-slate-700', body: 'bg-slate-50', ring: 'ring-slate-300' },
-    doing: { emoji: '🔨', head: 'bg-sky-100 text-sky-800', body: 'bg-sky-50/60', ring: 'ring-sky-300' },
-    review: { emoji: '👀', head: 'bg-amber-100 text-amber-800', body: 'bg-amber-50/60', ring: 'ring-amber-300' },
-    done: { emoji: '✅', head: 'bg-emerald-100 text-emerald-800', body: 'bg-emerald-50/60', ring: 'ring-emerald-300' },
+    todo: { icon: 'list-checks', head: 'bg-slate-100 text-slate-700', body: 'bg-slate-50', ring: 'ring-slate-300' },
+    doing: { icon: 'hammer', head: 'bg-sky-100 text-sky-800', body: 'bg-sky-50/60', ring: 'ring-sky-300' },
+    review: { icon: 'eye', head: 'bg-amber-100 text-amber-800', body: 'bg-amber-50/60', ring: 'ring-amber-300' },
+    done: { icon: 'circle-check', head: 'bg-emerald-100 text-emerald-800', body: 'bg-emerald-50/60', ring: 'ring-emerald-300' },
 };
 const keys = computed(() => Object.keys(props.columns).filter((k) => k !== 'review' || props.project.requires_review));
 
@@ -108,7 +108,7 @@ const saveResult = () => resultForm.put(route('kanban.boards.result', props.boar
     </div>
 
     <div v-if="board.completed" role="status" class="mb-6 flex items-center gap-4 rounded-3xl bg-emerald-700 p-5 text-white">
-        <span class="text-4xl" aria-hidden="true">🏆</span>
+        <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/20"><Icon name="trophy" :size="30" /></span>
         <div>
             <p class="font-display text-xl font-extrabold">{{ can.mine ? 'Your project is done! Awesome work!' : 'Project complete!' }}</p>
             <p class="text-sm text-emerald-50">Every step is in the Done column.</p>
@@ -133,7 +133,7 @@ const saveResult = () => resultForm.put(route('kanban.boards.result', props.boar
                 @drop="onDrop($event, key)"
             >
                 <header :class="style[key].head" class="mb-2 flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold">
-                    <span>{{ style[key].emoji }}</span>
+                    <Icon :name="style[key].icon" :size="16" />
                     <span class="flex-1">{{ columns[key] }}</span>
                     <span class="rounded-full bg-white/70 px-2 text-xs">{{ cols[key].length }}</span>
                 </header>
@@ -156,7 +156,7 @@ const saveResult = () => resultForm.put(route('kanban.boards.result', props.boar
                         </div>
                         <p v-if="c.description" class="mt-1 line-clamp-2 text-xs text-muted">{{ c.description }}</p>
                         <p v-if="c.feedback && key !== 'done'" class="mt-2 flex gap-1.5 rounded-lg bg-amber-50 p-2 text-xs text-amber-900"><Icon name="message-text" :size="13" class="mt-0.5 shrink-0" /> {{ c.feedback }}</p>
-                        <p v-if="key === 'done' && c.reviewer" class="mt-1 text-xs font-semibold text-emerald-700">✓ reviewed by {{ c.reviewer }}</p>
+                        <p v-if="key === 'done' && c.reviewer" class="mt-1 text-xs font-semibold text-emerald-700"><Icon name="check" :size="12" class="inline align-[-1px]" /> reviewed by {{ c.reviewer }}</p>
 
                         <div v-if="can.review && key === 'review'" class="mt-3" @click.stop><ReviewActions :card="c" /></div>
 

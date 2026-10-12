@@ -83,7 +83,7 @@ class CommunityController extends Controller
             'runtime' => ['pyodide_url' => config('coding.pyodide_url', '/vendor/pyodide/')],
             'can' => [
                 'interact' => $user->can('interact', $project),
-                'edit' => $user->can('update', $project),
+                'edit' => $project->isOwnedBy($user),
                 'moderate' => $user->can('moderate', $project),
             ],
         ]);

@@ -1,4 +1,5 @@
 <script setup>
+import { gradeLabel } from '@/lib/format';
 import { Head, Link } from '@inertiajs/vue3';
 import Avatar from '@/Components/ui/Avatar.vue';
 import ConfirmDialog from '@/Components/ui/ConfirmDialog.vue';
@@ -65,7 +66,7 @@ const confirm = useConfirm();
                         </td>
                         <td class="px-5 py-3 text-muted">
                             <p class="text-ink">{{ student.school ?? '–' }}</p>
-                            <p v-if="student.grade" class="text-xs">Grade {{ student.grade }}</p>
+                            <p v-if="student.grade" class="text-xs">{{ gradeLabel(student.grade) }}</p>
                         </td>
                         <td class="px-5 py-3">
                             <p v-for="g in student.guardians" :key="g.id" class="text-ink">{{ g.name }} <span class="text-xs text-muted">{{ g.phone }}</span></p>

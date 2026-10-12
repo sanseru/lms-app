@@ -24,6 +24,7 @@ class LessonReportController extends Controller
         $status = $request->query('status', 'open');
 
         $reports = LessonReport::query()
+            ->reviewableBy($request->user())
             ->with(['lesson:id,title,type,course_id', 'lesson.course:id,title', 'user:id,name', 'resolver:id,name'])
             ->where('status', $status === 'open' ? '=' : '!=', 'open')
             ->latest()
@@ -45,7 +46,7 @@ class LessonReportController extends Controller
         return Inertia::render('Learning::Reports/Index', [
             'reports' => $reports,
             'status' => $status,
-            'openCount' => LessonReport::where('status', 'open')->count(),
+            'openCount' => LessonReport::reviewableBy($request->user())->where('status', 'open')->count(),
         ]);
     }
 
@@ -79,6 +80,8 @@ class LessonReportController extends Controller
 
     public function resolve(Request $request, LessonReport $report): RedirectResponse
     {
+        abort_unless(LessonReport::reviewableBy($request->user())->whereKey($report->id)->exists(), 403);
+
         $data = $request->validate([
             'status' => ['required', Rule::in(['resolved', 'dismissed'])],
             'response' => ['nullable', 'string', 'max:1000'],

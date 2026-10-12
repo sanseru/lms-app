@@ -1,4 +1,5 @@
 <script setup>
+import { greetName } from '@/lib/format';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import Avatar from '@/Components/ui/Avatar.vue';
 import ClassCard from '@/Components/ui/ClassCard.vue';
@@ -23,7 +24,7 @@ const user = usePage().props.auth.user;
         <div class="relative flex items-center gap-4">
             <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-accent-500 !text-ink ring-4 ring-brand-600" />
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight">Hi, {{ user.name.split(' ')[0] }}!</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight">Hi, {{ greetName(user.name) }}!</h1>
                 <p class="text-brand-100">Ready to code today?</p>
             </div>
         </div>

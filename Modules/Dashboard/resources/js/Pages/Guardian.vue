@@ -7,7 +7,7 @@ import LastSessionCard from '@/Components/ui/LastSessionCard.vue';
 import LearningCard from '@/Components/ui/LearningCard.vue';
 import QuotaCard from '@/Components/ui/QuotaCard.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
-import { greeting, rupiah } from '@/lib/format';
+import { greeting, rupiah, greetName, gradeLabel } from '@/lib/format';
 
 defineProps({ children: Array, invoices: Array });
 const user = usePage().props.auth.user;
@@ -18,7 +18,7 @@ const user = usePage().props.auth.user;
 
     <div class="mb-8">
         <p class="eyebrow">Parent portal</p>
-        <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink">{{ greeting() }}, {{ user.name.split(' ')[0] }}</h1>
+        <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink">{{ greeting() }}, {{ greetName(user.name) }}</h1>
         <p class="mt-1 text-muted">Follow your child's schedule, attendance, remaining sessions and invoices here.</p>
     </div>
 
@@ -55,10 +55,10 @@ const user = usePage().props.auth.user;
                 <Avatar :initials="child.initials" :seed="child.id" size="lg" />
                 <div class="flex-1">
                     <p class="font-display text-lg font-bold text-ink">{{ child.name }}</p>
-                    <p class="text-sm text-muted"><span class="font-mono">{{ child.code }}</span><template v-if="child.grade"> · {{ child.grade }}</template></p>
+                    <p class="text-sm text-muted"><span class="font-mono">{{ child.code }}</span><template v-if="child.grade"> · {{ gradeLabel(child.grade) }}</template></p>
                 </div>
                 <Link v-if="child.achievements" :href="route('gamification.show', child.id)" class="flex items-center gap-2 rounded-2xl bg-brand-50 px-3 py-2 hover:bg-brand-100">
-                    <span class="text-2xl">⭐</span>
+                    <span class="grid size-9 place-items-center rounded-xl bg-white text-brand-600"><Icon name="star" :size="18" /></span>
                     <span class="text-sm leading-tight"><b class="block text-ink">Level {{ child.achievements.level.level }}</b><span class="text-xs text-muted">{{ child.achievements.level.xp }} XP · {{ child.achievements.badges_earned }} {{ child.achievements.badges_earned === 1 ? 'badge' : 'badges' }}</span></span>
                 </Link>
                 <div v-if="child.stats.sessions" class="text-right">

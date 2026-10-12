@@ -106,3 +106,20 @@ test('only enrolled students can report a lesson', function () {
     $this->actingAs(userWithRole('student'))->post("/lessons/{$lesson->id}/report", ['reason' => 'other'])->assertForbidden();
     $this->actingAs(userWithRole('guardian'))->post("/lessons/{$lesson->id}/report", ['reason' => 'other'])->assertForbidden();
 });
+
+test('teachers only see and close reports on courses they teach or created', function () {
+    [$teacher, $student, $course] = codingSetup();
+    $lesson = ioExercise($course);
+    $this->actingAs($student)->post("/lessons/{$lesson->id}/report", ['reason' => 'unclear']);
+    $report = LessonReport::sole();
+    $stranger = userWithRole('teacher');
+
+    $this->actingAs($stranger)->get('/lesson-reports')
+        ->assertInertia(fn ($page) => $page->has('reports.data', 0)->where('openCount', 0));
+    $this->actingAs($stranger)->get('/grading')->assertInertia(fn ($page) => $page->where('openReports', 0));
+    $this->actingAs($stranger)->post("/lesson-reports/{$report->id}/close", ['status' => 'resolved'])->assertForbidden();
+
+    $this->actingAs($teacher)->get('/grading')->assertInertia(fn ($page) => $page->where('openReports', 1));
+    $this->actingAs(userWithRole('admin'))->get('/lesson-reports')->assertInertia(fn ($page) => $page->has('reports.data', 1));
+    expect($report->fresh()->status)->toBe('open');
+});

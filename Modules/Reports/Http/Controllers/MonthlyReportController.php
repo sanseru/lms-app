@@ -82,6 +82,13 @@ class MonthlyReportController extends Controller
         $month = $this->month($month);
 
         $data = $report->build($student, $month);
+
+        // Money stays between the course and the family: students and teachers do not see unpaid invoices.
+        $viewer = $request->user();
+        if (! $viewer->can('finance.manage') && ! $viewer->children()->whereKey($student->id)->exists()) {
+            $data['account']['outstanding'] = null;
+        }
+
         $noteable = $this->access->noteableClassIds($request->user(), $student);
 
         return Inertia::render('Reports::Show', [

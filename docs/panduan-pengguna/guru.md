@@ -146,7 +146,7 @@ Bila Anda mengubah solusi, tes, atau aturan kode setelah ada siswa yang mengumpu
 
 Di setiap materi, kuis, tugas, dan soal coding, siswa punya tombol **Report a problem** untuk melaporkan soal yang keliru, misalnya **The answer or a test seems wrong**, **The instructions are unclear**, atau **Something is broken or has a typo**. Guru kelas yang memakai kursus itu, pembuat kursus, dan admin menerima notifikasi.
 
-1. Buka **Grading → Reported problems** (alamat `/lesson-reports`). Angka di tombol menunjukkan laporan yang masih terbuka. Halaman pelajaran yang punya laporan terbuka juga menampilkan pengingat dengan tautan **Review reports**.
+1. Buka **Grading → Reported problems** (alamat `/lesson-reports`). Angka di tombol menunjukkan laporan yang masih terbuka. Guru hanya melihat dan menutup laporan untuk kursus yang ia buat atau yang dipakai kelasnya; admin melihat semuanya. Halaman pelajaran yang punya laporan terbuka juga menampilkan pengingat dengan tautan **Review reports**.
 2. Tab **Open** berisi laporan yang belum ditangani, **Closed** berisi yang sudah ditutup.
 3. Klik **Edit lesson** untuk memperbaiki pelajaran (untuk soal coding, perubahan tes atau solusi membuat versi baru).
 4. Klik **Close report**, pilih **Fixed it** atau **No change needed**, isi **Message to the student (optional)**, lalu **Close and notify**. Siswa pelapor menerima notifikasi.

@@ -269,7 +269,7 @@ Setelah kamu menyelesaikan semua pelajaran di kursus, guru akan menerbitkan sert
 **My monthly reports** (`/monthly-reports`) berisi laporan belajarmu setiap bulan, sama seperti yang dibaca orang tuamu.
 
 1. Pilih bulan di kotak di kanan atas, lalu klik **Open report**.
-2. Laporan berisi **Attendance**, **Lessons completed**, **Quiz average**, **XP this month**, catatan guru (**Going well** dan **Focus for next month**), daftar sesi bulan itu beserta PR, nilai kuis dan tugas, latihan coding dan proyek, lencana bulan itu, dan progres kursus.
+2. Laporan berisi **Attendance**, **Lessons completed**, **Quiz average**, **XP this month**, catatan guru (**Going well** dan **Focus for next month**), daftar sesi bulan itu beserta PR, nilai kuis dan tugas, latihan coding dan proyek, lencana bulan itu, dan progres kursus, serta sisa sesi paket. Jumlah tagihan hanya tampil untuk orang tua dan admin.
 3. Pakai tombol panah di samping nama bulan untuk pindah bulan, dan **Print / save PDF** untuk mencetak.
 
 ## Jadwal dan notifikasi

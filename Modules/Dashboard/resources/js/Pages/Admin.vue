@@ -5,7 +5,7 @@ import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
-import { greeting, rupiah } from '@/lib/format';
+import { greeting, rupiah, greetName } from '@/lib/format';
 
 defineProps({ stats: Object, today: Array, alerts: Object, pendingPayments: Array, recentStudents: Array });
 const user = usePage().props.auth.user;
@@ -18,7 +18,7 @@ const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day
     <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
             <p class="eyebrow">{{ todayLabel }}</p>
-            <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink">{{ greeting() }}, {{ user.name.split(' ')[0] }} 👋</h1>
+            <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink">{{ greeting() }}, {{ greetName(user.name) }}</h1>
             <p class="mt-1 text-muted">Here's today's overview of the school.</p>
         </div>
         <div class="flex flex-wrap gap-2">

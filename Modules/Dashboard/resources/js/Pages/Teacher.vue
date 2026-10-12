@@ -5,7 +5,7 @@ import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import StatCard from '@/Components/ui/StatCard.vue';
-import { greeting, rupiah } from '@/lib/format';
+import { greeting, rupiah, greetName } from '@/lib/format';
 
 defineProps({ stats: Object, today: Array, needsReport: Array, classes: Array });
 const user = usePage().props.auth.user;
@@ -15,7 +15,7 @@ const user = usePage().props.auth.user;
     <Head title="Home" />
 
     <div class="panel-brand mb-2 p-6 sm:p-8">
-        <h1 class="text-3xl font-extrabold tracking-tight">{{ greeting() }}, {{ user.name.split(' ')[0] }}!</h1>
+        <h1 class="text-3xl font-extrabold tracking-tight">{{ greeting() }}, {{ greetName(user.name) }}!</h1>
         <p class="mt-1 text-brand-100">{{ today.length ? `You have ${today.length} ${today.length === 1 ? 'session' : 'sessions'} today. Happy teaching!` : 'No sessions today. A good time to prepare lessons.' }}</p>
     </div>
 

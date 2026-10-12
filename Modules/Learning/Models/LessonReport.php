@@ -3,6 +3,7 @@
 namespace Modules\Learning\Models;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -38,5 +39,20 @@ class LessonReport extends Model
     public function resolver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'resolved_by');
+    }
+
+    /**
+     * Reports a user may see and close: admins all of them, teachers only reports on
+     * courses they created or teach (a class of theirs uses the course).
+     */
+    public function scopeReviewableBy(Builder $query, User $user): Builder
+    {
+        if ($user->hasRole('admin')) {
+            return $query;
+        }
+
+        return $query->whereHas('lesson.course', fn (Builder $q) => $q
+            ->where('created_by', $user->id)
+            ->orWhereHas('classes', fn (Builder $q) => $q->where('teacher_id', $user->id)));
     }
 }

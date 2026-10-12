@@ -1,4 +1,5 @@
 <script setup>
+import CodeLabel from './CodeLabel.vue';
 import { Lightbulb } from 'lucide-vue-next';
 import Icon from '@/Components/ui/Icon.vue';
 
@@ -23,7 +24,7 @@ const short = (v) => (v == null || v === '' ? '(empty)' : String(v).length > 300
                 >
                     <Icon :name="r.passed === true ? 'check' : r.passed === false ? 'x' : r.hidden ? 'lock' : 'clock'" :size="13" />
                 </span>
-                <span class="font-semibold text-ink">{{ r.label ?? (r.hidden ? `Hidden test ${i + 1}` : `Test ${i + 1}`) }}</span>
+                <span class="font-semibold text-ink"><CodeLabel :text="r.label ?? (r.hidden ? `Hidden test ${i + 1}` : `Test ${i + 1}`)" /></span>
                 <span v-if="r.passed === null && r.hidden" class="text-xs text-muted">graded when you submit</span>
                 <span v-if="r.weight > 1" class="ml-auto text-xs text-muted">weight {{ r.weight }}</span>
             </div>

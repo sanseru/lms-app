@@ -1,11 +1,11 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import NotificationBell from '@/Components/ui/NotificationBell.vue';
 import UserMenu from '@/Components/ui/UserMenu.vue';
-import { useFullscreen } from '@/lib/fullscreen';
+import { enterPageFullscreen, useFullscreen } from '@/lib/fullscreen';
 
 /**
  * Student header, as in the client prototype: big logo, the six main menus in the
@@ -22,9 +22,26 @@ const primary = computed(() => PRIMARY.map((r) => items.value.find((i) => i.rout
 const more = computed(() => items.value.filter((i) => !PRIMARY.includes(i.route)));
 const isActive = (item) => item.active.split('|').some((p) => route().current(p));
 const moreActive = computed(() => more.value.some(isActive));
+// Opening the course (client: the course is a full-screen world) goes fullscreen too.
+const onItemClick = (item) => item.route === 'learning.courses.index' && enterPageFullscreen();
 
 const drawer = ref(false);
-router.on('navigate', () => (drawer.value = false));
+router.on('navigate', () => {
+    drawer.value = false;
+    searching.value = false;
+});
+
+// Search (client prototype): courses and lessons, results on their own page.
+const searching = ref(false);
+const term = ref('');
+const searchInput = ref(null);
+const canSearch = route().has('learning.search');
+const openSearch = async () => {
+    searching.value = !searching.value;
+    await nextTick();
+    searchInput.value?.focus();
+};
+const search = () => term.value.trim().length >= 2 && router.get(route('learning.search'), { q: term.value.trim() });
 
 const root = ref(null);
 const canFullscreen = ref(false);
@@ -48,6 +65,7 @@ onMounted(() => {
                     :key="item.route"
                     :href="item.href"
                     :aria-current="isActive(item) ? 'page' : undefined"
+                    @click.capture="onItemClick(item)"
                     :class="isActive(item) ? 'font-extrabold text-brand-600' : 'font-medium text-ink hover:bg-brand-50 hover:text-brand-600'"
                     class="rounded-[10px] px-3.5 py-2 text-base whitespace-nowrap transition"
                 >
@@ -79,6 +97,18 @@ onMounted(() => {
 
             <div class="ml-auto flex items-center gap-2">
                 <button
+                    v-if="canSearch"
+                    type="button"
+                    class="grid size-11 place-items-center rounded-xl bg-chip text-ink hover:bg-brand-50"
+                    aria-label="Search"
+                    title="Search"
+                    :aria-expanded="searching"
+                    aria-controls="header-search"
+                    @click="openSearch"
+                >
+                    <Icon name="search" :size="20" />
+                </button>
+                <button
                     v-if="fullscreenButton && canFullscreen"
                     type="button"
                     class="hidden size-11 place-items-center rounded-xl bg-chip text-ink hover:bg-brand-50 sm:grid"
@@ -96,6 +126,15 @@ onMounted(() => {
             </div>
         </div>
 
+        <!-- Search box under the header (client prototype) -->
+        <form v-if="searching" id="header-search" role="search" class="absolute inset-x-0 top-full border-b border-line bg-white px-4 py-3 shadow-sm sm:px-6 lg:px-10" @submit.prevent="search" @keydown.esc="searching = false">
+            <div class="mx-auto flex max-w-2xl items-center gap-2">
+                <label for="header-search-input" class="sr-only">Search for courses or lessons</label>
+                <input id="header-search-input" ref="searchInput" v-model="term" type="search" class="field" placeholder="Search for courses or lessons..." maxlength="80" />
+                <button type="submit" class="btn-primary shrink-0" :disabled="term.trim().length < 2"><Icon name="search" :size="16" /> Search</button>
+            </div>
+        </form>
+
         <!-- Phone and tablet menu -->
         <Transition enter-from-class="opacity-0" leave-to-class="opacity-0" enter-active-class="transition" leave-active-class="transition">
             <div v-if="drawer" class="fixed inset-0 z-50 bg-ink/40 lg:hidden" @click="drawer = false" />
@@ -111,6 +150,7 @@ onMounted(() => {
                     :key="item.route + item.label"
                     :href="item.href"
                     :class="isActive(item) ? 'bg-brand-600 text-white' : 'text-ink hover:bg-brand-50'"
+                    @click.capture="onItemClick(item)"
                     class="flex items-center gap-3 rounded-xl px-3 py-3 font-semibold"
                 >
                     <Icon :name="item.icon" :size="18" /> {{ item.label }}

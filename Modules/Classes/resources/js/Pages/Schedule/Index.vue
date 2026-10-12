@@ -5,7 +5,18 @@ import Icon from '@/Components/ui/Icon.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
 import { classColors } from '@/lib/format';
 
-const props = defineProps({ days: Array, week: Object, calendarUrl: String });
+const props = defineProps({ days: Array, week: Object, calendarUrl: String, highlights: { type: Object, default: null } });
+
+// Client prototype cards: LIVE NOW, the next class, and the latest recording (real sessions).
+const cards = computed(() => {
+    const h = props.highlights;
+    if (!h) return [];
+    return [
+        h.live && { key: 'live', tag: 'Live now', tone: 'bg-accent-50 text-accent-700', session: h.live, meta: `Today, ${h.live.start_time}–${h.live.end_time} WIB`, href: h.live.zoom_url, external: !!h.live.zoom_url, action: h.live.zoom_url ? 'Join on Zoom' : 'See details' },
+        h.next && { key: 'next', tag: h.next.this_week ? 'This week' : 'Coming up', tone: 'bg-sky-50 text-sky-800', session: h.next, meta: `${h.next.date_label}, ${h.next.start_time} WIB`, action: 'See details' },
+        h.recording && { key: 'rec', tag: 'Recording', tone: 'bg-emerald-50 text-emerald-800', session: h.recording, meta: `${h.recording.minutes} minutes · ${h.recording.date_label}`, href: h.recording.recording_url, external: true, action: 'Watch lesson' },
+    ].filter(Boolean);
+});
 
 const copied = ref(false);
 const copyCalendar = async () => {
@@ -44,6 +55,21 @@ const isStudent = usePage().props.auth.user?.role === 'student';
             <Link :href="route('schedule.index')" class="btn-ghost">This week</Link>
         </template>
     </PageHeader>
+
+    <div v-if="cards.length" class="mb-6 grid gap-4 md:grid-cols-3">
+        <article v-for="c in cards" :key="c.key" :class="c.key === 'live' && 'ring-2 ring-accent-200'" class="card flex flex-col p-5">
+            <span :class="c.tone" class="inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-extrabold tracking-[0.12em] uppercase">
+                <span v-if="c.key === 'live'" class="size-2 animate-pulse rounded-full bg-accent-500" aria-hidden="true" />{{ c.tag }}
+            </span>
+            <h2 class="mt-3 font-display text-lg leading-tight font-extrabold text-ink">{{ c.session.class.name }}</h2>
+            <p class="mt-1 text-sm text-muted">{{ c.session.topic || (c.session.teacher ? `With ${c.session.teacher.name}` : c.session.class.subject) }}</p>
+            <div class="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3 text-sm">
+                <span class="text-muted">{{ c.meta }}</span>
+                <a v-if="c.external" :href="c.href" target="_blank" rel="noopener" class="font-bold text-brand-600 hover:underline">{{ c.action }} →</a>
+                <Link v-else :href="route('sessions.show', c.session.id)" class="font-bold text-brand-600 hover:underline">{{ c.action }} →</Link>
+            </div>
+        </article>
+    </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
         <section

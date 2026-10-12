@@ -42,7 +42,8 @@ class LabProjectController extends Controller
         $project = LabProject::create([
             ...$data,
             'user_id' => $request->user()->id,
-            'code' => $data['code'] ?? LabProject::STARTERS[$data['language']],
+            // Scratch starts from Scratch's own default project, saved on the first Save.
+            'code' => in_array($data['language'], LabProject::FILE_TYPES, true) ? null : ($data['code'] ?? LabProject::STARTERS[$data['language']] ?? ''),
         ]);
 
         return to_route('lab.projects.edit', $project);
@@ -61,7 +62,12 @@ class LabProjectController extends Controller
 
     public function update(LabProjectRequest $request, LabProject $project): RedirectResponse
     {
-        $project->update($request->validated());
+        $data = $request->safe()->except('file');
+        $project->update($project->usesFile() ? ['code' => null] + $data : $data);
+
+        if ($file = $request->file('file')) {
+            $project->storeFile($file);
+        }
 
         return back()->with('success', 'Project saved.');
     }

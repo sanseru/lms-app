@@ -47,6 +47,11 @@ class ProgramsDemoSeeder
         $this->pythonLevels($programs['Python']);
         $this->otherLevels($programs);
 
+        // Scratch levels: projects are built in the Scratch editor inside the lesson.
+        Lesson::whereIn('course_id', Course::where('program_id', $programs['Scratch']->id)->pluck('id'))
+            ->where('type', 'assignment')
+            ->update(['workspace' => 'scratch']);
+
         // The "Python Pro 1" class now uses its level; its students can also revisit the levels below.
         $pro1 = Course::where('title', 'Python Pro 1')->first();
         ClassRoom::where('name', 'Python Pro 1')->get()->each(fn ($c) => $c->forceFill(['course_id' => $pro1?->id])->saveQuietly());

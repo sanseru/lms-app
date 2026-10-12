@@ -90,7 +90,7 @@ npm install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed        # roles, permissions and demo data (skipped when APP_ENV=production)
-npm run dev                       # or: npm run build. Both copy Pyodide into public/vendor first
+npm run dev                       # or: npm run build. Both copy Pyodide and install the Scratch editor into public/vendor first
 php artisan serve                 # http://127.0.0.1:8000
 php artisan schedule:work         # optional locally; production uses cron `schedule:run` every minute
 ```
@@ -138,8 +138,8 @@ All modules live in `Modules/<Name>` and are enabled in `config/modules.php`. UR
 | Coding | lesson type `code` | Done (stage 1) | Python, JavaScript, HTML/CSS, Parsons. Runs in the browser; the server compares outputs with answers kept only on the server (hidden tests never sent). Mandatory "Test solution" before publishing, tiered hints, solution after N failures, code rules, exercise versions. Grader: `Modules/Coding/Grading/Grader.php`; runners in `Modules/Coding/resources/js/lib/` |
 | Forum (Q&A) | `/questions` | Done | Per class, optional lesson link, private ("teacher only") and anonymous-to-peers, teacher answers pinned first, accepted answer, votes, pin, guardian read-only, "Ask your teacher" card on each lesson |
 | Kanban | `/projects` | Done | Teacher project per class with template steps; each student gets a synced board (todo/doing/review/done), teacher review queue, archived projects lock boards |
-| Lab | `/lab`, `/community` | Done | Free Python/JS/Website projects using Coding runners; Save & share to Community (trending 7 days, likes, unique views, comments, teacher moderation, names shown as first name + initial). Permissions `lab.use`, `community.moderate` |
-| Gamification | `/achievements` | Done | XP events recomputed from source data (`XpRules`), levels `50n(n-1)`, 13 badges, class leaderboard (toggle `GAMIFICATION_LEADERBOARD`). No daily streak yet |
+| Lab | `/lab`, `/community` | Done | Free projects: Python, **Scratch** (self-hosted Scratch editor in an iframe, `ScratchFrame.vue` + `resources/scratch/host.html`, `.sb3` on the private disk, served by `community.file`), **Presentation** (markdown slides split by `---`, `SlideShow.vue`), Website, JavaScript. Save & share to Community (trending Today/Week/Month, likes, unique views, comments by anyone signed in, teacher moderation, names shown as first name + initial). XP rules `lab_shared`, `lab_liked`, `lab_commented`. Permissions `lab.use`, `community.moderate` |
+| Gamification | `/achievements` | Done | XP events recomputed from source data (`XpRules`), levels `50n(n-1)`, 19 badges (6 named after the client prototype; a badge may count several rules, and 0-XP "milestone" rules such as `python_lesson` only feed badges), class leaderboard (toggle `GAMIFICATION_LEADERBOARD`). No daily streak yet |
 | Certificates | `/my-certificates`, public `/certificates/{code}` | Done | A4 landscape, QR, verify page, revoke, auto list of students who finished a course |
 | Finance | `/finance/*` | Done | Invoices (single or per class), proof upload, verify/reject, partial/paid status, quota packages, tutor payroll slips, printable receipt with amount in words, low-quota list, 6-month summary |
 | Notifications | `/notifications` | Done (in-app only) | Bell + page; `Notify::send()` (`Modules/Notifications/Support/Notify.php`) with dedupe key. No WhatsApp/email channel yet |
@@ -207,8 +207,9 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 8. Audit log is append-only.
 9. Entire UI in English; `docs/` in Indonesian; URL segments English; route names unchanged.
 10. Monthly report and certificates are printed to PDF from the browser (no server PDF library).
-12. Client naming wins for what users see: student menus are Home, Course, Online Lesson, Community, Laboratory, Archive (top header, `StudentLayout`/`StudentHeader`, rest under More); teachers see Course and Online Lesson. The comparison and decisions are in `docs/analisis-prototipe-klien.md`. Everyone logged in may like and comment on shared Community projects.
 11. Learning structure follows the client prototype: **Program → level (course) → Lesson (`course_units`) → task (lesson item)**. Students move up levels step by step: the next level unlocks when every published item of the previous one is done, without changing class (`Modules/Learning/Support/LevelAccess.php`). "Mixed" tasks (multiple choice + code in one task) are split into separate tasks. Inside a level, lessons also open one after another (`LessonGate`); the class teacher can open lessons early per class at Classes → Lesson access (`class_lesson_opens`), which also opens a later level with just those lessons.
+12. Client naming wins for what users see: student menus are Home, Course, Online Lesson, Community, Laboratory, Archive (top header, `StudentLayout`/`StudentHeader`, rest under More); teachers see Course and Online Lesson. The comparison and decisions are in `docs/analisis-prototipe-klien.md`. Everyone logged in may like and comment on shared Community projects.
+13. Scratch is self-hosted (not a TurboWarp embed) so projects save to our server. Laboratory types are Python, Scratch, Presentation, Website, JavaScript; an assignment can use the Scratch editor as its workspace (`lessons.workspace = 'scratch'`).
 
 ---
 
@@ -220,6 +221,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 - **Route names vs URLs**: names are legacy (`forum.*`, `kanban.*`, `gamification.*`, `certificates.*`), URLs are English. Use `route()`.
 - **New permissions do nothing** until the permission seeder runs (also in production after deploy).
 - **Pyodide** must be present in `public/vendor/pyodide`; `npm run build`/`dev` copy it. Running plain `vite` skips it.
+- **Scratch editor** lives in `public/vendor/scratch-gui` (~100 MB, git-ignored), installed by `scripts/fetch-scratch-gui.mjs` (pinned `@scratch/scratch-gui`, downloaded once with `npm pack`, publicPath patched to `/vendor/scratch-gui/`). CI sets `SCRATCH_GUI_SKIP=1`. Without it the Scratch pages show "The Scratch editor is not installed". Sprite/sound library thumbnails still load from Scratch's asset server. `resources/scratch/host.html` is the app's own page and is copied there on every build.
 - **Demo seeding is skipped** in production; the first admin comes from tinker.
 - **Audit logging pauses** during `db:seed`/`migrate:fresh`; `activity_log` rows cannot be updated or deleted (by design).
 - **Uploads** use the `local` disk directly in code; switching to S3/object storage needs code changes.

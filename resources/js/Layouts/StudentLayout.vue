@@ -1,8 +1,12 @@
 <script setup>
+import { onMounted } from 'vue';
 import FlashToast from '@/Components/ui/FlashToast.vue';
 import StudentHeader from '@/Components/StudentHeader.vue';
+import { leavePageFullscreen } from '@/lib/fullscreen';
 
 // Students: the client's top-menu layout instead of the staff sidebar.
+// Coming back from the course map or a task leaves the fullscreen the app turned on.
+onMounted(leavePageFullscreen);
 </script>
 
 <template>

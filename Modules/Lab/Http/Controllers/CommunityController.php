@@ -8,16 +8,22 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Lab\Http\Requests\LabCommentRequest;
 use Modules\Lab\Models\LabComment;
 use Modules\Lab\Models\LabProject;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Community gallery: shared Laboratory projects from every class. */
 class CommunityController extends Controller
 {
     private const SORTS = ['new', 'popular', 'discussed'];
+
+    /** Trending windows (client prototype: Today / Week / Month). */
+    private const PERIODS = ['today', 'week', 'month'];
 
     public function index(Request $request): Response
     {
@@ -25,6 +31,12 @@ class CommunityController extends Controller
         $sort = in_array($request->query('sort'), self::SORTS, true) ? $request->query('sort') : 'new';
         $language = array_key_exists($request->query('language'), LabProject::LANGUAGES) ? $request->query('language') : null;
         $search = trim((string) $request->query('q'));
+        $period = in_array($request->query('period'), self::PERIODS, true) ? $request->query('period') : 'week';
+        $since = match ($period) {
+            'today' => now()->startOfDay(),
+            'month' => now()->subDays(30),
+            default => now()->subDays(7),
+        };
 
         $base = fn () => LabProject::query()->inCommunity()
             ->with('owner:id,name')
@@ -40,9 +52,9 @@ class CommunityController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        // Trending: most likes received in the last 7 days.
+        // Trending: most likes received in the chosen window.
         $trending = $base()
-            ->whereHas('likers', $recent = fn (Builder $q) => $q->where('lab_project_likes.created_at', '>=', now()->subDays(7)))
+            ->whereHas('likers', $recent = fn (Builder $q) => $q->where('lab_project_likes.created_at', '>=', $since))
             ->withCount(['likers as recent_likes' => $recent])
             ->orderByDesc('recent_likes')
             ->orderByDesc('shared_at')
@@ -52,7 +64,7 @@ class CommunityController extends Controller
         return Inertia::render('Lab::Community/Index', [
             'projects' => $projects->through(fn (LabProject $p) => $p->toCard($user)),
             'trending' => $trending->map->toCard($user),
-            'filters' => ['sort' => $sort, 'language' => $language, 'q' => $search],
+            'filters' => ['sort' => $sort, 'language' => $language, 'q' => $search, 'period' => $period],
             'languages' => LabProject::LANGUAGES,
             'can' => ['create' => $user->can('lab.use')],
         ]);
@@ -86,6 +98,18 @@ class CommunityController extends Controller
                 'edit' => $project->isOwnedBy($user),
                 'moderate' => $user->can('moderate', $project),
             ],
+        ]);
+    }
+
+    /** The project's .sb3 (Scratch), for the editor and the player. Versioned URL, so cached. */
+    public function file(LabProject $project): StreamedResponse
+    {
+        Gate::authorize('view', $project);
+        abort_unless($project->usesFile() && $project->file_path && Storage::disk('local')->exists($project->file_path), 404);
+
+        return Storage::disk('local')->response($project->file_path, Str::slug($project->title ?: 'project').'.sb3', [
+            'Content-Type' => 'application/x.scratch.sb3',
+            'Cache-Control' => 'private, max-age=31536000, immutable',
         ]);
     }
 

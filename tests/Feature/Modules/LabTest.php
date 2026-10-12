@@ -28,7 +28,7 @@ test('student creates a lab project with starter code and saves it', function ()
 test('lab validates the project type and keeps the type fixed after creation', function () {
     $student = userWithRole('student');
 
-    $this->actingAs($student)->post('/lab', ['title' => 'X', 'language' => 'scratch'])->assertSessionHasErrors(['language' => 'The selected project type is invalid.']);
+    $this->actingAs($student)->post('/lab', ['title' => 'X', 'language' => 'cobol'])->assertSessionHasErrors(['language' => 'The selected project type is invalid.']);
 
     $project = labProject($student);
     $this->actingAs($student)->put("/lab/{$project->id}", ['title' => 'X', 'code' => '', 'language' => 'html'])->assertSessionHasErrors('language');

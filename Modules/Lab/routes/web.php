@@ -17,6 +17,7 @@ Route::prefix('lab')->name('lab.')->middleware('can:lab.use')->whereNumber('proj
 Route::prefix('community')->name('community.')->whereNumber(['project', 'comment'])->group(function () {
     Route::get('/', [CommunityController::class, 'index'])->name('index');
     Route::get('{project}', [CommunityController::class, 'show'])->name('show');
+    Route::get('{project}/file', [CommunityController::class, 'file'])->name('file');
     Route::post('{project}/like', [CommunityController::class, 'like'])->name('like');
     Route::post('{project}/comments', [CommunityController::class, 'comment'])->name('comments.store');
     Route::delete('comments/{comment}', [CommunityController::class, 'destroyComment'])->name('comments.destroy');

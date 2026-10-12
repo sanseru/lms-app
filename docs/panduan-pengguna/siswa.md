@@ -10,14 +10,18 @@ Tampilan aplikasi memakai bahasa Inggris. Di panduan ini, nama menu dan tombol d
 
 Menu siswa ada di bar atas, sama seperti rancangan klien: **Home**, **Course**, **Online Lesson**, **Community**, **Laboratory**, dan **Archive**. Menu lain (**Classes**, **My projects**, **Q&A**, **My achievements**, **My certificates**, **My monthly reports**) ada di **More**. Di HP, semua menu dibuka lewat tombol ☰ di kanan atas.
 
+**Mencari.** Klik ikon kaca pembesar di kanan atas, ketik minimal 2 huruf (mis. `loop` atau `Python`), lalu tekan Enter. Hasilnya dibagi dua: **Courses** (semua kursus di katalog; kursusmu diberi label **Your course**) dan **Lessons** (hanya pelajaran di level yang sudah boleh kamu buka).
+
+![Hasil pencarian: daftar kursus dan pelajaran](img/siswa-cari.png)
+
 | Menu | Isinya | Alamat |
 |---|---|---|
 | **Home** | Ringkasan belajarmu hari ini | `/dashboard` |
 | **Classes** | Kelas yang kamu ikuti | `/classes` |
-| **Online Lesson** | Kelas Zoom minggu ini, tombol **Join Zoom** | `/schedule` |
+| **Online Lesson** | Kelas yang sedang berlangsung, kelas berikutnya, rekaman terakhir, dan jadwal minggu ini | `/schedule` |
 | **Course** | Peta belajar kursusmu dan katalog kursus lain | `/courses`, `/courses/explore` |
 | **Community** | Proyek yang dibagikan siswa lain | `/community` |
-| **Laboratory** | Tempat bebas mencoba kode | `/lab` |
+| **Laboratory** | Tempat bebas membuat proyek Python, Scratch, presentasi, website, JavaScript | `/lab` |
 | **My projects** | Papan proyek dari guru | `/projects` |
 | **Q&A** | Tanya jawab dengan guru dan teman | `/questions` |
 | **My achievements** | XP, level, dan lencana | `/achievements` |
@@ -44,7 +48,7 @@ Di **Home** kamu melihat:
 
 ![Halaman Course: panel kelas di kiri, peta Lesson bernomor dari START sampai kastel level berikutnya di kanan](img/siswa-materi.png)
 
-Buka **Course**. Kursus disusun seperti di sekolah musik: **program** (mis. Python) terdiri dari beberapa **level** (Python Start 1, Python Start 2, …), setiap level berisi **Lesson** bernomor, dan setiap Lesson berisi beberapa **task** (teori, kuis, tugas, coding).
+Buka **Course**. Browser langsung masuk **layar penuh** supaya peta memenuhi layar; tekan Esc atau tombol layar penuh di kanan atas untuk keluar (aplikasi tidak memaksa layar penuh lagi sampai kamu memulai task). Kursus disusun seperti di sekolah musik: **program** (mis. Python) terdiri dari beberapa **level** (Python Start 1, Python Start 2, …), setiap level berisi **Lesson** bernomor, dan setiap Lesson berisi beberapa **task** (teori, kuis, tugas, coding).
 
 - Halaman peta memenuhi layar seperti dunia bergambar: langit biru, jalur titik-titik, lingkaran Lesson besar, dan kastel di akhir setiap level, tanpa menu samping. Kartu **Your class** di atas peta merangkum kelas, progres, guru, jadwal berikutnya, **Join Zoom**, dan tombol **Continue**.
 - Bar atas berisi **Home** (kembali ke Beranda), **Explore courses**, lonceng notifikasi, dan tombol layar penuh.
@@ -124,10 +128,12 @@ Ada empat jenis soal. Petunjuk kecil di bawah setiap soal memberi tahu cara menj
 ### Tugas
 
 1. Isi **Answer / notes**: tulis jawaban atau ceritakan apa yang kamu buat (boleh tempel kode).
-2. Tempel **Project link** (mis. dari Scratch, Replit, atau Google Drive) dan/atau isi **Upload a file** (gambar, PDF, ZIP, .sb3, .py, .html; maks. 10 MB).
+2. Tempel **Project link** (mis. dari Replit atau Google Drive) dan/atau isi **Upload a file** (gambar, PDF, ZIP, .sb3, .py, .html; maks. 20 MB).
 3. Klik **Submit**. Statusnya menjadi **Awaiting grade**. Selama belum dinilai, kamu masih bisa mengubahnya dengan **Update submission**.
 4. Kalau statusnya **Needs revision**, baca catatan guru, perbaiki, lalu kirim lagi lewat form **Resubmit**.
 5. Setelah dinilai, statusnya **Graded** dan nilai serta komentar guru muncul.
+
+**Tugas Scratch.** Kalau gurumu mengatur tugas dikerjakan di Scratch, halaman tugas menampilkan editor Scratch (**Build it in Scratch**) langsung di bawah petunjuk. Buat proyekmu di sana, tulis catatan bila perlu, lalu klik **Submit**: proyek Scratch-mu terlampir otomatis. Proyek baru tersimpan saat kamu menekan **Submit**, jadi jangan tutup halaman sebelum mengirim. Selama belum dinilai, **Update submission** membuka proyekmu lagi untuk diperbaiki. Guru bisa memutar proyekmu dengan bendera hijau.
 
 ### Melaporkan masalah
 
@@ -168,11 +174,11 @@ Jenis soal lain:
 
 ## Laboratory
 
-![Laboratorium: daftar proyek kode milikmu dengan filter jenis](img/siswa-lab.png)
+![Laboratorium: daftar proyekmu dengan filter jenis](img/siswa-lab.png)
 
 **Laboratory** (`/lab`) adalah tempat bebas untuk mencoba ide. Tidak ada nilai di sini.
 
-1. Klik **New project**. Di jendela **What do you want to make?**, pilih jenisnya: **Python**, **JavaScript**, atau **Website** (HTML, CSS, dan JS).
+1. Klik **New project**. Di jendela **What do you want to make?**, pilih jenisnya: **Python**, **Scratch** (game dan cerita dengan balok), **Presentation** (slide), **Website** (HTML, CSS, dan JS), atau **JavaScript**.
 2. Isi **Project name**, lalu klik **Create and open**.
 3. Tulis kode di editor. Klik **Run** (atau Ctrl+Enter) untuk menjalankannya. Hasilnya muncul di **Output**; untuk website, halamanmu tampil di **Preview**. Kalau programmu meminta input, klik **Input** dan tulis satu nilai per baris.
 4. Isi **What does it do?** supaya orang lain tahu proyekmu tentang apa.
@@ -181,23 +187,31 @@ Jenis soal lain:
 
 ![Editor Laboratorium: nama proyek, editor kode, dan panel hasil](img/siswa-lab-editor.png)
 
-Di daftar proyek, gunakan tombol **All**, **Python**, **JavaScript**, dan **Website** untuk menyaring. Klik **All projects** di editor untuk kembali ke daftar. Ikon tempat sampah menghapus proyek.
+**Proyek Scratch.** Editor Scratch lengkap terbuka di halaman proyek (kode balok, kostum, suara, panggung). Klik **Save** untuk menyimpan proyek ke akunmu; tulisan **Unsaved changes** muncul setiap kali kamu mengubah sesuatu. **Fullscreen** membuat editor memenuhi layar dan tetap punya tombol **Save**. Menu **File** milik Scratch tetap bisa dipakai untuk memuat atau mengunduh berkas `.sb3`.
+
+![Editor Scratch di Laboratory](img/siswa-lab-scratch.png)
+
+**Presentation.** Tulis slide di kiri: baris berisi tiga tanda minus (`---`) memisahkan slide, `#` membuat judul besar, `##` judul kecil, `-` daftar berbutir, `**tebal**`. Slideshow di kanan langsung berubah saat kamu mengetik. Pakai **Back** / **Next** (atau tombol panah di keyboard) dan ikon layar penuh untuk presentasi.
+
+![Editor presentasi: teks slide di kiri, slideshow di kanan](img/siswa-lab-presentasi.png)
+
+Di daftar proyek, gunakan tombol **All**, **Python**, **Scratch**, **Presentation**, **Website**, dan **JavaScript** untuk menyaring. Klik **All projects** di editor untuk kembali ke daftar. Ikon tempat sampah menghapus proyek.
 
 **Membagikan ke Komunitas.** Klik **Save & share** di editor. Proyekmu muncul di Komunitas dan kartunya diberi label **In Community**. Mau menariknya lagi? Klik **Make private**. **View in Community** membuka halaman proyekmu di Komunitas.
 
 ## Community
 
-![Komunitas: proyek yang sedang tren minggu ini dan semua proyek yang dibagikan](img/siswa-komunitas.png)
+![Komunitas: proyek Trending (Today, Week, Month) dan semua proyek yang dibagikan](img/siswa-komunitas.png)
 
 **Community** (`/community`) berisi proyek yang dibagikan siswa dari semua kelas.
 
-- **Trending this week**: proyek yang paling banyak disukai dalam 7 hari terakhir.
-- Urutkan dengan **New**, **Popular**, atau **Most discussed**. Saring dengan **All**, **Python**, **JavaScript**, **Website**, atau cari lewat **Search projects**.
+- **Trending**: proyek yang paling banyak disukai **Today** (hari ini), **Week** (7 hari), atau **Month** (30 hari). Pilih periodenya di kanan.
+- Urutkan dengan **New**, **Popular**, atau **Most discussed**. Saring dengan **All**, **Python**, **Scratch**, **Presentation**, **Website**, **JavaScript**, atau cari lewat **Search projects**.
 - **Share a project** membawamu ke Laboratory untuk memilih proyek yang mau dibagikan.
 
 Klik kartu untuk membuka proyek. Di sana kamu bisa:
 
-- Menjalankan proyeknya dengan **Run**, dan membuka **Code** untuk melihat kodenya.
+- Menjalankan proyeknya dengan **Run**, dan membuka **Code** untuk melihat kodenya. Proyek Scratch diputar dengan **bendera hijau** (ikon kotak di kanan atas untuk layar penuh); presentasi diputar dengan **Back** / **Next**.
 - Menekan ikon hati untuk menyukai proyek (tekan lagi untuk membatalkan).
 - Menulis komentar di **Comments**, lalu klik **Post comment**. Tulis yang baik, atau tanyakan cara kerjanya. Kamu bisa menghapus komentarmu sendiri, dan pemilik proyek bisa menghapus komentar di proyeknya.
 - Kalau itu proyekmu, klik **Edit in Laboratory** untuk mengubahnya.
@@ -262,9 +276,12 @@ Kamu mendapat **XP** otomatis dari kegiatan belajar:
 | **Answer picked as best** | 20 |
 | **Finished a project step** | 10 |
 | **Finished a project** | 50 |
+| **Shared a project** (ke Community) | 15 |
+| **Got a like on a project** (sekali per proyek) | 5 |
+| **Commented on a classmate's project** | 2 |
 | **Earned a certificate** | 100 |
 
-XP menaikkan **level**: **Code Rookie**, **Explorer**, **Tinkerer**, **Inventor**, **Junior Engineer**, **Creator**, **Code Master**, sampai **Legend**. Ada juga **13 lencana**, misalnya **First Steps** (1 pelajaran), **Little Coder** (1 soal coding), **Always There** (hadir 8 sesi), **Brave Asker** (1 pertanyaan), **Builder** (1 proyek), dan **Graduate** (1 sertifikat). Lencana yang belum didapat tampil pudar beserta progresnya.
+XP menaikkan **level**: **Code Rookie**, **Explorer**, **Tinkerer**, **Inventor**, **Junior Engineer**, **Creator**, **Code Master**, sampai **Legend**. Ada juga **19 lencana**. Enam di antaranya sama dengan rancangan klien: **First project** (bagikan 1 proyek), **3 projects** (bagikan 3 proyek), **First like** (proyekmu disukai teman), **First comment** (komentari proyek teman), **Python starter** (selesaikan 1 pelajaran Python), dan **10 questions solved** (lulus 10 kuis atau soal coding). Lainnya misalnya **First Steps** (1 pelajaran), **Little Coder** (1 soal coding), **Always There** (hadir 8 sesi), **Brave Asker** (1 pertanyaan), **Builder** (1 proyek), dan **Graduate** (1 sertifikat). Lencana yang belum didapat tampil pudar beserta progresnya.
 
 Halaman **My achievements** juga menampilkan **Class stars this month** (5 siswa dengan XP terbanyak bulan ini di setiap kelasmu), **Latest XP**, dan **How to earn XP**.
 
@@ -288,6 +305,8 @@ Setelah kamu menyelesaikan semua pelajaran di kursus, guru akan menerbitkan sert
 
 ## Jadwal dan notifikasi
 
-- **Online Lesson** menampilkan kelas Zoom-mu minggu ini. Kamu bisa memasangnya ke kalender HP lewat **Create calendar link** (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
+![Online Lesson: kartu kelas berikutnya dan rekaman, lalu jadwal minggu ini](img/siswa-online-lesson.png)
+
+- **Online Lesson** menampilkan kartu seperti rancangan klien: **Live now** (kelas yang sedang berlangsung atau mulai dalam 10 menit, dengan tombol **Join on Zoom**), **This week** / **Coming up** (kelas berikutnya), dan **Recording** (rekaman Zoom kelas terakhir, tombol **Watch lesson**). Di bawahnya ada jadwal kelas Zoom-mu minggu ini. Kamu bisa memasangnya ke kalender HP lewat **Create calendar link** (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
 - **Classes** menampilkan kelas yang kamu ikuti beserta jadwal dan gurunya.
 - **Lonceng** memberi tahu PR baru dari sesi, tugas yang sudah dinilai atau perlu revisi, jawaban atas pertanyaanmu, dan hasil pemeriksaan laporan masalah yang kamu kirim.

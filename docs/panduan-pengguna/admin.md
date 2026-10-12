@@ -168,7 +168,7 @@ Setiap tanggal 1 pukul 08.00, orang tua menerima notifikasi bahwa laporan bulan 
 
 ## Laboratorium dan Komunitas
 
-**Laboratory** adalah tempat membuat proyek coding bebas; admin juga bisa membuat proyek sendiri lewat **New project**. **Community** menampilkan proyek yang dibagikan siswa ke semua kelas. Admin dan guru bertugas memoderasinya:
+**Laboratory** adalah tempat membuat proyek bebas (Python, Scratch, Presentation, Website, JavaScript); admin juga bisa membuat proyek sendiri lewat **New project**. **Community** menampilkan proyek yang dibagikan siswa ke semua kelas. Admin dan guru bertugas memoderasinya:
 
 - **Menyembunyikan proyek**: buka proyek dari **Community**, klik **Remove from Community**, lalu **Remove**. Proyek tetap ada di Laboratory pemiliknya, tetapi tidak terlihat orang lain dan tidak bisa dibagikan ulang. Untuk mengembalikannya, buka proyek itu dan klik **Put it back**.
 - **Menghapus komentar**: klik ikon hapus (**Delete comment**) pada komentar yang tidak pantas, lalu **Delete**.

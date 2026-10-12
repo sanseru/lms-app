@@ -66,7 +66,10 @@ jobs:
 
       # Test halaman Inertia butuh public/build/manifest.json, jadi build jalan sebelum test.
       - run: npm ci
+      # Test tidak memakai editor Scratch, jadi unduhan ±150 MB-nya dilewati di CI.
       - run: npm run build
+        env:
+          SCRATCH_GUI_SKIP: '1'
 
       - name: Prepare .env
         run: |

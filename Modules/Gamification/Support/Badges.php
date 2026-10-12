@@ -8,8 +8,20 @@ namespace Modules\Gamification\Support;
  */
 class Badges
 {
-    /** @var array<string, array{0: string, 1: string, 2: string, 3: string, 4: int, 5: string}> key => [emoji, name, how to earn, rule, target, color] */
+    /**
+     * The rule may be a list of rules whose events add up (e.g. quizzes + coding tasks).
+     *
+     * @var array<string, array{0: string, 1: string, 2: string, 3: string|list<string>, 4: int, 5: string}> key => [emoji, name, how to earn, rule, target, color]
+     */
     public const ALL = [
+        // The six badges on the client prototype's home page.
+        'first_project' => ['🌟', 'First project', 'Share 1 project to the Community', 'lab_shared', 1, 'amber'],
+        'three_projects' => ['🚀', '3 projects', 'Share 3 projects to the Community', 'lab_shared', 3, 'sky'],
+        'first_like' => ['❤️', 'First like', 'Get a like on a shared project', 'lab_liked', 1, 'rose'],
+        'first_comment' => ['💬', 'First comment', "Comment on a classmate's project", 'lab_commented', 1, 'violet'],
+        'python_starter' => ['🐍', 'Python starter', 'Finish 1 Python lesson', 'python_lesson', 1, 'emerald'],
+        'ten_solved' => ['🧩', '10 questions solved', 'Pass 10 quizzes or coding tasks', ['quiz_passed', 'code_passed'], 10, 'orange'],
+
         'langkah_pertama' => ['👣', 'First Steps', 'Finish 1 lesson', 'lesson_done', 1, 'sky'],
         'kutu_buku' => ['📚', 'Bookworm', 'Finish 10 lessons', 'lesson_done', 10, 'violet'],
         'jago_kuis' => ['🧠', 'Quiz Whiz', 'Pass 3 quizzes', 'quiz_passed', 3, 'amber'],

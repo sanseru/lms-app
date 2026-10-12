@@ -11,6 +11,7 @@ import LessonReport from '@/Components/ui/LessonReport.vue';
 import GradeForm from '../../Components/GradeForm.vue';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 import SubmissionContent from '../../Components/SubmissionContent.vue';
+import ScratchFrame from '../../../../../Lab/resources/js/Components/ScratchFrame.vue';
 
 defineOptions({ layout: lessonLayout });
 
@@ -106,7 +107,20 @@ const optionClass = (q, i) => {
 // ---- Assignment ----
 const subForm = useForm({ body: props.submission?.body ?? '', link_url: props.submission?.link_url ?? '', file: null });
 const editing = ref(!props.submission || props.submission.status === 'revision');
-const submitWork = () => subForm.post(route('learning.submissions.store', props.lesson.id), { forceFormData: true, preserveScroll: true, onSuccess: () => (editing.value = false) });
+// Scratch assignments: the student builds in the editor on the page; Submit attaches the .sb3.
+const isScratchTask = computed(() => props.lesson.workspace === 'scratch');
+const scratchFrame = ref(null);
+const submitWork = async () => {
+    if (isScratchTask.value) {
+        try {
+            const blob = await scratchFrame.value.save();
+            subForm.file = new File([blob], 'scratch-project.sb3', { type: 'application/x.scratch.sb3' });
+        } catch (e) {
+            return subForm.setError('file', e.message);
+        }
+    }
+    subForm.post(route('learning.submissions.store', props.lesson.id), { forceFormData: true, preserveScroll: true, onSuccess: () => (editing.value = false) });
+};
 const grading = ref(null);
 const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
 </script>
@@ -327,15 +341,25 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <b class="text-accent-700">Needs revision:</b> {{ submission.feedback }}
                 </div>
 
+                <section v-if="editing && isScratchTask" class="space-y-2" aria-labelledby="scratch-title">
+                    <div class="flex flex-wrap items-end justify-between gap-2">
+                        <h2 id="scratch-title" class="font-display font-bold text-ink">Build it in Scratch</h2>
+                        <p class="text-xs text-muted">Your project is handed in when you press Submit below. You can update it until it is graded.</p>
+                    </div>
+                    <ScratchFrame ref="scratchFrame" :src="submission?.is_scratch ? submission.file_url : null" :title="`Scratch editor: ${lesson.title}`" class="h-[calc(100vh-14rem)] min-h-[520px]" />
+                </section>
+
                 <form v-if="editing" class="card space-y-4 p-5" @submit.prevent="submitWork">
                     <h2 class="font-display font-bold text-ink">{{ submission ? 'Resubmit' : 'Submit assignment' }}</h2>
                     <Field id="body" label="Answer / notes" :error="subForm.errors.body">
-                        <textarea id="body" v-model="subForm.body" rows="5" class="field" placeholder="Tell us what you made, or paste your code here." />
+                        <textarea id="body" v-model="subForm.body" :rows="isScratchTask ? 2 : 5" class="field" :placeholder="isScratchTask ? 'Anything you want your teacher to know? (optional)' : 'Tell us what you made, or paste your code here.'" />
                     </Field>
-                    <Field id="link_url" label="Project link" :error="subForm.errors.link_url" hint="e.g. a Scratch, Replit or Google Drive link.">
+                    <p v-if="isScratchTask" class="flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2 text-sm text-brand-700"><Icon name="paperclip" :size="15" /> Your Scratch project above is attached automatically.</p>
+                    <p v-if="isScratchTask && subForm.errors.file" class="text-sm text-red-600" role="alert">{{ subForm.errors.file }}</p>
+                    <Field v-if="!isScratchTask" id="link_url" label="Project link" :error="subForm.errors.link_url" hint="e.g. a Scratch, Replit or Google Drive link.">
                         <input id="link_url" v-model="subForm.link_url" type="url" class="field" placeholder="https://" />
                     </Field>
-                    <Field id="file" label="Upload a file" :error="subForm.errors.file" :hint="submission?.file_name ? `Current file: ${submission.file_name}` : 'Image, PDF, ZIP, .sb3, .py, .html. Max. 10 MB.'">
+                    <Field v-if="!isScratchTask" id="file" label="Upload a file" :error="subForm.errors.file" :hint="submission?.file_name ? `Current file: ${submission.file_name}` : 'Image, PDF, ZIP, .sb3, .py, .html. Max. 20 MB.'">
                         <input id="file" type="file" class="field file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700" @input="subForm.file = $event.target.files[0]" />
                     </Field>
                     <div class="flex justify-end gap-2">

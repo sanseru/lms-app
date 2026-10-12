@@ -12,6 +12,7 @@ use Modules\Learning\Http\Controllers\LessonReportController;
 use Modules\Learning\Http\Controllers\ProgramController;
 use Modules\Learning\Http\Controllers\ProgressController;
 use Modules\Learning\Http\Controllers\QuizController;
+use Modules\Learning\Http\Controllers\SearchController;
 use Modules\Learning\Http\Controllers\SubmissionController;
 
 Route::name('learning.')->group(function () {
@@ -54,6 +55,7 @@ Route::name('learning.')->group(function () {
     Route::middleware('role:student')->group(function () {
         Route::get('courses/explore', [CourseCatalogController::class, 'index'])->name('courses.explore');
         Route::get('archive', ArchiveController::class)->name('archive');
+        Route::get('search', SearchController::class)->name('search');
         Route::post('courses/{course}/interest', [CourseCatalogController::class, 'interest'])->middleware('throttle:10,1')->name('courses.interest');
     });
     Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');

@@ -31,6 +31,7 @@ class LessonRequest extends FormRequest
             'max_attempts' => ['nullable', 'integer', 'min:1', 'max:20'],
             'time_limit_minutes' => ['nullable', 'integer', 'min:1', 'max:180'],
             'max_score' => ['nullable', 'integer', 'min:1', 'max:1000'],
+            'workspace' => ['nullable', Rule::in(array_keys(Lesson::WORKSPACES))],
 
             'questions' => [$quiz ? 'required' : 'nullable', 'array', 'max:50'],
             'questions.*.id' => ['nullable', 'integer'],

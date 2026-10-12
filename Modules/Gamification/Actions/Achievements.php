@@ -27,12 +27,13 @@ class Achievements
             'level' => Levels::for($total),
             'xp_month' => (int) $events->where('occurred_at', '>=', now()->startOfMonth())->sum('points'),
             'badges' => $this->badges($events),
-            'recent' => $events->sortByDesc('occurred_at')->take(8)->values()->map(fn (XpEvent $e) => [
+            // Milestone rules (0 XP) only feed badges, so they stay out of the XP lists.
+            'recent' => $events->where('points', '>', 0)->sortByDesc('occurred_at')->take(8)->values()->map(fn (XpEvent $e) => [
                 'label' => $this->rules->get($e->rule)?->label() ?? $e->rule,
                 'points' => $e->points,
                 'at' => $e->occurred_at->diffForHumans(),
             ]),
-            'by_rule' => collect($this->rules->all())->map(fn ($rule, $key) => [
+            'by_rule' => collect($this->rules->all())->filter(fn ($rule) => $rule->points() > 0)->map(fn ($rule, $key) => [
                 'label' => $rule->label(),
                 'points' => $rule->points(),
                 'count' => $events->where('rule', $key)->count(),
@@ -46,10 +47,10 @@ class Achievements
         $byRule = $events->groupBy('rule');
 
         return collect(Badges::ALL)
-            ->filter(fn ($b) => $this->rules->get($b[3]) !== null)
+            ->filter(fn ($b) => collect((array) $b[3])->contains(fn ($rule) => $this->rules->get($rule) !== null))
             ->map(function ($b, $key) use ($byRule) {
-                [$emoji, $name, $how, $rule, $target, $color] = $b;
-                $list = $byRule->get($rule, collect())->values();
+                [$emoji, $name, $how, $rules, $target, $color] = $b;
+                $list = collect((array) $rules)->flatMap(fn ($rule) => $byRule->get($rule, collect()))->sortBy('occurred_at')->values();
                 $earned = $list->count() >= $target ? $list[$target - 1]->occurred_at : null;
 
                 return [

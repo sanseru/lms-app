@@ -1,11 +1,18 @@
 <script setup>
+import { onBeforeUnmount, onMounted } from 'vue';
 import FlashToast from '@/Components/ui/FlashToast.vue';
 import StudentHeader from '@/Components/StudentHeader.vue';
+import { armPageFullscreen } from '@/lib/fullscreen';
 
 /**
  * Full-width layout for the student's course map (client prototype: the map is the
  * whole screen). Same header as the other student pages, plus a fullscreen button.
+ * Opening the map puts the browser in fullscreen (on the first click when the page was
+ * loaded directly, because browsers only allow it from a user gesture).
  */
+let disarm = () => {};
+onMounted(() => (disarm = armPageFullscreen()));
+onBeforeUnmount(() => disarm());
 </script>
 
 <template>

@@ -156,7 +156,8 @@ await chapter('e', async () => {
 
     // Orang tua (ortu5, anak Bima dan Citra) mengirim bukti transfer.
     const parent = await as('ortu5');
-    const proof = join(OUT, '..', 'bukti-transfer-contoh.png');
+    // Gambar contoh bukti transfer disimpan di dist/ (tidak di-commit).
+    const proof = join(OUT, '..', 'dist', 'bukti-transfer-contoh.png');
     await step('Orang tua membuka tagihan', async () => {
         await shot(parent, '22-ortu-beranda', { full: true });
         await go(parent, '/finance/invoices');

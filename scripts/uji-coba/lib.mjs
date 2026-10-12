@@ -14,6 +14,7 @@ let browser;
 
 export async function start() {
     mkdirSync(OUT, { recursive: true });
+    mkdirSync(join(OUT, '..', 'dist'), { recursive: true });
     browser = await chromium.launch();
 }
 

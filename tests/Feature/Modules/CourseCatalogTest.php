@@ -95,3 +95,34 @@ test('lesson pages tell the page a student is learning so it opens in focus mode
     $this->actingAs($class->teacher)->get("/lessons/{$lesson->id}")
         ->assertInertia(fn ($page) => $page->where('can.learn', false));
 });
+
+test('the archive lists the lessons a student finished, per level', function () {
+    [, $student, $course] = learningSetup();
+    $unit = $course->units()->create(['title' => 'Getting started']);
+    $a = $course->lessons()->create(['title' => 'A', 'type' => 'material', 'position' => 1, 'is_published' => true, 'unit_id' => $unit->id]);
+    $b = $course->lessons()->create(['title' => 'B', 'type' => 'material', 'position' => 2, 'is_published' => true]);
+
+    $this->actingAs($student)->get('/archive')->assertInertia(fn ($page) => $page->component('Learning::Archive/Index')->has('levels', 0));
+
+    $this->actingAs($student)->post("/lessons/{$a->id}/complete");
+    $this->actingAs($student)->get('/archive')->assertInertia(fn ($page) => $page
+        ->has('levels', 1)
+        ->has('levels.0.lessons', 1)
+        ->where('levels.0.lessons.0.title', 'Getting started')
+        ->where('levels.0.lessons.0.first_task_id', $a->id));
+
+    $this->actingAs(userWithRole('teacher'))->get('/archive')->assertForbidden();
+    expect($b->id)->toBeInt();
+});
+
+test('the student home shows the six client stats and popular community projects', function () {
+    [, $student, $course] = learningSetup();
+    $lesson = $course->lessons()->create(['title' => 'A', 'type' => 'material', 'position' => 1, 'is_published' => true]);
+    $this->actingAs($student)->post("/lessons/{$lesson->id}/complete");
+
+    $this->actingAs($student)->get('/dashboard')->assertInertia(fn ($page) => $page
+        ->component('Dashboard::Student')
+        ->where('creator.lessons', 1)
+        ->where('creator.projects', 0)
+        ->has('popular'));
+});

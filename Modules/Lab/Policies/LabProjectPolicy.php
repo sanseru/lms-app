@@ -26,10 +26,13 @@ class LabProjectPolicy
             || ($project->shared_at !== null && $user->can('community.moderate'));
     }
 
-    /** Likes and comments: anyone who codes in the Laboratory, on a live project. */
+    /**
+     * Likes and comments on a live project: everyone who is logged in (students, teachers,
+     * parents, admins), as in the client prototype. Teachers can still remove comments.
+     */
     public function interact(User $user, LabProject $project): bool
     {
-        return $project->isShared() && $user->can('lab.use');
+        return $project->isShared();
     }
 
     public function moderate(User $user, LabProject $project): bool

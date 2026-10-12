@@ -26,7 +26,7 @@ const year = new Date().getFullYear();
                     <li><a href="#programs" class="hover:text-ink">Programs &amp; levels</a></li>
                     <li><a href="#pricing" class="hover:text-ink">Learning packages</a></li>
                     <li><a href="#faq" class="hover:text-ink">FAQ</a></li>
-                    <li><Link :href="route('login')" class="hover:text-ink">Sign in to the portal</Link></li>
+                    <li><Link :href="route('login')" class="hover:text-ink">Log in to the portal</Link></li>
                 </ul>
             </div>
         </div>

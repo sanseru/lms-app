@@ -63,14 +63,21 @@ test('admins and teachers cannot edit or delete a student lab project', function
     expect($project->fresh())->title->toBe('Times table')->shared_at->not->toBeNull();
 });
 
-test('parents cannot use the laboratory but can browse the community', function () {
+test('parents cannot use the laboratory but can like and comment in the community', function () {
     $guardian = userWithRole('guardian');
     $project = labProject(userWithRole('student'), ['shared_at' => now()]);
+    $private = labProject(userWithRole('student'));
 
     $this->actingAs($guardian)->get('/lab')->assertForbidden();
     $this->actingAs($guardian)->get('/community')->assertOk()->assertInertia(fn ($p) => $p->has('projects.data', 1)->where('can.create', false));
-    $this->actingAs($guardian)->get("/community/{$project->id}")->assertOk()->assertInertia(fn ($p) => $p->where('can.interact', false));
-    $this->actingAs($guardian)->post("/community/{$project->id}/like")->assertForbidden();
+    // Client prototype: everyone who is logged in can like and comment on shared work.
+    $this->actingAs($guardian)->get("/community/{$project->id}")->assertOk()->assertInertia(fn ($p) => $p->where('can.interact', true));
+    $this->actingAs($guardian)->post("/community/{$project->id}/like")->assertRedirect();
+    $this->actingAs($guardian)->post("/community/{$project->id}/comments", ['body' => 'Great game!'])->assertSessionHas('success');
+    expect($project->likers()->count())->toBe(1)->and($project->comments()->count())->toBe(1);
+
+    // Projects that are not shared cannot be liked by anyone else.
+    $this->actingAs($guardian)->post("/community/{$private->id}/like")->assertForbidden();
 });
 
 test('shared projects show in the community with likes, unique views, and comments', function () {

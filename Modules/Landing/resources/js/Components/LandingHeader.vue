@@ -17,7 +17,7 @@ const open = ref(false);
             </nav>
             <div class="flex items-center gap-2">
                 <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost hidden text-[15px] sm:inline-flex">
-                    <LandingIcon name="login" :size="18" />{{ user ? 'Dashboard' : 'Sign in' }}
+                    <LandingIcon name="login" :size="18" />{{ user ? 'Home' : 'Login' }}
                 </Link>
                 <Link :href="route('leads.apply')" class="btn-accent hidden text-[15px] sm:inline-flex">Try for free</Link>
                 <button type="button" class="grid h-11 w-11 place-items-center rounded-xl border border-line bg-white md:hidden" :aria-expanded="open" aria-controls="landing-mobile-nav" :aria-label="open ? 'Close menu' : 'Open menu'" @click="open = !open">
@@ -28,7 +28,7 @@ const open = ref(false);
         <nav v-show="open" id="landing-mobile-nav" class="grid gap-1 border-t border-line bg-paper px-4 pb-4 pt-2 font-semibold md:hidden" aria-label="Mobile navigation">
             <a v-for="l in navLinks" :key="l.href" :href="l.href" class="rounded-lg px-3 py-3 hover:bg-brand-50" @click="open = false">{{ l.label }}</a>
             <Link :href="user ? route('dashboard') : route('login')" class="btn-ghost mt-2 py-3 text-base">
-                <LandingIcon name="login" :size="18" />{{ user ? 'Go to dashboard' : 'Sign in (students, parents, teachers)' }}
+                <LandingIcon name="login" :size="18" />{{ user ? 'Go to Home' : 'Login (students, parents, teachers)' }}
             </Link>
             <Link :href="route('leads.apply')" class="btn-accent py-3 text-base">Sign up for a free trial class</Link>
             <a :href="waLink(trialText)" target="_blank" rel="noopener" class="btn-ghost py-3 text-base">Ask on WhatsApp</a>

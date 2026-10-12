@@ -120,7 +120,7 @@ Menu **Child's projects** menampilkan proyek dari guru beserta progresnya: tengg
 
 ## Community
 
-Menu **Community** menampilkan karya (program) yang dibagikan siswa dari semua kelas. Anda bisa mengurutkan dengan **New**, **Popular**, atau **Most discussed**, menyaring per bahasa, mencari, membuka karya, menjalankannya dengan **Run**, serta membaca kodenya dan komentarnya. Orang tua hanya bisa melihat: tombol suka dan kolom komentar hanya untuk siswa dan guru.
+Menu **Community** menampilkan karya (program) yang dibagikan siswa dari semua kelas. Anda bisa mengurutkan dengan **New**, **Popular**, atau **Most discussed**, menyaring per bahasa, mencari, membuka karya, menjalankannya dengan **Run**, serta membaca kodenya dan komentarnya. Anda juga bisa memberi like (ikon hati) dan menulis komentar yang ramah, seperti siswa dan guru. Guru bisa menghapus komentar yang tidak pantas.
 
 ## Tanya Jawab
 

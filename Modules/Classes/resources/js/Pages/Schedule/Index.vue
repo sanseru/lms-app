@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import Icon from '@/Components/ui/Icon.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
@@ -19,12 +19,18 @@ const copyCalendar = async () => {
 };
 const makeCalendar = () => router.post(route('calendar.regenerate'), {}, { preserveScroll: true });
 const total = computed(() => props.days.reduce((n, d) => n + d.sessions.filter((s) => !['cancelled', 'rescheduled'].includes(s.status)).length, 0));
+const isStudent = usePage().props.auth.user?.role === 'student';
 </script>
 
 <template>
-    <Head title="Schedule" />
+    <Head :title="isStudent ? 'Online Lesson' : 'Schedule'" />
 
-    <PageHeader eyebrow="Academic" title="Weekly schedule" :description="`${total} class sessions this week. All times in WIB.`">
+    <!-- Students know this page as "Online Lesson" (client prototype): their live Zoom classes. -->
+    <PageHeader
+        :eyebrow="isStudent ? 'Learn live' : 'Academic'"
+        :title="isStudent ? 'Online Lesson' : 'Weekly schedule'"
+        :description="isStudent ? `Your live classes on Zoom this week (${total}). Join from here when it is time. All times in WIB.` : `${total} class sessions this week. All times in WIB.`"
+    >
         <template #actions>
             <div class="flex items-center gap-1 rounded-xl border border-line bg-white p-1">
                 <Link :href="route('schedule.index', { week: week.prev })" class="rounded-lg p-2 text-muted hover:bg-chip hover:text-ink" preserve-scroll aria-label="Previous week">

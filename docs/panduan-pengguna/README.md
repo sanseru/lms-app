@@ -9,7 +9,7 @@ Panduan ini menjelaskan cara memakai aplikasi untuk setiap peran. Pilih panduan 
 | Siswa | Anak yang belajar | [siswa.md](siswa.md) |
 | Orang tua | Orang tua atau wali yang memantau anak dan membayar tagihan | [orang-tua.md](orang-tua.md) |
 
-Tampilan aplikasi berbahasa Inggris. Di panduan ini, label menu dan tombol ditulis **tebal** persis seperti di layar, misalnya **Sign in** atau **Save**.
+Tampilan aplikasi berbahasa Inggris. Di panduan ini, label menu dan tombol ditulis **tebal** persis seperti di layar, misalnya **Log in** atau **Save**.
 
 Untuk pemasangan di server, lihat [dokumentasi production](../production.md).
 
@@ -19,9 +19,9 @@ Untuk pemasangan di server, lihat [dokumentasi production](../production.md).
 
 ![Halaman login](img/login.png)
 
-1. Buka alamat aplikasi, lalu klik **Sign in** di halaman depan (atau langsung buka `/login`).
+1. Buka alamat aplikasi, lalu klik **Log in** di halaman depan (atau langsung buka `/login`).
 2. Isi **Username or email** dan **Password**. Anak tidak wajib punya email; cukup username yang dibuat admin. Centang **Remember me** bila memakai perangkat pribadi.
-3. Klik **Sign in**. Anda akan diarahkan ke **Home**, yang isinya berbeda untuk tiap peran.
+3. Klik **Log in**. Anda akan diarahkan ke **Home**, yang isinya berbeda untuk tiap peran.
 
 Catatan:
 

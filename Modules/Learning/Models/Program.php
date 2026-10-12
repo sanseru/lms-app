@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** A programming language or track (Python, Scratch, …) made of ordered levels (courses). */
 class Program extends Model
 {
-    protected $fillable = ['name', 'description', 'color', 'position'];
+    protected $fillable = ['name', 'category', 'description', 'color', 'position'];
 
     /** Levels in learning order: Python Start 1, Python Start 2, … */
     public function courses(): HasMany
@@ -18,6 +18,6 @@ class Program extends Model
 
     public function toCard(): array
     {
-        return $this->only('id', 'name', 'description', 'color', 'position');
+        return $this->only('id', 'name', 'category', 'description', 'color', 'position');
     }
 }

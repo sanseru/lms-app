@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
 import Pagination from '@/Components/ui/Pagination.vue';
@@ -21,12 +21,14 @@ const empty = {
     flagged: ['No flagged sessions', 'Teachers can flag a session with problems while filling in attendance.'],
     cancelled: ['No cancelled sessions', null],
 };
+// Teachers know this page as "Online Lesson" (client prototype); admins keep the operations name.
+const pageTitle = usePage().props.auth.user?.role === 'teacher' ? 'Online Lesson' : 'Sessions & attendance';
 </script>
 
 <template>
-    <Head title="Sessions & attendance" />
+    <Head :title="pageTitle" />
 
-    <PageHeader eyebrow="Academic" title="Sessions & attendance" description="Fill in attendance and notes for each session on one screen. Student quotas and tutor fees are recorded automatically." />
+    <PageHeader eyebrow="Academic" :title="pageTitle" description="Fill in attendance and notes for each session on one screen. Student quotas and tutor fees are recorded automatically." />
 
     <div class="mb-4 flex gap-2 overflow-x-auto pb-1">
         <Link

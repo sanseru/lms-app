@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Learning\Http\Controllers\ArchiveController;
 use Modules\Learning\Http\Controllers\CourseCatalogController;
 use Modules\Learning\Http\Controllers\CourseController;
 use Modules\Learning\Http\Controllers\CourseUnitController;
@@ -52,6 +53,7 @@ Route::name('learning.')->group(function () {
     Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
     Route::middleware('role:student')->group(function () {
         Route::get('courses/explore', [CourseCatalogController::class, 'index'])->name('courses.explore');
+        Route::get('archive', ArchiveController::class)->name('archive');
         Route::post('courses/{course}/interest', [CourseCatalogController::class, 'interest'])->middleware('throttle:10,1')->name('courses.interest');
     });
     Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');

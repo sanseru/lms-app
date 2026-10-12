@@ -35,7 +35,7 @@ Login memakai username **atau** email, jadi anak tidak wajib punya email. Pendaf
 | Modul | Isi |
 |---|---|
 | **Identity** | Role `admin`, `teacher`, `student`, `guardian`; permission per modul; login username/email; akun nonaktif tidak bisa login |
-| **Dashboard** | Satu URL `/dashboard`, tampilan berbeda per role (admin, guru, siswa, orang tua) |
+| **Dashboard** | Satu URL `/dashboard`, tampilan berbeda per role (admin, guru, siswa, orang tua). Siswa memakai header atas seperti prototipe klien (logo besar; menu **Home, Course, Online Lesson, Community, Laboratory, Archive**, sisanya di **More**); beranda siswa menampilkan 6 statistik klien (Projects, Likes received, Views, Comments, Lessons done, Questions solved) dan **Popular in Community** |
 | **People** | CRUD siswa (kode otomatis `SIS-xxxxx`), guru (`GRU-xxxx`), orang tua; relasi orang tua ↔ anak |
 | **Classes** | CRUD kelas dengan link Zoom, jadwal mingguan, kapasitas, cek bentrok jadwal guru; daftarkan siswa; halaman jadwal mingguan |
 | **Landing** | Halaman promosi di `/` dengan tombol login ke halaman login bersama, plus formulir publik `/free-trial`. Data kontak, harga, dan testimoni ada di `Modules/Landing/resources/js/site.js` |
@@ -83,6 +83,8 @@ Lihat `Modules/Forum` sebagai contoh modul lengkap yang kecil.
 4. Daftarkan provider di `config/modules.php`, jalankan migrate dan seeder permission.
 
 ## Dokumentasi
+
+- [Analisis prototipe klien vs aplikasi](docs/analisis-prototipe-klien.md) (apa yang sudah, belum, dan istilah yang diseragamkan)
 
 - [Panduan pengguna per peran](docs/panduan-pengguna/README.md) (admin, guru, siswa, orang tua)
 - [Dokumentasi production](docs/production.md) (instalasi server, `.env`, cron, backup, keamanan, deploy)

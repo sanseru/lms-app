@@ -8,11 +8,13 @@ Tampilan aplikasi memakai bahasa Inggris. Di panduan ini, nama menu dan tombol d
 
 ## Menu siswa
 
+Menu siswa ada di bar atas, sama seperti rancangan klien: **Home**, **Course**, **Online Lesson**, **Community**, **Laboratory**, dan **Archive**. Menu lain (**Classes**, **My projects**, **Q&A**, **My achievements**, **My certificates**, **My monthly reports**) ada di **More**. Di HP, semua menu dibuka lewat tombol ☰ di kanan atas.
+
 | Menu | Isinya | Alamat |
 |---|---|---|
 | **Home** | Ringkasan belajarmu hari ini | `/dashboard` |
 | **Classes** | Kelas yang kamu ikuti | `/classes` |
-| **Schedule** | Jadwal kelas minggu ini | `/schedule` |
+| **Online Lesson** | Kelas Zoom minggu ini, tombol **Join Zoom** | `/schedule` |
 | **Course** | Peta belajar kursusmu dan katalog kursus lain | `/courses`, `/courses/explore` |
 | **Community** | Proyek yang dibagikan siswa lain | `/community` |
 | **Laboratory** | Tempat bebas mencoba kode | `/lab` |
@@ -21,6 +23,7 @@ Tampilan aplikasi memakai bahasa Inggris. Di panduan ini, nama menu dan tombol d
 | **My achievements** | XP, level, dan lencana | `/achievements` |
 | **My certificates** | Sertifikat yang sudah kamu dapat | `/my-certificates` |
 | **My monthly reports** | Laporan belajar per bulan | `/monthly-reports` |
+| **Archive** | Lesson dan level yang sudah selesai, untuk diulang | `/archive` |
 
 ## Beranda
 
@@ -279,8 +282,12 @@ Setelah kamu menyelesaikan semua pelajaran di kursus, guru akan menerbitkan sert
 2. Laporan berisi **Attendance**, **Lessons completed**, **Quiz average**, **XP this month**, catatan guru (**Going well** dan **Focus for next month**), daftar sesi bulan itu beserta PR, nilai kuis dan tugas, latihan coding dan proyek, lencana bulan itu, dan progres kursus, serta sisa sesi paket. Jumlah tagihan hanya tampil untuk orang tua dan admin.
 3. Pakai tombol panah di samping nama bulan untuk pindah bulan, dan **Print / save PDF** untuk mencetak.
 
+## Archive
+
+**Archive** (`/archive`) menyimpan semua Lesson yang sudah kamu selesaikan, dikelompokkan per level. Klik sebuah Lesson untuk mengulangnya kapan saja. Level yang sudah tuntas diberi tanda **Level complete**.
+
 ## Jadwal dan notifikasi
 
-- **Schedule** menampilkan kelasmu minggu ini. Kamu bisa memasangnya ke kalender HP lewat **Create calendar link** (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
+- **Online Lesson** menampilkan kelas Zoom-mu minggu ini. Kamu bisa memasangnya ke kalender HP lewat **Create calendar link** (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
 - **Classes** menampilkan kelas yang kamu ikuti beserta jadwal dan gurunya.
 - **Lonceng** memberi tahu PR baru dari sesi, tugas yang sudah dinilai atau perlu revisi, jawaban atas pertanyaanmu, dan hasil pemeriksaan laporan masalah yang kamu kirim.

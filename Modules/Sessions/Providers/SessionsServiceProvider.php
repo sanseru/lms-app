@@ -41,6 +41,8 @@ class SessionsServiceProvider extends ModuleServiceProvider
 
     public function navigation(NavigationRegistry $nav): void
     {
-        $nav->add(new NavItem('Sessions & attendance', 'sessions.index', 'clipboard-check', 'Academic', 15, roles: ['admin', 'teacher'], active: 'sessions.*'));
+        // Client naming for teachers: live classes are "Online Lesson".
+        $nav->add(new NavItem('Online Lesson', 'sessions.index', 'video', 'Academic', 15, roles: ['teacher'], active: 'sessions.*'));
+        $nav->add(new NavItem('Sessions & attendance', 'sessions.index', 'clipboard-check', 'Academic', 15, roles: ['admin'], active: 'sessions.*'));
     }
 }

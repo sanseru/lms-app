@@ -14,6 +14,7 @@ use Modules\Learning\Actions\StudentProgress;
 use Modules\Learning\Models\Course;
 use Modules\Learning\Models\CourseInterest;
 use Modules\Learning\Models\Lesson;
+use Modules\Learning\Models\Program;
 use Modules\Learning\Support\LevelAccess;
 
 /**
@@ -50,6 +51,7 @@ class CourseCatalogController extends Controller
 
         return Inertia::render('Learning::Courses/Explore', [
             'courses' => $courses,
+            'programs' => Program::orderBy('position')->orderBy('name')->get()->map->toCard(),
             'current' => $current ? collect($current)->only('id', 'title', 'subject', 'color', 'description', 'percent', 'completed', 'total', 'next') : null,
         ]);
     }

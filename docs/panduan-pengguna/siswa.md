@@ -47,8 +47,8 @@ Buka **Course**. Kursus disusun seperti di sekolah musik: **program** (mis. Pyth
 - Bar atas berisi **Home** (kembali ke Beranda), **Explore courses**, lonceng notifikasi, dan tombol layar penuh.
 - Tombol di bawahnya memilih program (mis. **Python**, **Scratch**) lengkap dengan persentase selesai.
 - Kartu **Your class** juga menampilkan program dan level (mis. **Python · Level 1**) dan berapa task sudah selesai. Tombol oranye **Start** / **Continue** langsung membawamu ke task berikutnya, dan **Lesson list and scores** membuka daftar nilai.
-- Di kanan ada peta yang berkelok dari **START · nama level** di atas sampai kastel di bawah. Tulisan di bawah START menunjukkan berapa Lesson sudah selesai (mis. **3/4 lessons completed**).
-  - Setiap lingkaran bernomor adalah satu Lesson. Di sampingnya tertulis judul Lesson dan berapa task yang sudah selesai.
+- Di bawahnya ada peta yang berkelok dari **START · nama level** di atas sampai kastel di bawah. Tulisan di bawah START menunjukkan berapa Lesson sudah selesai (mis. **3/4 lessons completed**).
+  - Setiap lingkaran bernomor adalah satu Lesson. Di bawahnya tertulis nomor dan judul Lesson; angka kecil di lingkaran yang menyala menunjukkan task yang sudah selesai.
   - Lingkaran dengan centang hijau sudah selesai. Lingkaran yang menyala dengan label **Up next** (atau **Start here**) adalah yang harus kamu kerjakan sekarang.
   - Klik lingkaran Lesson untuk membuka daftar task-nya, lalu klik task atau tombol **Start lesson** / **Continue**.
   - Lesson dibuka **berurutan**: lingkaran abu-abu bergembok baru terbuka setelah semua task di Lesson sebelumnya selesai. Gurumu bisa membuka Lesson lebih awal untuk seluruh kelas.

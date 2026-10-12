@@ -19,7 +19,7 @@ class SubmissionRequest extends FormRequest
         return [
             'body' => ['nullable', 'string', 'max:10000'],
             'link_url' => ['nullable', 'url', 'max:255'],
-            'file' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,pdf,zip,sb3,py,html,txt,js,css'],
+            'file' => ['nullable', 'file', 'max:20480', 'mimes:jpg,jpeg,png,pdf,zip,sb3,py,html,txt,js,css'],
         ];
     }
 

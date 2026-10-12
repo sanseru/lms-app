@@ -35,6 +35,7 @@ Contoh perintah memakai Ubuntu 24.04, Nginx, PHP-FPM 8.3, dan MySQL 8. Sesuaikan
 | Session, cache, queue | Driver `database` (tanpa Redis) |
 | Berkas unggahan | Disk `local` privat di `storage/app/private`, dilayani lewat controller dengan cek hak akses |
 | Python di browser | Pyodide disajikan dari server sendiri di `public/vendor/pyodide` (bukan CDN) |
+| Editor Scratch | Build resmi `@scratch/scratch-gui` disajikan dari `public/vendor/scratch-gui` (±100 MB). Pustaka gambar sprite/suara bawaan Scratch tetap dimuat dari server aset Scratch, jadi browser siswa perlu internet |
 | Tugas terjadwal | Laravel Scheduler lewat cron |
 
 Kode siswa di modul Coding **tidak pernah dijalankan di server Laravel**. Kode berjalan di browser siswa (Pyodide, Web Worker, iframe sandbox), lalu server membandingkan output dengan jawaban yang hanya tersimpan di server. Opsi `judge0` mengirim kode ke server Judge0 terpisah.
@@ -90,7 +91,7 @@ php artisan db:seed --force     # hanya role & permission bila APP_ENV=productio
 # 5. Admin pertama (lihat bagian Database)
 php artisan tinker
 
-# 6. Build aset (juga menyalin Pyodide ke public/vendor/pyodide)
+# 6. Build aset (juga menyalin Pyodide dan memasang editor Scratch ke public/vendor)
 npm ci
 npm run build
 
@@ -221,13 +222,15 @@ php artisan tinker --execute='App\Models\User::where("username","admin")->first(
 
 ```bash
 npm ci            # pasang dependensi persis sesuai package-lock.json
-npm run build     # menyalin Pyodide ke public/vendor/pyodide, lalu vite build ke public/build
+npm run build     # menyalin Pyodide, memasang editor Scratch (sekali, ±150 MB unduhan), lalu vite build ke public/build
 ```
 
 Catatan:
 
 - `.npmrc` berisi `ignore-scripts=true`, jadi skrip instal paket tidak dijalankan. Penyalinan Pyodide dilakukan oleh `npm run build` (`scripts/copy-pyodide.mjs`), bukan saat `npm install`.
-- `public/build` dan `public/vendor/pyodide` tidak masuk git. Keduanya harus ada di server: build di server, atau build di CI/laptop lalu unggah kedua folder itu.
+- `public/build`, `public/vendor/pyodide` dan `public/vendor/scratch-gui` tidak masuk git. Ketiganya harus ada di server: build di server, atau build di CI/laptop lalu unggah folder itu.
+- Editor Scratch dipasang oleh `scripts/fetch-scratch-gui.mjs` (versi dikunci, unduhan via `npm pack`); bila versi yang sama sudah ada, langkah ini dilewati. Server tanpa akses npm: jalankan build di tempat lain lalu unggah `public/vendor/scratch-gui`. `SCRATCH_GUI_SKIP=1` melewati langkah ini (dipakai CI).
+- Proyek Scratch siswa (`.sb3`, maks. 20 MB) disimpan di `storage/app/private/lab`; ikut dicadangkan bersama `storage/app`.
 - Pyodide sekitar 13 MB dan diunduh browser siswa sekali saat pertama membuka soal Python, lalu di-cache browser.
 - Node tidak perlu berjalan terus. Setelah build, `node_modules` boleh dihapus dari server untuk menghemat disk (pasang lagi saat build berikutnya).
 
@@ -245,7 +248,7 @@ server {
     index index.php;
 
     # Bukti transfer 4 MB, berkas tugas 10 MB
-    client_max_body_size 12M;
+    client_max_body_size 22M;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -257,8 +260,14 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
-    # Aset hasil build dan Pyodide: cache panjang
-    location ~* ^/(build|vendor/pyodide)/ {
+    # Halaman host Scratch milik aplikasi: selalu ambil versi terbaru
+    location = /vendor/scratch-gui/host.html {
+        add_header Cache-Control "no-cache";
+        try_files $uri =404;
+    }
+
+    # Aset hasil build, Pyodide dan editor Scratch: cache panjang
+    location ~* ^/(build|vendor/pyodide|vendor/scratch-gui)/ {
         expires 30d;
         add_header Cache-Control "public, immutable";
         try_files $uri =404;
@@ -294,11 +303,11 @@ Pastikan `/etc/nginx/mime.types` memetakan `application/wasm wasm;` dan `.mjs` s
 
 ### PHP
 
-Di `/etc/php/8.3/fpm/php.ini` (nilai bawaan PHP `upload_max_filesize=2M` terlalu kecil):
+Di `/etc/php/8.3/fpm/php.ini` (nilai bawaan PHP `upload_max_filesize=2M` terlalu kecil; proyek Scratch bisa sampai 20 MB):
 
 ```ini
-upload_max_filesize = 10M
-post_max_size = 12M
+upload_max_filesize = 20M
+post_max_size = 22M
 memory_limit = 256M
 expose_php = Off
 
@@ -522,7 +531,8 @@ Nama brand, logo, dan warna ada di `resources/css/app.css` dan `public/`. Rekeni
 | Menu atau halaman modul hilang, 403 | Permission belum di-seed atau cache permission | Jalankan seeder permission lalu `php artisan permission:cache-reset` |
 | "Akun nonaktif" / tidak bisa login | Status user `inactive` atau terhapus | Admin mengubah status di menu Pengguna |
 | Lupa kata sandi tidak mengirim email | `MAIL_MAILER=log` atau SMTP salah; user tanpa email | Isi `MAIL_*`; cek log; untuk user tanpa email, admin mengganti sandi |
-| Unggah bukti/tugas gagal ("413" atau "gagal diunggah") | Batas Nginx/PHP | `client_max_body_size 12M`, `upload_max_filesize=10M`, `post_max_size=12M`, restart php-fpm |
+| Unggah bukti/tugas gagal ("413" atau "gagal diunggah") | Batas Nginx/PHP | `client_max_body_size 22M`, `upload_max_filesize=20M`, `post_max_size=22M`, restart php-fpm |
+| Halaman Scratch menampilkan "The Scratch editor is not installed" | `public/vendor/scratch-gui` tidak ada (build dengan `SCRATCH_GUI_SKIP=1` atau unduhan gagal) | Jalankan `node scripts/fetch-scratch-gui.mjs` lalu cek `curl -I https://domain/vendor/scratch-gui/scratch-gui-standalone.js` |
 | Soal Python macet di "Menyiapkan Python…" | `public/vendor/pyodide` tidak ada, MIME `.wasm`/`.mjs` salah, atau diblokir CSP | Jalankan `npm run build`; cek `curl -I https://domain/vendor/pyodide/pyodide.asm.wasm` harus `application/wasm` |
 | Sesi kelas tidak muncul untuk minggu depan | Cron scheduler tidak jalan | Pasang cron; jalankan `php artisan sessions:generate` manual |
 | XP/lencana tidak bertambah | `xp:sync` belum jalan | Halaman Prestasiku juga menyinkronkan saat dibuka; cek cron |

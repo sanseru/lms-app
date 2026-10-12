@@ -359,7 +359,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <Field v-if="!isScratchTask" id="link_url" label="Project link" :error="subForm.errors.link_url" hint="e.g. a Scratch, Replit or Google Drive link.">
                         <input id="link_url" v-model="subForm.link_url" type="url" class="field" placeholder="https://" />
                     </Field>
-                    <Field v-if="!isScratchTask" id="file" label="Upload a file" :error="subForm.errors.file" :hint="submission?.file_name ? `Current file: ${submission.file_name}` : 'Image, PDF, ZIP, .sb3, .py, .html. Max. 10 MB.'">
+                    <Field v-if="!isScratchTask" id="file" label="Upload a file" :error="subForm.errors.file" :hint="submission?.file_name ? `Current file: ${submission.file_name}` : 'Image, PDF, ZIP, .sb3, .py, .html. Max. 20 MB.'">
                         <input id="file" type="file" class="field file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700" @input="subForm.file = $event.target.files[0]" />
                     </Field>
                     <div class="flex justify-end gap-2">

@@ -153,7 +153,9 @@ Timer kuis: bila **Time limit (minutes)** diisi (1–180), siswa harus menekan *
 
 Kunci jawaban baru terlihat siswa setelah mereka lulus (atau setelah kesempatan mencoba habis). Di halaman kuis, guru melihat **Student results** (percobaan dan nilai terbaik per siswa) serta **Questions and answer key**.
 
-**Assignment** (tugas): **Title**, **Assignment instructions**, dan **Maximum score**. Siswa mengumpulkan jawaban teks, tautan proyek, dan/atau berkas (JPG, PNG, PDF, ZIP, SB3, PY, HTML, TXT, JS, CSS; maks. 10 MB). Di halaman tugas, guru melihat **Student submissions** dan bisa langsung menilai lewat **Grade**.
+**Assignment** (tugas): **Title**, **Assignment instructions**, dan **Maximum score**. Siswa mengumpulkan jawaban teks, tautan proyek, dan/atau berkas (JPG, PNG, PDF, ZIP, SB3, PY, HTML, TXT, JS, CSS; maks. 20 MB). Di halaman tugas, guru melihat **Student submissions** dan bisa langsung menilai lewat **Grade**.
+
+**Tugas Scratch.** Di form tugas, pilih **Students work in: Scratch editor**. Siswa lalu membuat proyek di editor Scratch yang ada di halaman tugas dan menekan **Submit**; berkas `.sb3` terlampir otomatis. Di **Student submissions**, klik **Play Scratch project** untuk memutar proyek siswa (bendera hijau) tanpa mengunduhnya. Pilihan **Anywhere (link, file or text)** mempertahankan cara lama.
 
 ### Soal coding
 
@@ -278,8 +280,8 @@ Setiap siswa di kelas otomatis mendapat papan kanban sendiri dengan kolom **To d
 
 ![Komunitas](img/siswa-komunitas.png)
 
-- **Laboratory** adalah ruang coding bebas (Python, JavaScript, atau **Website**) untuk guru dan siswa. Klik **New project**, tulis kode, jalankan, lalu **Save** atau **Save & share** untuk membagikannya ke Komunitas. Guru bisa memakainya untuk menyiapkan contoh sebelum kelas.
-- **Community** menampilkan proyek yang dibagikan siswa dari semua kelas, dengan bagian **Trending this week**, urutan **New**, **Popular**, **Most discussed**, filter bahasa, dan pencarian.
+- **Laboratory** adalah ruang berkarya bebas untuk guru dan siswa: **Python**, **Scratch** (editor Scratch lengkap), **Presentation** (slide; `---` memisahkan slide), **Website**, dan **JavaScript**. Klik **New project**, kerjakan, lalu **Save** atau **Save & share** untuk membagikannya ke Komunitas. Guru bisa memakainya untuk menyiapkan contoh atau slide sebelum kelas.
+- **Community** menampilkan proyek yang dibagikan siswa dari semua kelas, dengan **Trending** (**Today** / **Week** / **Month**), urutan **New**, **Popular**, **Most discussed**, filter jenis, dan pencarian. Proyek Scratch diputar dengan bendera hijau, presentasi dengan **Back** / **Next**. Guru juga bisa menyukai dan mengomentari karya siswa.
 
 Moderasi oleh guru:
 

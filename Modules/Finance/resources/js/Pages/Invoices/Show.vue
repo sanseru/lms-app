@@ -169,13 +169,13 @@ const copyAccount = async () => {
 
             <div v-if="!can.manage" class="panel-brand !rounded-2xl p-5">
                 <p class="font-display font-bold">Transfer to</p>
-                <p class="mt-2 text-sm text-brand-100">{{ bank.name }}</p>
+                <p class="mt-2 text-sm text-white/85">{{ bank.name }}</p>
                 <p class="font-mono text-2xl font-medium tracking-wider">{{ bank.account_number }}</p>
                 <p class="text-sm">Account name: {{ bank.account_name }}</p>
                 <button class="mt-4 min-h-11 w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 hover:bg-brand-50" @click="copyAccount">
                     {{ copied ? 'Account number copied' : 'Copy account number' }}
                 </button>
-                <p class="mt-3 text-xs text-brand-100">After you transfer, send the proof so an admin can verify it.</p>
+                <p class="mt-3 text-xs text-white/85">After you transfer, send the proof so an admin can verify it.</p>
             </div>
         </div>
     </div>

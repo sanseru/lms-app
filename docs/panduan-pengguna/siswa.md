@@ -8,7 +8,7 @@ Tampilan aplikasi memakai bahasa Inggris. Di panduan ini, nama menu dan tombol d
 
 ## Menu siswa
 
-Menu siswa ada di bar atas, sama seperti rancangan klien: **Home**, **Course**, **Online Lesson**, **Community**, **Laboratory**, dan **Archive**. Menu lain (**Classes**, **My projects**, **Q&A**, **My achievements**, **My certificates**, **My monthly reports**) ada di **More**. Di HP, semua menu dibuka lewat tombol ☰ di kanan atas.
+Menu siswa ada di bar atas, sama seperti rancangan klien: **Home**, **Course**, **Online Lesson**, **Community**, **Laboratory**, dan **Archive**. Menu lain (**My projects**, **Q&A**, **My achievements**, **My certificates**, **My monthly reports**) ada di **More**. Di HP, semua menu dibuka lewat tombol ☰ di kanan atas.
 
 **Mencari.** Klik ikon kaca pembesar di kanan atas, ketik minimal 2 huruf (mis. `loop` atau `Python`), lalu tekan Enter. Hasilnya dibagi dua: **Courses** (semua kursus di katalog; kursusmu diberi label **Your course**) dan **Lessons** (hanya pelajaran di level yang sudah boleh kamu buka).
 
@@ -17,7 +17,6 @@ Menu siswa ada di bar atas, sama seperti rancangan klien: **Home**, **Course**, 
 | Menu | Isinya | Alamat |
 |---|---|---|
 | **Home** | Ringkasan belajarmu hari ini | `/dashboard` |
-| **Classes** | Kelas yang kamu ikuti | `/classes` |
 | **Online Lesson** | Kelas yang sedang berlangsung, kelas berikutnya, rekaman terakhir, dan jadwal minggu ini | `/schedule` |
 | **Course** | Peta belajar kursusmu dan katalog kursus lain | `/courses`, `/courses/explore` |
 | **Community** | Proyek yang dibagikan siswa lain | `/community` |
@@ -308,5 +307,5 @@ Setelah kamu menyelesaikan semua pelajaran di kursus, guru akan menerbitkan sert
 ![Online Lesson: kartu kelas berikutnya dan rekaman, lalu jadwal minggu ini](img/siswa-online-lesson.png)
 
 - **Online Lesson** menampilkan kartu seperti rancangan klien: **Live now** (kelas yang sedang berlangsung atau mulai dalam 10 menit, dengan tombol **Join on Zoom**), **This week** / **Coming up** (kelas berikutnya), dan **Recording** (rekaman Zoom kelas terakhir, tombol **Watch lesson**). Di bawahnya ada jadwal kelas Zoom-mu minggu ini. Kamu bisa memasangnya ke kalender HP lewat **Create calendar link** (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
-- **Classes** menampilkan kelas yang kamu ikuti beserta jadwal dan gurunya.
+- Kelasmu (guru, jadwal, sesi berikutnya, **Join Zoom**) tampil di kartu **Your class** di halaman **Course**.
 - **Lonceng** memberi tahu PR baru dari sesi, tugas yang sudah dinilai atau perlu revisi, jawaban atas pertanyaanmu, dan hasil pemeriksaan laporan masalah yang kamu kirim.

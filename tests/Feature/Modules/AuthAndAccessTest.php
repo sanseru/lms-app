@@ -63,7 +63,7 @@ test('navigation only contains menus allowed for the role', function () {
     expect($labels(userWithRole('admin')))->toContain('Students', 'Teachers', 'Parents', 'Classes', 'Invoices', 'Monthly reports', 'Audit log');
     // Students use the client's menu names (Online Lesson, Archive); the header shows Home, Course,
     // Online Lesson, Community, Laboratory and Archive first and the rest under "More".
-    expect($labels(userWithRole('student')))->toBe(['Home', 'Classes', 'Online Lesson', 'Course', 'Community', 'Laboratory', 'My projects', 'Q&A', 'My achievements', 'My certificates', 'My monthly reports', 'Archive']);
+    expect($labels(userWithRole('student')))->toBe(['Home', 'Online Lesson', 'Course', 'Community', 'Laboratory', 'My projects', 'Q&A', 'My achievements', 'My certificates', 'My monthly reports', 'Archive']);
     expect($labels(userWithRole('teacher')))->toContain('Course', 'Online Lesson')->not->toContain('Courses & lessons', 'Sessions & attendance');
     expect($labels(userWithRole('guardian')))->toContain("Child's invoices", 'Monthly reports')->not->toContain('Students', 'Audit log');
 });

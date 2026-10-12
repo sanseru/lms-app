@@ -10,10 +10,10 @@ import Icon from '@/Components/ui/Icon.vue';
 
             <div class="relative z-10 max-w-md">
                 <h2 class=" text-4xl leading-tight font-extrabold tracking-tight">Learn, create and grow together.</h2>
-                <p class="mt-4 text-brand-100">One place for online classes, Zoom schedules, learning progress and course payments.</p>
+                <p class="mt-4 text-white/85">One place for online classes, Zoom schedules, learning progress and course payments.</p>
 
                 <div class="mt-8 grid grid-cols-3 gap-3">
-                    <div v-for="item in [['code', 'Python'], ['rocket', 'Scratch'], ['sparkles', 'AI & Robotics']]" :key="item[1]" class="rounded-2xl bg-brand-800 p-4 ring-1 ring-white/10">
+                    <div v-for="item in [['code', 'Python'], ['rocket', 'Scratch'], ['sparkles', 'AI & Robotics']]" :key="item[1]" class="rounded-2xl bg-white/15 p-4 ring-1 ring-white/10">
                         <Icon :name="item[0]" :size="22" class="text-accent-300" />
                         <p class="mt-2 text-sm font-semibold">{{ item[1] }}</p>
                     </div>

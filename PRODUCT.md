@@ -44,8 +44,22 @@ Kursus coding anak yang hidup di Zoom tetapi punya "rumah" sendiri: setiap sesi 
 
 - Nama: **Alprogmatics**. Logo: `public/images/logo-header.png`.
 - Warna brand yang sudah dipakai: ungu `#5B4185` dan coral `#F58464` (dari prototipe referensi, bukan kewajiban mutlak).
+- Warna logo: cyan `#01C9FE` → biru `#0080F0` → ungu `#6010D0`, aksen oranye `#FE8003` dan kuning `#FEA002`.
 - Font: Plus Jakarta Sans (judul), DM Sans (teks), DM Mono (kode).
 - Nada: ramah, bermain, menyemangati anak, tetapi tepercaya dan jelas bagi orang tua. Copy UI memakai bahasa Inggris sederhana: kalimat pendek dan kata sehari-hari untuk siswa, sopan dan lugas untuk orang tua. _(disimpulkan dari brief dan copy yang ada)_
+
+## Client Preferences
+
+Keinginan klien yang sudah disampaikan langsung (WhatsApp, prototipe, review). Ini mengikat: jangan dibalik tanpa persetujuan pemilik.
+
+- **Panel sorotan berwarna logo dan ceria.** Banner sapaan, kartu level, dan panel highlight lain memakai gradasi warna logo: biru → ungu → sentuhan coral (`panel-brand` di `resources/css/app.css`). Jangan kembali ke ungu tua polos, dan jangan membuat gradien lain di luar `panel-brand`. Teks diletakkan di sisi kiri (biru/ungu); tombol di atas panel berwarna putih.
+- **Ikuti prototipe klien** (`docs/client-example/LMS-Alprogmatics/`) untuk nama menu, urutan, dan alur siswa. Menu siswa di bar atas: **Home, Course, Online Lesson, Community, Laboratory, Archive**, sisanya di **More**. Tidak ada menu **Classes** untuk siswa (kelas tampil di halaman Course).
+- **Logo besar** di header (setara prototipe, tinggi ±62 px di desktop).
+- **Course sebagai dunia penuh layar**: peta langit dengan START, lingkaran Lesson, dan kastel; membuka Course dan mengerjakan task masuk layar penuh browser.
+- **Struktur Program → Level → Lesson → Task**, naik level step by step tanpa pindah kelas; task "mixed" dipecah.
+- **Laboratory**: Python, Scratch (editor Scratch asli, di-host sendiri), Presentation, Website, JavaScript. Karya bisa dibagikan ke Community; siswa, guru, dan orang tua bisa like dan komentar.
+- **Badge dan statistik ala prototipe** di beranda siswa (6 statistik, Popular in Community, badge First project, First like, dsb.).
+- Riwayat keputusan lengkap: `docs/analisis-prototipe-klien.md`.
 
 ## Evidence on Hand
 

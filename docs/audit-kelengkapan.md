@@ -20,7 +20,7 @@ Prioritas P0 sampai P3 dari dokumen riset.
 | P1 | Dashboard keuangan: omzet, piutang, siswa kuota habis | Sudah ada | Finance overview + daftar paket hampir habis |
 | P1 | Pengingat ke tutor yang belum isi catatan sesi | Sudah ada | `sessions:remind-reports` tiap jam |
 | P2 | Pipeline calon siswa di kanban + jadwal kelas trial | Sudah ada | Leads: formulir publik `/free-trial`, pipeline `/leads`, kelas trial guru `/leads/trials`, `ConvertLead` membuat akun |
-| P2 | Portofolio proyek, sertifikat per level, laporan berkala ortu (PDF) | Sudah ada | Kanban (link hasil karya), Lab + Community, Certificates, Reports (laporan bulanan `/monthly-reports`, cetak PDF dari browser) |
+| P2 | Portofolio proyek, sertifikat per level, laporan berkala ortu (PDF) | Sudah ada | Kanban (link hasil karya), Lab (Python, Scratch, Presentation, Website, JavaScript) + Community, Certificates, Reports (laporan bulanan `/monthly-reports`, cetak PDF dari browser) |
 | P2 | Feed iCal per tutor, PWA | Sebagian | Feed iCal per user di `/calendar/{token}.ics`. PWA belum |
 | P2 | Badge dan streak siswa | Sebagian | Gamification (XP, level, 19 lencana termasuk 6 lencana klien) — Streak harian belum |
 | P3 | Integrasi Zoom API | Belum | Link Zoom diisi manual per kelas/sesi |

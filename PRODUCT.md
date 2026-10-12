@@ -35,7 +35,7 @@ Kursus coding anak yang hidup di Zoom tetapi punya "rumah" sendiri: setiap sesi 
 
 - Modular monolith Laravel 13 + Inertia 2 + Vue 3 + Tailwind 4 (lihat README "Struktur modul" dan CLAUDE.md).
 - Empat dashboard per role di satu URL `/dashboard`.
-- Coding: Python (Pyodide), JavaScript, HTML/CSS, Parsons; penilaian di server. Laboratory dan Community untuk proyek bebas siswa.
+- Coding: Python (Pyodide), JavaScript, HTML/CSS, Parsons; penilaian di server. Laboratory (Python, Scratch, Presentation, Website, JavaScript) dan Community untuk proyek bebas siswa; editor Scratch di-host sendiri dan juga bisa dipakai untuk tugas di lesson.
 - Laporan bulanan orang tua, sertifikat, dan kuitansi dicetak ke PDF dari browser (tanpa library PDF di server).
 - Notifikasi baru in-app; kanal email/WhatsApp belum ada.
 - Harga, kontak WhatsApp, dan testimoni di landing masih contoh (`Modules/Landing/resources/js/site.js`).

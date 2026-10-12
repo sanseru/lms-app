@@ -84,7 +84,7 @@ Setiap sertifikat punya kode verifikasi. Siapa pun (tanpa login) bisa membuka `/
 | Misi Pemanasan / Misi Akhir | Warm-up Mission / Final Mission | Kuis awal dan akhir kursus (pre-test dan post-test) untuk mengukur kenaikan kemampuan |
 | Paket sesi | Session package | Paket berisi sejumlah sesi (mis. 8 sesi) yang dibayar di muka dan terpotong tiap sesi |
 | Proyek | Project | Tugas berkarya langkah demi langkah dengan papan kanban per siswa |
-| Laboratorium / Komunitas | Laboratory / Community | Tempat membuat proyek coding bebas, dan galeri proyek yang dibagikan ke semua siswa |
+| Laboratorium / Komunitas | Laboratory / Community | Tempat membuat proyek bebas (Python, Scratch, presentasi, website, JavaScript), dan galeri proyek yang dibagikan ke semua siswa |
 | Laporan bulanan | Monthly report | Rapor satu bulan: kehadiran, catatan guru, nilai, dan prestasi; bisa dicetak atau disimpan sebagai PDF |
 | Lead | Lead | Calon siswa yang mendaftar kelas trial, sebelum punya akun |
 | XP, level, lencana | XP, level, badges | Poin dan penghargaan yang dihitung otomatis dari aktivitas belajar |

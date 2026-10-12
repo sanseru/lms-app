@@ -78,7 +78,7 @@ Success means: children come back on their own, parents trust the reports and pa
 | DB | SQLite by default; MySQL/PostgreSQL supported by Laravel but **not yet tested** |
 | Design | Tailwind tokens in `resources/css/app.css`; Impeccable design skill vendored in `.claude/skills/impeccable` |
 
-No CI workflow exists in `.github/` yet.
+CI: `.github/workflows/ci.yml` runs Pint and `npm ci && npm run build && php artisan test` on every pull request and on pushes to `main`.
 
 ---
 
@@ -246,8 +246,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 Each task is one PR on its own branch, with tests and docs updated. "Done when" is the acceptance criterion.
 
 1. ~~**Sync stale docs.**~~ Done on branch `claude/elegant-mccarthy-yxr746`: `PRODUCT.md`, README, `docs/production.md`, `docs/audit-kelengkapan.md` and the user guides now describe the English UI with fresh screenshots.
-2. **Add CI.** GitHub Actions workflow running `composer install`, `vendor/bin/pint --test`, `php artisan test`, and `npm ci && npm run build` on pull requests.
-   *Done when* the workflow is green on a PR.
+2. ~~**Add CI.**~~ Done: `.github/workflows/ci.yml` (Pint job + build-and-test job, PHP 8.3, Node 22, SQLite).
 3. **Teacher link to student progress.** Teachers can only reach a student's learning progress (`route('learning.progress.show', $student)`) by typing the URL (monthly reports already have a menu item). Add links from the class detail page and the monthly reports list, respecting permissions.
    *Done when* a teacher reaches a student's progress report in two clicks from their class, with a Pest test for access rules (own class allowed, other classes forbidden).
 4. **MySQL/PostgreSQL compatibility.** Run the full suite against MySQL 8 and PostgreSQL 16 (CI matrix or locally), fix any failing queries/migrations.

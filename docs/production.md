@@ -549,6 +549,5 @@ Hal berikut belum tersedia atau perlu keputusan/infrastruktur tambahan. Detail l
 | Health check | Belum | Belum ada route khusus untuk pemantauan uptime |
 | Database selain SQLite | Perlu diuji | Test otomatis berjalan di SQLite; uji MySQL/PostgreSQL di staging |
 | Unggahan di object storage | Belum | Disk `local` ditulis langsung di kode; berkas ada di disk server |
-| CI otomatis | Belum | Belum ada workflow GitHub Actions; jalankan `vendor/bin/pint --test` dan `php artisan test` sebelum deploy |
 | Tautan rapor untuk guru | Belum | Guru membuka rapor progres siswa lewat alamat `/progress/{id}`; laporan bulanan sudah punya menu **Monthly reports** |
 | Isi halaman depan | Contoh | Kontak, harga, dan testimoni di `site.js` masih placeholder |

@@ -3,10 +3,12 @@ import { ref } from 'vue';
 import { LoaderCircle, Play, Trash2 } from 'lucide-vue-next';
 import { preparePython, runFree } from '../../../../Coding/resources/js/lib/runner';
 import { buildSrcdoc } from '../../../../Coding/resources/js/lib/htmlCheck';
+import SlideShow from './SlideShow.vue';
 
 /**
  * Runs a Laboratory project in the browser with the Coding module's runners:
  * Python in Pyodide, JavaScript in a Web Worker, websites in a sandboxed iframe.
+ * Presentations play as a slideshow that follows the text as it is typed.
  */
 const props = defineProps({
     language: { type: String, required: true },
@@ -24,8 +26,11 @@ const opts = { timeLimitMs: 5000, indexURL: props.runtime.pyodide_url };
 
 if (props.language === 'python') preparePython(opts.indexURL).catch(() => {});
 
+const slideshow = ref(null);
+
 async function run() {
     if (busy.value) return;
+    if (props.language === 'presentation') return slideshow.value?.first();
     if (props.language === 'html') {
         preview.value = buildSrcdoc(props.code);
         return;
@@ -45,7 +50,8 @@ defineExpose({ run });
 </script>
 
 <template>
-    <div class="flex h-full flex-col overflow-hidden rounded-2xl bg-[#1a252d] text-[#d9e7e8]">
+    <SlideShow v-if="language === 'presentation'" ref="slideshow" :source="code" :tall="tall" />
+    <div v-else class="flex h-full flex-col overflow-hidden rounded-2xl bg-[#1a252d] text-[#d9e7e8]">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
             <span class="font-mono text-xs font-bold tracking-wider text-white/60 uppercase">{{ language === 'html' ? 'Preview' : 'Output' }}</span>
             <div class="flex items-center gap-1.5">

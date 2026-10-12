@@ -8,11 +8,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Lab\Http\Requests\LabCommentRequest;
 use Modules\Lab\Models\LabComment;
 use Modules\Lab\Models\LabProject;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** Community gallery: shared Laboratory projects from every class. */
 class CommunityController extends Controller
@@ -86,6 +89,18 @@ class CommunityController extends Controller
                 'edit' => $project->isOwnedBy($user),
                 'moderate' => $user->can('moderate', $project),
             ],
+        ]);
+    }
+
+    /** The project's .sb3 (Scratch), for the editor and the player. Versioned URL, so cached. */
+    public function file(LabProject $project): StreamedResponse
+    {
+        Gate::authorize('view', $project);
+        abort_unless($project->usesFile() && $project->file_path && Storage::disk('local')->exists($project->file_path), 404);
+
+        return Storage::disk('local')->response($project->file_path, Str::slug($project->title ?: 'project').'.sb3', [
+            'Content-Type' => 'application/x.scratch.sb3',
+            'Cache-Control' => 'private, max-age=31536000, immutable',
         ]);
     }
 

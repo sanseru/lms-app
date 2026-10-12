@@ -1,5 +1,5 @@
 <script setup>
-import { Braces, Code, Globe } from 'lucide-vue-next';
+import { Blocks, Braces, Code, Globe, Presentation } from 'lucide-vue-next';
 
 /** Thumbnail per project type: a solid color (no gradients) with a big mono glyph. */
 defineProps({ language: String, title: String, compact: Boolean });
@@ -8,6 +8,8 @@ const looks = {
     python: { bg: 'bg-sky-700', glyph: 'py', icon: Code },
     javascript: { bg: 'bg-amber-300 text-amber-950', glyph: 'js', icon: Braces },
     html: { bg: 'bg-emerald-700', glyph: '</>', icon: Globe },
+    scratch: { bg: 'bg-amber-400 text-amber-950', glyph: 'sb3', icon: Blocks },
+    presentation: { bg: 'bg-brand-600', glyph: '▶', icon: Presentation },
 };
 </script>
 

@@ -64,6 +64,8 @@ class AssignmentSubmission extends Model
             'link_url' => $this->link_url,
             'file_name' => $this->file_name,
             'file_url' => $this->file_path ? route('learning.submissions.file', $this) : null,
+            // A Scratch project can be played right on the page instead of downloaded.
+            'is_scratch' => $this->file_path && str_ends_with(strtolower((string) $this->file_name), '.sb3'),
             'score' => $this->score,
             'feedback' => $this->feedback,
             'submitted_at' => $this->submitted_at?->format('d M Y, H:i'),

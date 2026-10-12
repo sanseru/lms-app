@@ -8,10 +8,12 @@ import Icon from '@/Components/ui/Icon.vue';
 import CodeEditor from '../../../../../Coding/resources/js/Components/CodeEditor.vue';
 import ProjectThumb from '../../Components/ProjectThumb.vue';
 import RunPanel from '../../Components/RunPanel.vue';
+import ScratchFrame from '../../Components/ScratchFrame.vue';
 
 const props = defineProps({ project: Object, comments: Array, runtime: Object, can: Object });
 
-const showCode = ref(props.project.language !== 'html');
+// Code is open for code projects; websites and slides show their result first.
+const showCode = ref(!['html', 'presentation'].includes(props.project.language));
 const comment = useForm({ body: '' });
 const post = () => comment.post(route('community.comments.store', props.project.id), { preserveScroll: true, onSuccess: () => comment.reset() });
 const like = () => router.post(route('community.like', props.project.id), {}, { preserveScroll: true, preserveState: true });
@@ -48,11 +50,16 @@ const when = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric'
                 </div>
             </div>
 
-            <RunPanel :language="project.language" :code="project.code" :runtime="runtime" />
+            <!-- Scratch: the player (green flag) for the shared project -->
+            <template v-if="project.language === 'scratch'">
+                <ScratchFrame v-if="project.file_url" :src="project.file_url" mode="player" :title="`${project.title}, a Scratch project`" class="aspect-[4/3.3] max-h-[78vh] w-full" />
+                <p v-else class="card p-5 text-sm text-muted">This Scratch project has not been saved yet.</p>
+            </template>
+            <RunPanel v-else :language="project.language" :code="project.code" :runtime="runtime" />
 
-            <div class="card overflow-hidden">
+            <div v-if="project.language !== 'scratch'" class="card overflow-hidden">
                 <button type="button" class="flex w-full items-center justify-between px-5 py-3 text-sm font-bold text-ink hover:bg-chip" :aria-expanded="showCode" @click="showCode = !showCode">
-                    <span class="flex items-center gap-2"><Icon name="code" :size="16" /> Code</span>
+                    <span class="flex items-center gap-2"><Icon name="code" :size="16" /> {{ project.language === 'presentation' ? 'Slides text' : 'Code' }}</span>
                     <Icon name="chevron-down" :size="16" :class="showCode ? 'rotate-180' : ''" class="transition" />
                 </button>
                 <div v-if="showCode" class="border-t border-line p-3">

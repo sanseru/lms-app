@@ -24,6 +24,7 @@ const form = useForm({
     max_attempts: l.max_attempts ?? '',
     time_limit_minutes: l.time_limit_minutes ?? '',
     max_score: l.max_score ?? 100,
+    workspace: l.workspace ?? '',
     assessment: l.assessment ?? '',
     questions: l.questions?.length ? JSON.parse(JSON.stringify(l.questions)) : [blankQuestion()],
 });
@@ -230,9 +231,17 @@ const err = (key) => form.errors[key];
                         </select>
                     </Field>
                 </template>
-                <Field v-if="form.type === 'assignment'" id="max_score" label="Maximum score" :error="err('max_score')">
-                    <input id="max_score" v-model.number="form.max_score" type="number" min="1" class="field" />
-                </Field>
+                <template v-if="form.type === 'assignment'">
+                    <Field id="max_score" label="Maximum score" :error="err('max_score')">
+                        <input id="max_score" v-model.number="form.max_score" type="number" min="1" class="field" />
+                    </Field>
+                    <Field id="workspace" label="Students work in" :error="err('workspace')" hint="Scratch editor: students build the project right in the lesson and hand it in with one click. You can play it on the submissions list.">
+                        <select id="workspace" v-model="form.workspace" class="field">
+                            <option value="">Anywhere (link, file or text)</option>
+                            <option value="scratch">Scratch editor</option>
+                        </select>
+                    </Field>
+                </template>
                 <label class="flex items-start gap-3 rounded-xl border border-line p-3">
                     <input v-model="form.is_published" type="checkbox" class="mt-0.5 rounded border-line text-brand-600 focus:ring-brand-300" />
                     <span>

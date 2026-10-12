@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { Braces, Code, Globe } from 'lucide-vue-next';
+import { Blocks, Braces, Code, Globe, Presentation } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
@@ -10,8 +10,8 @@ import ProjectCard from '../../Components/ProjectCard.vue';
 
 const props = defineProps({ projects: Array, filters: Object, types: Array, totals: Object });
 
-const typeIcons = { python: Code, javascript: Braces, html: Globe };
-const typeColors = { python: 'bg-sky-700 text-white', javascript: 'bg-amber-300 text-amber-950', html: 'bg-emerald-700 text-white' };
+const typeIcons = { python: Code, scratch: Blocks, presentation: Presentation, html: Globe, javascript: Braces };
+const typeColors = { python: 'bg-sky-700 text-white', scratch: 'bg-amber-400 text-amber-950', presentation: 'bg-brand-600 text-white', html: 'bg-emerald-700 text-white', javascript: 'bg-amber-300 text-amber-950' };
 
 const creating = ref(false);
 const form = useForm({ title: '', language: 'python' });
@@ -21,7 +21,7 @@ const create = () => form.post(route('lab.projects.store'), { onSuccess: () => (
 <template>
     <Head title="Laboratory" />
 
-    <PageHeader eyebrow="Laboratory" title="Your coding lab" description="A free space to try ideas. Write Python, JavaScript, or a website, run it right away, and share the ones you're proud of with the Community.">
+    <PageHeader eyebrow="Laboratory" title="Your coding lab" description="A free space to try ideas. Write Python, build a Scratch game, make slides or a website, and share the ones you're proud of with the Community.">
         <template #actions>
             <Link :href="route('community.index')" class="btn-ghost"><Icon name="users" :size="16" /> Community</Link>
             <button type="button" class="btn-primary" @click="creating = true"><Icon name="plus" :size="16" /> New project</button>
@@ -54,7 +54,7 @@ const create = () => form.post(route('lab.projects.store'), { onSuccess: () => (
     <Modal :show="creating" max-width="lg" @close="creating = false">
         <form class="p-6" @submit.prevent="create">
             <h2 class="font-display text-xl font-extrabold text-ink">What do you want to make?</h2>
-            <fieldset class="mt-4 grid gap-3">
+            <fieldset class="mt-4 grid gap-3 sm:grid-cols-2">
                 <legend class="sr-only">Project type</legend>
                 <label
                     v-for="t in types"

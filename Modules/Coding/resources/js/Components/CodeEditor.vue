@@ -22,7 +22,8 @@ const emit = defineEmits(['run']);
 const host = ref(null);
 let view;
 const lang = new Compartment();
-const langFor = (l) => (l === 'html' ? html() : l === 'javascript' ? javascript() : python());
+// Slides (markdown) and other plain text get no code highlighting.
+const langFor = (l) => (l === 'html' ? html() : l === 'javascript' ? javascript() : l === 'presentation' ? [] : python());
 
 onMounted(() => {
     view = new EditorView({

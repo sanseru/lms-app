@@ -17,6 +17,9 @@ class Lesson extends Model
 
     public const ASSESSMENTS = ['pre' => 'Warm-up Mission', 'post' => 'Final Mission'];
 
+    /** Where an assignment is done; null = anywhere (link, file or text). */
+    public const WORKSPACES = ['scratch' => 'Scratch editor'];
+
     /** All content types: built-in plus those registered by other modules. */
     public static function types(): array
     {
@@ -35,7 +38,7 @@ class Lesson extends Model
 
     protected $fillable = [
         'course_id', 'unit_id', 'position', 'title', 'type', 'body', 'video_url', 'duration_minutes',
-        'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'is_published', 'assessment',
+        'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'workspace', 'is_published', 'assessment',
     ];
 
     protected function casts(): array

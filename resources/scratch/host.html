@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Scratch</title>
+        <!--
+            Host page for the self-hosted Scratch editor (copied to public/vendor/scratch-gui by
+            scripts/fetch-scratch-gui.mjs). The app embeds it in an iframe, so Scratch's React and
+            CSS stay apart from the app, and talks to it with postMessage (same origin only):
+
+            Query:  ?mode=editor|player  &src=same-origin URL of the project .sb3 (optional)
+            Out:    {scratch: 'ready'}       editor is up and the project is loaded
+                    {scratch: 'changed'}     the student changed the project
+                    {scratch: 'error', reason: 'missing'|'load'}
+                    {scratch: 'saved', id, blob}  answer to 'save'
+            In:     {scratch: 'save', id}    asks for the project as an .sb3 Blob
+        -->
+        <style>
+            html, body, #app { height: 100%; margin: 0; }
+            body { overflow: hidden; background: #fff; font-family: system-ui, sans-serif; }
+            .notice { display: grid; place-items: center; height: 100%; padding: 24px; box-sizing: border-box; text-align: center; color: #1d2934; }
+            .notice b { display: block; font-size: 18px; margin-bottom: 6px; }
+            /* Player: the app has its own fullscreen button, so hide Scratch's "leave full screen". */
+            body.player [class*="stage-header_right-section"] { display: none; }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script src="scratch-gui-standalone.js"></script>
+        <script>
+            (function () {
+                const params = new URLSearchParams(location.search);
+                const player = params.get('mode') === 'player';
+                const src = params.get('src');
+                const app = document.getElementById('app');
+                document.body.classList.toggle('player', player);
+                // Only projects from this app are loaded (relative or same-origin absolute URLs).
+                const sameOrigin = (url) => {
+                    try {
+                        return !!url && new URL(url, location.href).origin === location.origin;
+                    } catch (e) {
+                        return false;
+                    }
+                };
+                const post = (msg) => parent !== window && parent.postMessage(msg, location.origin);
+                const notice = (title, text) => (app.innerHTML = '<div class="notice"><p><b>' + title + '</b>' + text + '</p></div>');
+
+                if (!window.GUI) {
+                    notice('The Scratch editor is not installed', 'Ask your admin to run: node scripts/fetch-scratch-gui.mjs');
+                    post({ scratch: 'error', reason: 'missing' });
+                    return;
+                }
+
+                const G = window.GUI;
+                // The player uses Scratch's full-screen stage, which scales to the iframe's size.
+                const state = new G.EditorState({ locale: 'en', isPlayerOnly: player, isFullScreen: player });
+                const store = state.store;
+                const loadingState = () => store.getState().scratchGui.projectState.loadingState;
+                // Scratch's loading states are plain strings (G.LoadingStates is the list of names).
+                const showing = (s) => s === 'SHOWING_WITH_ID' || s === 'SHOWING_WITHOUT_ID';
+
+                let vm = null;
+                let loading = true; // changes while (re)loading are not the student's
+                G.setAppElement(app);
+                G.createStandaloneRoot(state, app).render({
+                    isPlayerOnly: player,
+                    projectId: G.defaultProjectId, // start from Scratch's default project (the cat)
+                    canSave: false,
+                    canShare: false,
+                    canRemix: false,
+                    canCreateCopy: false,
+                    canEditTitle: false,
+                    canChangeLanguage: false,
+                    enableCommunity: false,
+                    showComingSoon: false,
+                    backpackVisible: false,
+                    hideTutorialProjects: true,
+                    onClickLogo: () => {},
+                    onVmInit: (v) => {
+                        vm = v;
+                        vm.on('PROJECT_CHANGED', () => !loading && post({ scratch: 'changed' }));
+                    },
+                });
+
+                // Load the saved project the way Scratch's own "Load from your computer" does,
+                // so the editor's project state (title, loading screen) stays consistent.
+                async function loadSaved() {
+                    const response = await fetch(src, { credentials: 'same-origin' });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const data = await response.arrayBuffer();
+                    store.dispatch(G.requestProjectUpload(loadingState()));
+                    let ok = false;
+                    try {
+                        await vm.loadProject(data);
+                        ok = true;
+                    } finally {
+                        store.dispatch(G.onLoadedProject('LOADING_VM_FILE_UPLOAD', false, ok));
+                        store.dispatch(G.closeLoadingProject());
+                    }
+                }
+
+                // Wait for the built-in default project, then swap in the saved one (if any).
+                const stop = store.subscribe(() => {
+                    if (!vm || !showing(loadingState())) return;
+                    stop();
+                    const done = () => setTimeout(() => {
+                        loading = false;
+                        post({ scratch: 'ready' });
+                    }, 300);
+                    if (sameOrigin(src)) {
+                        loadSaved().then(done, () => {
+                            loading = false;
+                            post({ scratch: 'error', reason: 'load' });
+                        });
+                    } else {
+                        done();
+                    }
+                });
+
+                window.addEventListener('message', async (event) => {
+                    if (event.origin !== location.origin || event.source !== parent) return;
+                    const msg = event.data || {};
+                    if (msg.scratch === 'save' && vm) {
+                        const blob = await vm.saveProjectSb3();
+                        post({ scratch: 'saved', id: msg.id, blob });
+                    }
+                });
+            })();
+        </script>
+    </body>
+</html>

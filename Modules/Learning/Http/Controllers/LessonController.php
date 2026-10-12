@@ -86,6 +86,7 @@ class LessonController extends Controller
                 'max_attempts' => $lesson->max_attempts,
                 'time_limit_minutes' => $lesson->type === 'quiz' ? $lesson->time_limit_minutes : null,
                 'max_score' => $lesson->type === 'assignment' ? $lesson->maxScore() : null,
+                'workspace' => $lesson->type === 'assignment' ? $lesson->workspace : null,
             ],
             'unit' => $lesson->unit_id ? [
                 'id' => $lesson->unit_id,
@@ -133,7 +134,7 @@ class LessonController extends Controller
 
         return Inertia::render('Learning::Lessons/Form', [
             'course' => $lesson->course->only('id', 'title'),
-            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'assessment') + [
+            'lesson' => $lesson->only('id', 'title', 'type', 'body', 'video_url', 'duration_minutes', 'is_published', 'pass_score', 'max_attempts', 'time_limit_minutes', 'max_score', 'workspace', 'assessment') + [
                 'questions' => $lesson->questions->map->only('id', 'prompt', 'type', 'options', 'explanation', 'points', 'concept'),
             ],
             'defaultType' => $lesson->type,
@@ -209,7 +210,7 @@ class LessonController extends Controller
             $data['pass_score'] = $data['max_attempts'] = $data['time_limit_minutes'] = $data['assessment'] = null;
         }
         if ($data['type'] !== 'assignment') {
-            $data['max_score'] = null;
+            $data['max_score'] = $data['workspace'] = null;
         }
 
         return $data;

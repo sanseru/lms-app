@@ -41,7 +41,7 @@ class LearningDemoSeeder
                     ['The block that moves a sprite to the right is…', 'single', [['change x by 10', true], ['change y by 10', false], ['turn 15 degrees', false]], 'The x axis goes left and right.'],
                     ['Which blocks belong to the Events category?', 'multiple', [['when green flag clicked', true], ['when key pressed', true], ['move 10 steps', false]], 'Events are what start a script.'],
                 ]],
-                ['assignment', 'Project: Chase game', 60, "Make a game where a cat chases a ball.\n\n- Move the cat with the arrow keys\n- The ball jumps to a random spot when the cat touches it\n- Add a score\n\nSubmit the link to your Scratch project (make sure you have clicked *Share*)."],
+                ['assignment', 'Project: Chase game', 60, "Make a game where a cat chases a ball.\n\n- Move the cat with the arrow keys\n- The ball jumps to a random spot when the cat touches it\n- Add a score\n\nBuild it in the Scratch editor on this page and press *Submit* when you are done."],
             ]);
 
         $web = $this->course($author, 'Web Basics: HTML & CSS', 'Web Development', 'intermediate', 'sky',

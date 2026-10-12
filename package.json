@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "node scripts/copy-pyodide.mjs && vite build",
-        "dev": "node scripts/copy-pyodide.mjs && vite"
+        "build": "node scripts/copy-pyodide.mjs && node scripts/fetch-scratch-gui.mjs && vite build",
+        "dev": "node scripts/copy-pyodide.mjs && node scripts/fetch-scratch-gui.mjs && vite"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^2.0.0",

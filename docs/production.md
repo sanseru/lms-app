@@ -117,7 +117,7 @@ Nilai yang wajib diubah dari `.env.example` untuk production:
 | `APP_KEY` | hasil `php artisan key:generate` | Jangan pernah diganti setelah berjalan: session dan data terenkripsi menjadi tidak terbaca |
 | `APP_DEBUG` | `false` | **Wajib** `false`. `true` membocorkan konfigurasi dan isi `.env` saat error |
 | `APP_URL` | `https://lms.domainanda.id` | Dipakai untuk tautan di email, feed kalender iCal, dan QR sertifikat |
-| `APP_LOCALE` | `id` | Bahasa Indonesia |
+| `APP_LOCALE` | `en` | Seluruh UI, validasi, dan notifikasi berbahasa Inggris. `lang/id` tidak dipakai |
 | `APP_TIMEZONE` | `Asia/Jakarta` | Jadwal, sesi, dan scheduler memakai zona ini |
 | `LOG_STACK` | `daily` | Log dirotasi harian (lihat `LOG_DAILY_DAYS`, bawaan 14 hari) |
 | `LOG_LEVEL` | `warning` | `debug` terlalu banyak untuk production |
@@ -333,6 +333,7 @@ Tugas terjadwal didefinisikan di `routes/console.php`:
 | `sessions:generate` | Harian 01:00 WIB | Membuat sesi kelas dari jadwal mingguan untuk 4 minggu ke depan (`config/sessions.php`, `generate_weeks_ahead`) |
 | `xp:sync` | Harian 01:30 WIB | Menghitung ulang XP dan lencana dari data sumber |
 | `sessions:remind-reports` | Tiap jam | Mengingatkan guru yang belum mengisi laporan sesi 2 jam setelah sesi berakhir |
+| `reports:monthly` | Tanggal 1, 08:00 WIB | Memberi tahu orang tua bahwa laporan bulanan bulan lalu sudah siap |
 
 Pasang satu baris cron untuk user web:
 
@@ -344,7 +345,7 @@ sudo crontab -u www-data -e
 * * * * * cd /var/www/lms && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Periksa dengan `php artisan schedule:list`. Tanpa cron, sesi baru tidak muncul, XP tidak diperbarui otomatis, dan pengingat guru tidak terkirim.
+Periksa dengan `php artisan schedule:list`. Tanpa cron, sesi baru tidak muncul, XP tidak diperbarui otomatis, pengingat guru tidak terkirim, dan orang tua tidak diberi tahu laporan bulanan.
 
 Perintah ini juga bisa dijalankan manual:
 
@@ -538,15 +539,16 @@ Hal berikut belum tersedia atau perlu keputusan/infrastruktur tambahan. Detail l
 |---|---|---|
 | Notifikasi WhatsApp | Belum | Notifikasi hanya in-app (lonceng). Tabel `notifications` sudah siap dibaca kanal pengirim; butuh akun penyedia WA API (mis. Fonnte, Wablas, WhatsApp Cloud API) dan nomor pengirim, lalu job antrean yang mengirim pesan. Setelah itu worker queue menjadi wajib |
 | Notifikasi email | Belum | Email hanya dipakai untuk reset kata sandi |
-| Audit log | Belum | Belum ada jejak siapa mengubah nilai, memverifikasi pembayaran, atau mengubah role |
-| Laporan berkala orang tua (PDF) | Belum | Rapor tersedia online; belum ada rekap bulanan PDF |
 | Judge0 (C++/Java, penilaian di server) | Sebagian | Driver siap (`CODING_DRIVER=judge0`), tetapi server Judge0 belum dipasang. Judge0 butuh VPS terpisah (Docker) dan jangan dipasang di server yang sama dengan aplikasi |
 | Integrasi Zoom API | Belum | Link Zoom diisi manual per kelas |
 | Payment gateway (QRIS/VA) | Sengaja tidak | Sesuai keputusan: transfer manual + verifikasi admin |
 | Login Google, MFA admin | Belum | Login username/email + kata sandi |
-| PWA, streak harian, pipeline calon siswa | Belum | Lihat audit kelengkapan |
+| PWA, streak harian | Belum | Lihat audit kelengkapan |
+| Permintaan pindah jadwal dari orang tua | Belum | Admin/guru sudah bisa memindah jadwal dan membuat sesi pengganti |
 | Trusted proxies | Perlu diatur | Bila memakai Cloudflare/load balancer, lihat bagian Nginx |
+| Health check | Belum | Belum ada route khusus untuk pemantauan uptime |
 | Database selain SQLite | Perlu diuji | Test otomatis berjalan di SQLite; uji MySQL/PostgreSQL di staging |
 | Unggahan di object storage | Belum | Disk `local` ditulis langsung di kode; berkas ada di disk server |
-| Tautan rapor untuk guru | Belum | Guru membuka rapor lewat alamat `/progress/{id}`; orang tua punya tautan di menu |
+| CI otomatis | Belum | Belum ada workflow GitHub Actions; jalankan `vendor/bin/pint --test` dan `php artisan test` sebelum deploy |
+| Tautan rapor untuk guru | Belum | Guru membuka rapor progres siswa lewat alamat `/progress/{id}`; laporan bulanan sudah punya menu **Monthly reports** |
 | Isi halaman depan | Contoh | Kontak, harga, dan testimoni di `site.js` masih placeholder |

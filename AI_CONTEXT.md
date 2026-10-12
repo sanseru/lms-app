@@ -61,7 +61,7 @@ Business facts (decided by the owner, do not change without asking):
 - Public self-registration is off. Admin creates accounts. Login by **username or email** (children may have no email). Public `/free-trial` form creates leads.
 - Locale `en`, timezone `Asia/Jakarta`, currency Rupiah.
 
-Success means: children come back on their own, parents trust the reports and pay on time, teachers need no other tool. Product principles, audience, accessibility targets (WCAG 2.2 AA, 44px touch targets, reduced motion) and brand are in `PRODUCT.md`. Note: some lines in `PRODUCT.md` still say the UI is Indonesian; that is outdated (see section 8).
+Success means: children come back on their own, parents trust the reports and pay on time, teachers need no other tool. Product principles, audience, accessibility targets (WCAG 2.2 AA, 44px touch targets, reduced motion) and brand are in `PRODUCT.md`.
 
 ---
 
@@ -223,7 +223,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 - **Uploads** use the `local` disk directly in code; switching to S3/object storage needs code changes.
 - **Trusted proxies** are not configured; needed behind Cloudflare/a load balancer.
 - **Only SQLite is tested.** Check MySQL/PostgreSQL before production (JSON columns, date functions, case sensitivity).
-- **Stale docs/files** (fix them, see task 1): `AGENTS.md` was updated with this file, but `PRODUCT.md` "Operating Context", README's "Rencana modul berikutnya", `docs/production.md` "Belum siap" table and `docs/audit-kelengkapan.md` still list audit log, monthly PDF report, leads, quiz types and code rules as missing, and still mention Indonesian UI. The user guides in `docs/panduan-pengguna/` use old Indonesian UI labels, old URLs (`/tanya`, `/proyek`) and old screenshots.
+- **User guide screenshots** in `docs/panduan-pengguna/img/` come from the seeded demo data (`migrate:fresh --seed`) at 1366 px (desktop) and 390 px (phone), quantized to 256 colours. Retake them when a screen changes visibly.
 - `lang/id` still exists but is unused (`APP_LOCALE=en`).
 - Landing page data in `site.js` (WhatsApp number `6281234567890`, email, prices, testimonials marked as samples) is **fake** and must not go live.
 
@@ -245,8 +245,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 
 Each task is one PR on its own branch, with tests and docs updated. "Done when" is the acceptance criterion.
 
-1. **Sync stale docs.** Update `PRODUCT.md` (English UI, locale `en`), README "Rencana modul berikutnya", `docs/production.md` "Belum siap dan keterbatasan", `docs/audit-kelengkapan.md` statuses, and the user guides in `docs/panduan-pengguna/` (English UI labels, new URLs, fresh screenshots of the English UI). Docs stay Indonesian.
-   *Done when* no doc lists a finished feature as missing, no doc says the UI is Indonesian, and screenshots show the English UI.
+1. ~~**Sync stale docs.**~~ Done on branch `claude/elegant-mccarthy-yxr746`: `PRODUCT.md`, README, `docs/production.md`, `docs/audit-kelengkapan.md` and the user guides now describe the English UI with fresh screenshots.
 2. **Add CI.** GitHub Actions workflow running `composer install`, `vendor/bin/pint --test`, `php artisan test`, and `npm ci && npm run build` on pull requests.
    *Done when* the workflow is green on a PR.
 3. **Teacher link to student progress.** Teachers can only reach a student's learning progress (`route('learning.progress.show', $student)`) by typing the URL (monthly reports already have a menu item). Add links from the class detail page and the monthly reports list, respecting permissions.
@@ -279,7 +278,7 @@ Each task is one PR on its own branch, with tests and docs updated. "Done when" 
 | Feature list and module guide | `README.md` (Indonesian) |
 | Product, users, brand, principles | `PRODUCT.md` |
 | Production setup | `docs/production.md` |
-| Feature completeness audit vs research | `docs/audit-kelengkapan.md` (partly stale) |
+| Feature completeness audit vs research | `docs/audit-kelengkapan.md` |
 | Design audit | `docs/design/audit-impeccable-2026-10-11.md` |
 | User guides per role | `docs/panduan-pengguna/` |
 | Landing page content | `Modules/Landing/resources/js/site.js` |

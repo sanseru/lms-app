@@ -57,6 +57,7 @@ class NavigationRegistry
                 'label' => $group,
                 'items' => $items->map(fn (NavItem $item) => [
                     'label' => $item->label,
+                    'route' => $item->route,
                     'href' => route($item->route),
                     'icon' => $item->icon,
                     'active' => $item->active ?? $item->route,

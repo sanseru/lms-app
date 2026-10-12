@@ -25,20 +25,22 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Sign in" />
+        <Head title="Log in" />
 
-        <h1 class="text-2xl font-extrabold tracking-tight text-ink">Sign in to your learning space.</h1>
-        <p class="mt-1 text-sm text-muted">Use the username or email your admin gave you.</p>
+        <!-- Copy from the client prototype (student/login) -->
+        <p class="eyebrow mb-1">Welcome back</p>
+        <h1 class="text-2xl font-extrabold tracking-tight text-ink">Log in to your learning space.</h1>
+        <p class="mt-1 text-sm text-muted">Keep your learning streak going and discover something new today.</p>
 
         <div v-if="status" class="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{{ status }}</div>
 
         <form class="mt-6 space-y-5" @submit.prevent="submit">
             <Field id="login" label="Username or email" :error="form.errors.login">
-                <input id="login" v-model="form.login" type="text" class="field" autocomplete="username" autofocus required />
+                <input id="login" v-model="form.login" type="text" class="field" autocomplete="username" placeholder="Enter username or email" autofocus required />
             </Field>
 
             <Field id="password" label="Password" :error="form.errors.password">
-                <input id="password" v-model="form.password" type="password" class="field" autocomplete="current-password" required />
+                <input id="password" v-model="form.password" type="password" class="field" autocomplete="current-password" placeholder="Enter password" required />
             </Field>
 
             <div class="flex items-center justify-between">
@@ -52,7 +54,7 @@ const submit = () => {
             </div>
 
             <button type="submit" class="btn-accent w-full py-3" :disabled="form.processing">
-                Sign in <Icon name="arrow-right" :size="18" />
+                Log in <Icon name="arrow-right" :size="18" />
             </button>
         </form>
     </GuestLayout>

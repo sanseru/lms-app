@@ -10,6 +10,7 @@
 | [Dokumentasi production](production.md) | Persyaratan server, instalasi, `.env`, database, build aset, cron, storage, backup, keamanan, deploy, troubleshooting, hal yang belum siap |
 | [Audit kelengkapan](audit-kelengkapan.md) | Fitur yang sudah ada dan yang belum dibandingkan dengan riset |
 | [Desain](design/) | Audit desain UI |
+| [Analisis prototipe klien](analisis-prototipe-klien.md) | Apa yang sudah, belum, dan istilah yang diseragamkan dengan prototipe klien |
 | [Contoh dari klien](client-example/README.md) | Prototipe web statis LMS-Alprogmatics dari klien, referensi desain saja (bukan bagian aplikasi) |
 
 Screenshot panduan diambil dari UI berbahasa Inggris dengan data demo (`php artisan migrate:fresh --seed` di environment non-production), lebar 1366 px untuk desktop dan 390 px untuk HP. Teks panduan berbahasa Indonesia; label tombol dan menu ditulis persis seperti di UI (bahasa Inggris).

@@ -5,7 +5,9 @@ namespace Modules\Dashboard\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Classes\Models\ClassRoom;
@@ -18,6 +20,7 @@ use Modules\Gamification\Actions\Achievements;
 use Modules\Identity\Enums\Role;
 use Modules\Kanban\Models\Board;
 use Modules\Kanban\Models\Card;
+use Modules\Lab\Models\LabProject;
 use Modules\Learning\Actions\StudentProgress;
 use Modules\Learning\Models\AssignmentSubmission;
 use Modules\Sessions\Models\ClassSession;
@@ -110,6 +113,8 @@ class DashboardController extends Controller
             'learning' => $this->learningSummary($user),
             'projects' => $this->projectsFor($user),
             'achievements' => $this->achievementsFor($user),
+            'creator' => $this->creatorStats($user),
+            'popular' => $this->popularProjects($user),
             'profile' => [
                 'code' => $user->studentProfile?->student_code,
                 'grade' => $user->studentProfile?->grade,
@@ -259,5 +264,43 @@ class DashboardController extends Controller
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * The six numbers on the client prototype's student home: Projects, Likes received,
+     * Views, Comments, Lessons done, Questions solved (quizzes and coding tasks passed).
+     *
+     * @return array<string, int>
+     */
+    private function creatorStats(User $user): array
+    {
+        $projectIds = Schema::hasTable('lab_projects') ? DB::table('lab_projects')->where('user_id', $user->id)->pluck('id') : collect();
+        $count = fn (string $table) => $projectIds->isNotEmpty() && Schema::hasTable($table) ? DB::table($table)->whereIn('lab_project_id', $projectIds)->count() : 0;
+
+        $quizzes = Schema::hasTable('quiz_attempts') ? DB::table('quiz_attempts')->where('student_id', $user->id)->where('passed', true)->distinct()->count('lesson_id') : 0;
+        $coding = Schema::hasTable('code_submissions') ? DB::table('code_submissions')->where('student_id', $user->id)->where('status', 'passed')->distinct()->count('lesson_id') : 0;
+
+        return [
+            'projects' => $projectIds->count(),
+            'likes' => $count('lab_project_likes'),
+            'views' => $count('lab_project_views'),
+            'comments' => $count('lab_comments'),
+            'lessons' => Schema::hasTable('lesson_progress') ? DB::table('lesson_progress')->where('student_id', $user->id)->count() : 0,
+            'solved' => $quizzes + $coding,
+        ];
+    }
+
+    /** "Popular in Community" on the student home: the most liked shared projects. */
+    private function popularProjects(User $user): array
+    {
+        if (! class_exists(LabProject::class)) {
+            return [];
+        }
+
+        return LabProject::query()->inCommunity()
+            ->with('owner:id,name')->withCount(['likers', 'viewers', 'comments'])
+            ->orderByDesc('likers_count')->orderByDesc('viewers_count')->latest('shared_at')
+            ->take(3)->get()
+            ->map->toCard($user)->all();
     }
 }

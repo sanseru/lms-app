@@ -50,7 +50,7 @@ class CodingDemoSeeder
         $this->sampleSubmissions();
     }
 
-    private function exercise(Course $course, string $title, string $mode, string $language, int $minutes, string $body, ?string $starter, string $solution, array $tests, array $hints, string $concept, int $level, ?string $function = null): void
+    public function exercise(Course $course, string $title, string $mode, string $language, int $minutes, string $body, ?string $starter, string $solution, array $tests, array $hints, string $concept, int $level, ?string $function = null): void
     {
         $lesson = $course->lessons()->create([
             'title' => $title, 'type' => 'code', 'body' => $body, 'duration_minutes' => $minutes, 'position' => $course->nextPosition(), 'is_published' => true,

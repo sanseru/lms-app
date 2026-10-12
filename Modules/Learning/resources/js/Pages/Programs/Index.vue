@@ -14,7 +14,7 @@ const props = defineProps({ programs: Array, unassigned: Array, colors: Array })
 
 const confirm = useConfirm();
 const editing = ref(null); // program id being edited, or 'new'
-const form = useForm({ name: '', description: '', color: 'violet' });
+const form = useForm({ name: '', category: '', description: '', color: 'violet' });
 
 const startNew = () => {
     form.reset();
@@ -23,6 +23,7 @@ const startNew = () => {
 };
 const startEdit = (p) => {
     form.name = p.name;
+    form.category = p.category ?? '';
     form.description = p.description ?? '';
     form.color = p.color;
     form.clearErrors();
@@ -47,6 +48,9 @@ const save = () => {
         <h2 class="font-display font-bold text-ink sm:col-span-2">{{ editing === 'new' ? 'New program' : 'Edit program' }}</h2>
         <Field id="p-name" label="Name" :error="form.errors.name" required>
             <input id="p-name" v-model="form.name" type="text" class="field" maxlength="80" placeholder="e.g. Python" />
+        </Field>
+        <Field id="p-category" label="Category" :error="form.errors.category" hint="Tag on the catalog card, e.g. Programming, Data, Technology.">
+            <input id="p-category" v-model="form.category" type="text" class="field" maxlength="30" placeholder="e.g. Programming" />
         </Field>
         <Field label="Color">
             <div class="flex flex-wrap gap-2 pt-1">
@@ -76,6 +80,7 @@ const save = () => {
             <header class="flex items-start gap-3 border-b border-line p-5">
                 <span :class="(classColors[p.color] ?? classColors.violet).solid" class="mt-1 size-3 shrink-0 rounded-full" />
                 <div class="min-w-0 flex-1">
+                    <p v-if="p.category" class="text-xs font-bold tracking-wide text-accent-700 uppercase">{{ p.category }}</p>
                     <h2 class="font-display text-lg font-extrabold text-ink">{{ p.name }}</h2>
                     <p v-if="p.description" class="text-sm text-muted">{{ p.description }}</p>
                 </div>

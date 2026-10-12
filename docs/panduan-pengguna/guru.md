@@ -9,8 +9,8 @@ Menu guru di sidebar:
 | Grup | Menu |
 | --- | --- |
 | Main | **Home** |
-| Academic | **Classes**, **Sessions & attendance**, **Schedule**, **Monthly reports**, **Trial classes** |
-| Learning | **Courses & lessons**, **Grading**, **Community**, **Laboratory**, **Projects**, **Q&A**, **Student achievements**, **Certificates** |
+| Academic | **Classes**, **Online Lesson**, **Schedule**, **Monthly reports**, **Trial classes** |
+| Learning | **Course**, **Grading**, **Community**, **Laboratory**, **Projects**, **Q&A**, **Student achievements**, **Certificates** |
 | Finance | **My fees** |
 
 ## Beranda
@@ -36,7 +36,7 @@ Ini tugas terpenting setelah mengajar. Saat Anda menyelesaikan sesi, kuota paket
 
 ![Daftar sesi](img/guru-sesi.png)
 
-1. Buka **Sessions & attendance**, lalu pilih sesi (atau klik **Take attendance** dari Beranda). Tab yang tersedia: **Needs report**, **Upcoming**, **Completed**, **Flagged**, **Cancelled**.
+1. Buka **Online Lesson**, lalu pilih sesi (atau klik **Take attendance** dari Beranda). Tab yang tersedia: **Needs report**, **Upcoming**, **Completed**, **Flagged**, **Cancelled**.
 2. Di **Attendance**, pilih status setiap siswa: **Present**, **Excused**, **Sick**, atau **Absent**. Tombol **Mark all present** mempercepat. Keterangan per siswa (**Note (optional)**) muncul bila status bukan **Present**.
 3. Di **Session notes**, isi:
    - **Topic covered** (wajib), mis. "for and while loops".
@@ -93,7 +93,7 @@ Siswa naik level **step by step**: level berikutnya terbuka sendiri setelah semu
 
 ![Form course dengan bagian Program and level](img/guru-kursus-form.png)
 
-1. **Courses & lessons → New course**.
+1. **Course → New course**.
 2. Isi **Course title**, **Subject**, **Level**, **Description**, **Cover color**, dan **Status** (**Draft** atau **Published**).
 3. Di bagian **Program and level**, pilih **Program** dan isi **Level number** (1 untuk level pertama, 2 untuk berikutnya, dst.). Kosongkan **Program** untuk course yang berdiri sendiri.
 4. **Save**, lalu di halaman kursus bagian **Used in classes**, pilih kelas (**Choose a class…**) dan klik tombol **+** untuk memasang. Kelas yang sudah memakai kursus lain ditandai **(switch course)**; memilihnya akan mengganti kursus kelas itu. Klik tombol **×** di samping kelas untuk melepasnya (**Detach**). Progres siswa tetap tersimpan.

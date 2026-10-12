@@ -17,6 +17,7 @@ class ProgramRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:80'],
+            'category' => ['nullable', 'string', 'max:30'],
             'description' => ['nullable', 'string', 'max:500'],
             'color' => ['required', Rule::in(ClassRoom::COLORS)],
             'position' => ['nullable', 'integer', 'min:0', 'max:999'],

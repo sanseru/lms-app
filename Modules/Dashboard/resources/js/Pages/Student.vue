@@ -11,9 +11,17 @@ import LearningCard from '@/Components/ui/LearningCard.vue';
 import ProgressBar from '@/Components/ui/ProgressBar.vue';
 import LevelCard from '@/Components/ui/LevelCard.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import ProjectCard from '../../../../Lab/resources/js/Components/ProjectCard.vue';
 
-defineProps({ upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array, achievements: Object });
+defineProps({ creator: { type: Object, default: null }, popular: { type: Array, default: () => [] }, upcoming: Array, lastSession: Object, classes: Array, packages: Array, stats: Object, profile: Object, learning: Array, projects: Array, achievements: Object });
 const user = usePage().props.auth.user;
+
+// The six numbers from the client prototype's student home.
+const creatorTiles = (c) => [
+    ['Projects', c.projects], ['Likes received', c.likes], ['Views', c.views],
+    ['Comments', c.comments], ['Lessons done', c.lessons], ['Questions solved', c.solved],
+];
+const hasLab = route().has('community.show');
 
 </script>
 
@@ -35,6 +43,14 @@ const user = usePage().props.auth.user;
             <span v-if="profile.code" class="rounded-full bg-brand-800 px-3 py-1 font-mono text-sm ring-1 ring-white/10">{{ profile.code }}</span>
         </div>
     </div>
+
+    <!-- Client prototype: six stat tiles under the banner -->
+    <ul v-if="creator" class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <li v-for="[label, value] in creatorTiles(creator)" :key="label" class="card px-3 py-4 text-center">
+            <p class="font-display text-3xl font-extrabold text-brand-600 tabular-nums">{{ value }}</p>
+            <p class="mt-1 text-sm text-muted">{{ label }}</p>
+        </li>
+    </ul>
 
     <div v-if="achievements" class="mt-6 grid gap-4 lg:grid-cols-3">
         <Link :href="route('gamification.me')" class="lg:col-span-2"><LevelCard :level="achievements.level" compact class="h-full transition hover:shadow-lg" /></Link>
@@ -72,11 +88,26 @@ const user = usePage().props.auth.user;
         </div>
     </div>
 
+    <div v-if="hasLab" class="mt-6">
+        <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-display text-lg font-bold text-ink">Popular in Community</h2>
+            <Link :href="route('community.index')" class="text-sm font-semibold text-brand-600 hover:underline">See all →</Link>
+        </div>
+        <div v-if="popular.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ProjectCard v-for="p in popular" :key="p.id" :project="p" :href="route('community.show', p.id)" />
+        </div>
+        <div v-else class="card flex items-center gap-4 p-5">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-50 text-accent-700"><Icon name="flask" /></span>
+            <p class="flex-1 text-sm text-ink">Nothing here yet. Be the first to share a project from the Laboratory!</p>
+            <Link :href="route('lab.projects.index')" class="btn-ghost">Open Laboratory</Link>
+        </div>
+    </div>
+
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="card p-5 lg:col-span-2">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="font-display text-lg font-bold text-ink">Next sessions</h2>
-                <Link :href="route('schedule.index')" class="text-sm font-semibold text-brand-600 hover:underline">My schedule →</Link>
+                <Link :href="route('schedule.index')" class="text-sm font-semibold text-brand-600 hover:underline">Online Lesson →</Link>
             </div>
             <div v-if="upcoming.length" class="space-y-2">
                 <SessionItem v-for="s in upcoming" :key="s.id" :session="s" show-date />

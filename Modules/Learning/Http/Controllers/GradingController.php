@@ -32,7 +32,7 @@ class GradingController extends Controller
             'submissions' => $submissions,
             'tab' => $tab,
             'counts' => (clone $base)->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status'),
-            'openReports' => LessonReport::where('status', 'open')->count(),
+            'openReports' => LessonReport::reviewableBy($request->user())->where('status', 'open')->count(),
         ]);
     }
 }

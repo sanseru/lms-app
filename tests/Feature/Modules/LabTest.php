@@ -48,6 +48,21 @@ test('only the owner can open, edit, share, or delete a lab project', function (
     $this->actingAs($other)->get('/lab')->assertInertia(fn ($p) => $p->has('projects', 0));
 });
 
+test('admins and teachers cannot edit or delete a student lab project', function () {
+    $owner = userWithRole('student');
+    $project = labProject($owner, ['shared_at' => now()]);
+
+    foreach ([userWithRole('admin'), userWithRole('teacher')] as $staff) {
+        $this->actingAs($staff)->get("/lab/{$project->id}")->assertForbidden();
+        $this->actingAs($staff)->put("/lab/{$project->id}", ['title' => 'Changed', 'code' => ''])->assertForbidden();
+        $this->actingAs($staff)->delete("/lab/{$project->id}/share")->assertForbidden();
+        $this->actingAs($staff)->delete("/lab/{$project->id}")->assertForbidden();
+        $this->actingAs($staff)->get("/community/{$project->id}")->assertInertia(fn ($p) => $p->where('can.edit', false));
+    }
+
+    expect($project->fresh())->title->toBe('Times table')->shared_at->not->toBeNull();
+});
+
 test('parents cannot use the laboratory but can browse the community', function () {
     $guardian = userWithRole('guardian');
     $project = labProject(userWithRole('student'), ['shared_at' => now()]);

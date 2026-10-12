@@ -100,4 +100,14 @@ class LabProject extends Model
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
+
+    /**
+     * Only the owner edits, shares or deletes a Laboratory project. Checked directly
+     * instead of through the policy, because admins pass every gate via Gate::before;
+     * teachers and admins use Community moderation (hide) instead.
+     */
+    public function isOwnedBy(User $user): bool
+    {
+        return $this->user_id === $user->id;
+    }
 }

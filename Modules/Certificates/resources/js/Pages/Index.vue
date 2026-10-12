@@ -84,7 +84,7 @@ const submitManual = () => form
             class="group overflow-hidden rounded-3xl border border-line bg-white transition hover:-translate-y-1 hover:shadow-lg"
         >
             <div :class="(classColors[c.color] ?? classColors.violet).grad" class="relative grid aspect-[297/150] place-items-center p-5 text-center text-white">
-                <span class="absolute top-3 right-4 text-2xl">🏅</span>
+                <Icon name="award" :size="26" class="absolute top-3 right-4 text-white/90" />
                 <div>
                     <p class="text-xs font-bold tracking-[0.2em] text-white uppercase">Certificate</p>
                     <p class="mt-1 font-display text-lg leading-tight font-extrabold">{{ c.title }}</p>

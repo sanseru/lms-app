@@ -31,6 +31,17 @@ class Course extends Model
         return $this->hasMany(ClassRoom::class);
     }
 
+    public function interests(): HasMany
+    {
+        return $this->hasMany(CourseInterest::class);
+    }
+
+    /** A student takes this course when one of their classes uses it. */
+    public function isTakenBy(User $student): bool
+    {
+        return $this->classes()->whereHas('students', fn (Builder $q) => $q->whereKey($student->id))->exists();
+    }
+
     /** Courses the user may open: managers all, everyone else through their classes. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {

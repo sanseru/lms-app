@@ -3,7 +3,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Icon from '@/Components/ui/Icon.vue';
-import { rupiah } from '@/lib/format';
+import { rupiah, gradeLabel } from '@/lib/format';
 
 defineOptions({ layout: null });
 const props = defineProps({ report: Object, editable: Array, prev: String, next: String });
@@ -92,7 +92,7 @@ const backUrl = computed(() => (page.props.auth?.user ? route('reports.index', {
                         <p class="font-display text-lg font-bold text-ink">{{ report.student.name }}</p>
                         <p class="text-sm text-muted">
                             <span v-if="report.student.code">{{ report.student.code }}</span>
-                            <span v-if="report.student.grade"> · Grade {{ report.student.grade }}</span>
+                            <span v-if="report.student.grade"> · {{ gradeLabel(report.student.grade) }}</span>
                             <span v-if="report.student.school"> · {{ report.student.school }}</span>
                         </p>
                     </div>
@@ -266,14 +266,14 @@ const backUrl = computed(() => (page.props.auth?.user ? route('reports.index', {
                         </ul>
                     </div>
                     <div>
-                        <h2 class="report-h">Sessions and invoices</h2>
+                        <h2 class="report-h">{{ report.account.outstanding === null ? 'Sessions' : 'Sessions and invoices' }}</h2>
                         <ul class="space-y-2 text-sm">
                             <li v-for="p in report.account.packages" :key="p.name" class="flex justify-between gap-2">
                                 <span class="text-ink">{{ p.name }}<span v-if="p.expires_at" class="text-xs text-muted"> · until {{ p.expires_at }}</span></span>
                                 <span class="font-semibold" :class="p.remaining <= 2 ? 'text-amber-700' : 'text-ink'">{{ p.remaining }} sessions left</span>
                             </li>
                             <li v-if="!report.account.packages.length" class="text-muted">No active session package.</li>
-                            <li class="flex justify-between gap-2 border-t border-line pt-2">
+                            <li v-if="report.account.outstanding !== null" class="flex justify-between gap-2 border-t border-line pt-2">
                                 <span class="text-ink">Unpaid invoices</span>
                                 <span class="font-semibold" :class="report.account.outstanding ? 'text-accent-700' : 'text-emerald-700'">{{ report.account.outstanding ? rupiah(report.account.outstanding) : 'All paid' }}</span>
                             </li>

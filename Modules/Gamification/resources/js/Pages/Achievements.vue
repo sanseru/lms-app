@@ -9,7 +9,8 @@ import BadgeTile from '../Components/BadgeTile.vue';
 
 const props = defineProps({ student: Object, self: Boolean, summary: Object, leaderboards: Array, children: Array });
 const earned = computed(() => props.summary.badges.filter((b) => b.earned_at).length);
-const medal = ['🥇', '🥈', '🥉'];
+// Top three get a coloured rank chip instead of medal emoji.
+const rankTone = ['bg-amber-100 text-amber-800', 'bg-slate-200 text-slate-700', 'bg-orange-100 text-orange-800'];
 </script>
 
 <template>
@@ -47,9 +48,9 @@ const medal = ['🥇', '🥈', '🥉'];
                 </div>
                 <ol class="divide-y divide-line">
                     <li v-for="(p, i) in board.top" :key="p.id" :class="p.me && 'bg-brand-50'" class="flex items-center gap-3 px-5 py-2.5">
-                        <span class="w-6 text-center text-lg">{{ medal[i] ?? i + 1 }}</span>
+                        <span :class="rankTone[i] ?? 'text-muted'" class="grid size-7 shrink-0 place-items-center rounded-full text-sm font-bold">{{ i + 1 }}</span>
                         <Avatar :initials="p.initials" :seed="p.id" size="sm" />
-                        <span class="flex-1 text-sm font-semibold text-ink">{{ p.name }}<span v-if="p.me" class="text-brand-600"> (you)</span></span>
+                        <span class="flex-1 text-sm font-semibold text-ink">{{ p.name }}<span v-if="p.me && self" class="text-brand-600"> (you)</span></span>
                         <span class="text-xs text-muted">Lv {{ p.level }}</span>
                         <span class="w-16 text-right text-sm font-bold text-ink">{{ p.xp }} XP</span>
                     </li>

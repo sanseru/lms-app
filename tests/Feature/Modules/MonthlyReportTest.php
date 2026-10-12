@@ -100,6 +100,15 @@ test('only people connected to the student can read or annotate the report', fun
     $this->actingAs($this->guardian)->put("/monthly-reports/{$this->student->id}/2026-10/note", $note)->assertForbidden();
 });
 
+test('unpaid invoices on the report are only shown to the family and admins', function () {
+    $url = "/monthly-reports/{$this->student->id}/2026-10";
+
+    $this->actingAs($this->guardian)->get($url)->assertInertia(fn ($page) => $page->where('report.account.outstanding', 0));
+    $this->actingAs($this->admin)->get($url)->assertInertia(fn ($page) => $page->where('report.account.outstanding', 0));
+    $this->actingAs($this->student)->get($url)->assertInertia(fn ($page) => $page->where('report.account.outstanding', null));
+    $this->actingAs($this->teacher)->get($url)->assertInertia(fn ($page) => $page->where('report.account.outstanding', null));
+});
+
 test('future or malformed months are not found', function () {
     $this->actingAs($this->guardian)->get("/monthly-reports/{$this->student->id}/2026-11")->assertNotFound();
     $this->actingAs($this->guardian)->get("/monthly-reports/{$this->student->id}/2026-13")->assertNotFound();

@@ -97,6 +97,11 @@ const sessionLabel = (iso) =>
                 <Link :href="route('learning.courses.show', course.id)" class="flex items-center justify-between rounded-2xl px-1 text-sm font-bold text-brand-600 hover:text-brand-700">
                     See the lesson list and scores <Icon name="arrow-right" :size="16" />
                 </Link>
+                <Link :href="route('learning.courses.explore')" class="card flex items-center gap-3 p-4 text-sm transition hover:shadow-md">
+                    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-50 text-accent-700"><Icon name="compass" :size="20" /></span>
+                    <span class="min-w-0 flex-1"><b class="block text-ink">Explore other courses</b><span class="text-muted">See what else you can learn next.</span></span>
+                    <Icon name="arrow-right" :size="16" class="text-muted" />
+                </Link>
             </aside>
 
             <!-- The learning path -->
@@ -111,6 +116,8 @@ const sessionLabel = (iso) =>
     </template>
 
     <div v-else class="card">
-        <EmptyState icon="book-open" title="No course yet" description="Your course and learning path appear here once your teacher adds a course to your class." />
+        <EmptyState icon="book-open" title="No course yet" description="Your course and learning path appear here once your teacher adds a course to your class.">
+            <Link :href="route('learning.courses.explore')" class="btn-ghost"><Icon name="compass" :size="16" /> Explore courses</Link>
+        </EmptyState>
     </div>
 </template>

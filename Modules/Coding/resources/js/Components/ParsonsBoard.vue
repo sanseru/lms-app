@@ -27,7 +27,7 @@ const onDrop = (to) => {
             :key="line + i"
             :draggable="!disabled"
             :class="[
-                results ? (results[i]?.passed ? 'border-emerald-300 bg-emerald-50' : 'border-rose-300 bg-rose-50') : 'border-line bg-white hover:border-brand-300',
+                results?.length ? (results[i]?.passed ? 'border-emerald-300 bg-emerald-50' : 'border-rose-300 bg-rose-50') : 'border-line bg-white hover:border-brand-300',
                 dragging === i && 'opacity-40',
             ]"
             class="flex cursor-grab items-center gap-2 rounded-xl border px-3 py-2 shadow-sm transition active:cursor-grabbing"

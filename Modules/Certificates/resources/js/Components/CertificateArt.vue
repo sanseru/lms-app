@@ -1,4 +1,5 @@
 <script setup>
+import Icon from '@/Components/ui/Icon.vue';
 import QRCode from 'qrcode';
 import { onMounted, ref } from 'vue';
 
@@ -17,7 +18,7 @@ onMounted(async () => {
         <div class="absolute inset-[3.1cqw] rounded-[1cqw] border-[0.12cqw] border-accent-400" />
         <div class="absolute -top-[9cqw] -left-[9cqw] size-[24cqw] rounded-full bg-gradient-to-br from-brand-500 to-accent-500 opacity-90" />
         <div class="absolute -right-[7cqw] -bottom-[10cqw] size-[22cqw] rounded-full bg-gradient-to-br from-accent-400 to-brand-500 opacity-80" />
-        <span class="absolute top-[4cqw] right-[6cqw] text-[5cqw] opacity-80">🚀</span>
+        <Icon name="rocket" class="absolute top-[4cqw] right-[6cqw] size-[5cqw] text-accent-500 opacity-80" />
         <span class="absolute bottom-[5cqw] left-[6cqw] font-mono text-[3.5cqw] font-black text-brand-100">&lt;/&gt;</span>
 
         <div class="relative flex h-full flex-col items-center px-[12cqw] pt-[6cqw] pb-[6cqw] text-center">

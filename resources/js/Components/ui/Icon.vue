@@ -7,7 +7,7 @@ import {
     Sparkles, Trash2, Upload, User, UserPlus, Users, Video, Wallet, X,
     ListChecks, FilePen, ArrowUp, ArrowDown, Link2, Paperclip, CircleCheck, Lock, Play, Trophy, RotateCcw, Target, Code, FlaskConical, Rocket,
     MessageCircle, MessageCircleQuestion, Pin, ThumbsUp, Image, EyeOff, Hand, Send,
-    SquareKanban, GripVertical, ExternalLink, MessageSquareText, Award, ShieldCheck, ShieldX,
+    SquareKanban, GripVertical, ExternalLink, MessageSquareText, Award, ShieldCheck, ShieldX, Maximize2, Minimize2, Compass, Star, Medal, Hammer,
 } from 'lucide-vue-next';
 
 const icons = {
@@ -22,6 +22,7 @@ const icons = {
     'circle-check': CircleCheck, lock: Lock, play: Play, trophy: Trophy, 'rotate-ccw': RotateCcw, target: Target, code: Code, flask: FlaskConical, rocket: Rocket,
     'message-circle': MessageCircle, 'message-question': MessageCircleQuestion, pin: Pin, 'thumbs-up': ThumbsUp, image: Image, 'eye-off': EyeOff, hand: Hand, send: Send,
     kanban: SquareKanban, grip: GripVertical, 'external-link': ExternalLink, 'message-text': MessageSquareText, award: Award, 'shield-check': ShieldCheck, 'shield-x': ShieldX,
+    maximize: Maximize2, minimize: Minimize2, compass: Compass, star: Star, medal: Medal, hammer: Hammer,
 };
 
 const props = defineProps({

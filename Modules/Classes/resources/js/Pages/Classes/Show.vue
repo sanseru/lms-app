@@ -9,7 +9,7 @@ import Icon from '@/Components/ui/Icon.vue';
 import SessionItem from '@/Components/ui/SessionItem.vue';
 import StatusBadge from '@/Components/ui/StatusBadge.vue';
 import { useConfirm } from '@/composables/useConfirm';
-import { classColors } from '@/lib/format';
+import { classColors, gradeLabel } from '@/lib/format';
 import CheckList from '@/Components/ui/CheckList.vue';
 
 const props = defineProps({
@@ -107,7 +107,7 @@ const copyZoom = async () => {
                         <Avatar :initials="student.initials" :seed="student.id" size="sm" />
                         <div class="min-w-0 flex-1">
                             <p class="font-semibold text-ink">{{ student.name }}</p>
-                            <p class="font-mono text-xs text-muted">{{ student.code }}<template v-if="student.grade"> · Grade {{ student.grade }}</template></p>
+                            <p class="font-mono text-xs text-muted">{{ student.code }}<template v-if="student.grade"> · {{ gradeLabel(student.grade) }}</template></p>
                         </div>
                         <p v-if="student.joined_at" class="hidden text-xs text-muted sm:block">Since {{ student.joined_at }}</p>
                         <button
@@ -141,7 +141,7 @@ const copyZoom = async () => {
             <div class="card p-5">
                 <div class="mb-3 flex items-center justify-between">
                     <p class="eyebrow">Zoom</p>
-                    <button v-if="classRoom.zoom_url" class="text-xs font-semibold text-brand-600 hover:underline" @click="copyZoom">{{ copied ? 'Copied ✓' : 'Copy details' }}</button>
+                    <button v-if="classRoom.zoom_url" class="text-xs font-semibold text-brand-600 hover:underline" @click="copyZoom">{{ copied ? 'Copied' : 'Copy details' }}</button>
                 </div>
                 <dl v-if="classRoom.zoom_url" class="space-y-2 text-sm">
                     <div><dt class="text-muted">Link</dt><dd class="truncate font-medium text-brand-600"><a :href="classRoom.zoom_url" target="_blank" rel="noopener">{{ classRoom.zoom_url }}</a></dd></div>

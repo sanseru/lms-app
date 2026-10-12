@@ -1,4 +1,5 @@
 <script setup>
+import Icon from '@/Components/ui/Icon.vue';
 const points = [
     ['Session notes', 'covering the lesson, assignments and a message from the teacher, sent the same day.'],
     ['Level reports', 'assessing logic, creativity and independence.'],
@@ -19,7 +20,7 @@ const tutorFacts = [
                 <p class="mt-4 max-w-xl text-lg leading-relaxed text-white/75">No more guesswork. Every session is recorded, and you can check how many sessions are left anytime in the parent portal.</p>
                 <ul class="mt-8 grid gap-4">
                     <li v-for="[b, t] in points" :key="b" class="flex gap-3">
-                        <span class="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success/25 text-sm font-bold text-emerald-300">✓</span>
+                        <span class="mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success/25 text-emerald-300"><Icon name="check" :size="14" /></span>
                         <span><b>{{ b }}</b> {{ t }}</span>
                     </li>
                 </ul>

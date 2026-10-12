@@ -20,3 +20,22 @@ export const classColors = {
     rose: { bg: 'bg-rose-50', ring: 'ring-rose-200', dot: 'bg-rose-500', text: 'text-rose-700', solid: 'bg-rose-500', grad: 'bg-rose-700' },
     indigo: { bg: 'bg-indigo-50', ring: 'ring-indigo-200', dot: 'bg-indigo-500', text: 'text-indigo-700', solid: 'bg-indigo-500', grad: 'bg-indigo-700' },
 };
+
+/**
+ * School grade as typed by the admin: "5" becomes "Grade 5", while values that already
+ * read as a grade ("Grade 5", "Year 7", "5 SD") are shown unchanged.
+ */
+export const gradeLabel = (grade) => {
+    const value = String(grade ?? '').trim();
+    return /^\d+$/.test(value) ? `Grade ${value}` : value;
+};
+
+/**
+ * Name for greetings: the first name, but a title stays with the surname so
+ * "Mrs. Saputra" is greeted as "Mrs. Saputra" rather than "Mrs.".
+ */
+export const greetName = (name) => {
+    const parts = String(name ?? '').trim().split(/\s+/);
+    const isTitle = /^(mr|mrs|ms|miss|mx|dr|prof|sir|madam|bapak|bpk|pak|ibu|bu)\.?$/i.test(parts[0] ?? '');
+    return isTitle && parts.length > 1 ? `${parts[0]} ${parts[1]}` : (parts[0] ?? '');
+};

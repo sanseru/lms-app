@@ -12,7 +12,7 @@ class LabProjectRequest extends FormRequest
     {
         $project = $this->route('project');
 
-        return $project ? $this->user()->can('update', $project) : $this->user()->can('lab.use');
+        return $project ? $project->isOwnedBy($this->user()) : $this->user()->can('lab.use');
     }
 
     public function rules(): array

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Learning\Http\Controllers\CourseCatalogController;
 use Modules\Learning\Http\Controllers\CourseController;
 use Modules\Learning\Http\Controllers\GradingController;
 use Modules\Learning\Http\Controllers\LessonController;
@@ -32,6 +33,10 @@ Route::name('learning.')->group(function () {
     });
 
     Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::middleware('role:student')->group(function () {
+        Route::get('courses/explore', [CourseCatalogController::class, 'index'])->name('courses.explore');
+        Route::post('courses/{course}/interest', [CourseCatalogController::class, 'interest'])->middleware('throttle:10,1')->name('courses.interest');
+    });
     Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('lessons/{lesson}', [LessonController::class, 'show'])->name('lessons.show');
     Route::post('lessons/{lesson}/report', [LessonReportController::class, 'store'])->middleware('throttle:10,1')->name('reports.store');

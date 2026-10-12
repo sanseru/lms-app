@@ -5,7 +5,6 @@ namespace Modules\Lab\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Lab\Http\Requests\LabProjectRequest;
@@ -51,7 +50,7 @@ class LabProjectController extends Controller
 
     public function edit(Request $request, LabProject $project): Response
     {
-        Gate::authorize('update', $project);
+        abort_unless($project->isOwnedBy($request->user()), 403);
         $project->load('owner:id,name')->loadCount(['likers', 'viewers', 'comments']);
 
         return Inertia::render('Lab::Lab/Editor', [
@@ -67,17 +66,17 @@ class LabProjectController extends Controller
         return back()->with('success', 'Project saved.');
     }
 
-    public function destroy(LabProject $project): RedirectResponse
+    public function destroy(Request $request, LabProject $project): RedirectResponse
     {
-        Gate::authorize('delete', $project);
+        abort_unless($project->isOwnedBy($request->user()), 403);
         $project->delete();
 
         return to_route('lab.projects.index')->with('success', 'Project deleted.');
     }
 
-    public function share(LabProject $project): RedirectResponse
+    public function share(Request $request, LabProject $project): RedirectResponse
     {
-        Gate::authorize('update', $project);
+        abort_unless($project->isOwnedBy($request->user()), 403);
 
         if ($project->hidden_at) {
             return back()->with('error', 'A teacher removed this project from the Community, so it can’t be shared again.');
@@ -88,9 +87,9 @@ class LabProjectController extends Controller
         return back()->with('success', 'Shared to the Community. Everyone can see and run it now.');
     }
 
-    public function unshare(LabProject $project): RedirectResponse
+    public function unshare(Request $request, LabProject $project): RedirectResponse
     {
-        Gate::authorize('update', $project);
+        abort_unless($project->isOwnedBy($request->user()), 403);
         $project->forceFill(['shared_at' => null])->save();
 
         return back()->with('success', 'Your project is private again.');

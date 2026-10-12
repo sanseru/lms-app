@@ -30,17 +30,17 @@ const hasLab = route().has('community.show');
 
     <div class="panel-brand p-6 sm:p-8">
         <div class="relative flex items-center gap-4">
-            <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-accent-500 !text-ink ring-4 ring-brand-600" />
+            <Avatar :initials="user.initials" :seed="user.id" size="lg" class="!bg-accent-500 !text-ink ring-4 ring-white/30" />
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight">Hi, {{ greetName(user.name) }}!</h1>
-                <p class="text-brand-100">Ready to code today?</p>
+                <p class="text-white/85">Ready to code today?</p>
             </div>
         </div>
         <div class="relative mt-6 flex flex-wrap gap-3">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="school" :size="16" class="text-accent-300" /> {{ classes.length }} {{ classes.length === 1 ? 'class' : 'classes' }}</span>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="circle-check" :size="16" class="text-accent-300" /> {{ stats.present }} {{ stats.present === 1 ? 'session' : 'sessions' }} attended</span>
-            <span v-if="stats.rate !== null" class="inline-flex items-center gap-1.5 rounded-full bg-brand-800 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="target" :size="16" class="text-accent-300" /> Attendance {{ stats.rate }}%</span>
-            <span v-if="profile.code" class="rounded-full bg-brand-800 px-3 py-1 font-mono text-sm ring-1 ring-white/10">{{ profile.code }}</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="school" :size="16" class="text-accent-300" /> {{ classes.length }} {{ classes.length === 1 ? 'class' : 'classes' }}</span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="circle-check" :size="16" class="text-accent-300" /> {{ stats.present }} {{ stats.present === 1 ? 'session' : 'sessions' }} attended</span>
+            <span v-if="stats.rate !== null" class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold ring-1 ring-white/10"><Icon name="target" :size="16" class="text-accent-300" /> Attendance {{ stats.rate }}%</span>
+            <span v-if="profile.code" class="rounded-full bg-white/15 px-3 py-1 font-mono text-sm ring-1 ring-white/10">{{ profile.code }}</span>
         </div>
     </div>
 

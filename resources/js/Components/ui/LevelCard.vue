@@ -14,7 +14,7 @@ defineProps({ level: { type: Object, required: true }, compact: { type: Boolean,
             </div>
             <div class="min-w-0 flex-1">
                 <p :class="compact ? 'text-lg' : 'text-2xl'" class="font-display font-extrabold">{{ level.name }}</p>
-                <p class="text-sm text-brand-100"><b class="text-white tabular-nums">{{ level.xp }} XP</b> · {{ level.to_next }} XP to level {{ level.level + 1 }}</p>
+                <p class="text-sm text-white/85"><b class="text-white tabular-nums">{{ level.xp }} XP</b> · {{ level.to_next }} XP to level {{ level.level + 1 }}</p>
                 <div class="mt-3 rounded-full bg-white/20 p-0.5"><ProgressBar :value="level.percent" tone="amber" size="sm" /></div>
             </div>
         </div>

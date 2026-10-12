@@ -27,11 +27,11 @@ const sorts = [
 
     <section class="panel-brand mb-8 flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div class="max-w-xl">
-            <p class="text-[11px] font-extrabold tracking-[0.12em] text-brand-100 uppercase">Community</p>
+            <p class="text-[11px] font-extrabold tracking-[0.12em] text-white/85 uppercase">Community</p>
             <h1 class="mt-1 font-display text-3xl font-extrabold tracking-tight">See what everyone is building</h1>
             <p class="mt-2 text-sm text-white/85">Projects shared by students from every class. Run them, leave a kind comment, and get ideas for your next one.</p>
         </div>
-        <Link v-if="can.create" :href="route('lab.projects.index')" class="btn-accent shrink-0"><Icon name="plus" :size="16" /> Share a project</Link>
+        <Link v-if="can.create" :href="route('lab.projects.index')" class="btn shrink-0 bg-white text-brand-700 shadow-[0_4px_0_rgb(0_0_0/0.15)] hover:bg-brand-50"><Icon name="plus" :size="16" /> Share a project</Link>
     </section>
 
     <section v-if="trending.length || projects.total" class="mb-10" aria-labelledby="trending-title">

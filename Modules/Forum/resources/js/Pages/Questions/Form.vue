@@ -157,7 +157,7 @@ const visibilityHelp = {
         <aside class="space-y-4">
             <div class="panel-brand p-5">
                 <p class="font-display text-lg font-bold">Tips for asking</p>
-                <ol class="mt-2 list-decimal space-y-2 pl-5 text-sm text-brand-100 marker:font-bold marker:text-accent-300">
+                <ol class="mt-2 list-decimal space-y-2 pl-5 text-sm text-white/85 marker:font-bold marker:text-accent-300">
                     <li>Say what you are trying to make.</li>
                     <li>Explain what you have already tried.</li>
                     <li>Paste your code and the error message.</li>

@@ -118,10 +118,15 @@
         display: none;
     }
 }
+/* Highlight panel in the logo's colours (client request): blue to violet, ending in a warm
+   coral glow, with the dotted texture on top. Keep text on the left/blue side. */
 @utility panel-brand {
-    @apply relative overflow-hidden rounded-3xl bg-brand-700 text-white;
-    background-image: radial-gradient(color-mix(in oklab, white 14%, transparent) 1.2px, transparent 1.2px);
-    background-size: 18px 18px;
+    @apply relative overflow-hidden rounded-3xl text-white;
+    background-color: #4d48e6;
+    background-image:
+        radial-gradient(color-mix(in oklab, white 16%, transparent) 1.2px, transparent 1.2px),
+        linear-gradient(110deg, #2b6ef0 0%, #5747ec 38%, #8a4fe2 68%, #d8679c 88%, #f27f6c 100%);
+    background-size: 18px 18px, 100% 100%;
 }
 @utility field {
     @apply block w-full rounded-xl border-line bg-white text-sm text-ink placeholder:text-muted focus:border-brand-400 focus:ring-brand-200;

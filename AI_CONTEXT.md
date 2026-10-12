@@ -28,7 +28,7 @@ Hard rules:
   Policies. Admin bypasses all gates, so business-state rules must be checked explicitly.
 - Thin controllers, validation in Form Requests, reusable write logic in Actions/.
 - Vue 3 <script setup> + Tailwind 4, reuse resources/js/Components/ui and the btn-*/card/field/label/eyebrow
-  utilities. No purple gradients, no white text on coral, no emoji as UI icons; use panel-brand for highlight panels.
+  utilities. Highlight panels use only `panel-brand` (the logo gradient blue → violet → coral, client request); no other gradients, no white text on coral, no emoji as UI icons.
 - Every feature needs Pest tests in tests/Feature/Modules. Run `php artisan test` and `vendor/bin/pint`
   before every commit. Eager-load relations (lazy loading throws outside production).
 - Never commit secrets or .env. Work on a branch and open a pull request; do not push straight to main.
@@ -186,7 +186,7 @@ Cross-module extension points (prefer these over editing another module's intern
 Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 
 - Brand purple `#5B4185`, coral `#F58464`; fonts Plus Jakarta Sans (headings), DM Sans (body), DM Mono (code). Muted text `#5f6b75`.
-- No purple/violet gradients (use `panel-brand`), no white text on coral (`btn-accent` = coral background + dark ink text), emoji only as content (badges, project icons), never as UI icons.
+- Gradients only through `panel-brand` (logo colours blue → violet → coral, requested by the client; keep text on its blue/left side, white buttons on it), no white text on coral (`btn-accent` = coral background + dark ink text), emoji only as content (badges, project icons), never as UI icons.
 - Eyebrow labels stay in app pages (owner's decision), removed only on landing/login.
 - Student screens can be playful; guardian and finance screens calm and scannable. Each dashboard answers "what do I do now" before statistics.
 - Never invent testimonials, statistics or "trusted by" claims.

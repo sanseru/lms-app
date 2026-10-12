@@ -33,7 +33,8 @@ class ClassesServiceProvider extends ModuleServiceProvider
     public function navigation(NavigationRegistry $nav): void
     {
         $nav->add(
-            new NavItem('Classes', 'classes.index', 'school', 'Academic', 10, active: 'classes.*'),
+            // Students see their class on the Course page (client: no separate Classes menu).
+            new NavItem('Classes', 'classes.index', 'school', 'Academic', 10, roles: ['admin', 'teacher', 'guardian'], active: 'classes.*'),
             // Client naming: students know their live Zoom classes as "Online Lesson".
             new NavItem('Online Lesson', 'schedule.index', 'video', 'Academic', 20, roles: ['student']),
             new NavItem('Schedule', 'schedule.index', 'calendar-days', 'Academic', 20, roles: ['admin', 'teacher', 'guardian']),

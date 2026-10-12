@@ -16,7 +16,7 @@ const user = usePage().props.auth.user;
 
     <div class="panel-brand mb-2 p-6 sm:p-8">
         <h1 class="text-3xl font-extrabold tracking-tight">{{ greeting() }}, {{ greetName(user.name) }}!</h1>
-        <p class="mt-1 text-brand-100">{{ today.length ? `You have ${today.length} ${today.length === 1 ? 'session' : 'sessions'} today. Happy teaching!` : 'No sessions today. A good time to prepare lessons.' }}</p>
+        <p class="mt-1 text-white/85">{{ today.length ? `You have ${today.length} ${today.length === 1 ? 'session' : 'sessions'} today. Happy teaching!` : 'No sessions today. A good time to prepare lessons.' }}</p>
     </div>
 
     <Link v-if="stats.to_grade" :href="route('learning.grading.index')" class="mt-6 flex items-center gap-4 rounded-2xl border border-violet-200 bg-violet-50 p-5 transition hover:shadow-md">

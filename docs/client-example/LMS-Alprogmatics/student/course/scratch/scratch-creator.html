@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scratch Creator | Alprogmatics</title>
+    <link rel="stylesheet" href="../../assets/css/main.css?v=4" />
+    <link rel="stylesheet" href="../../assets/css/course-detail.css" />
+    <style>
+      .scratch-platform-card {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        margin-top: 24px;
+        padding: 24px 28px;
+        border: 1px solid #f3d7cb;
+        border-radius: 10px;
+        background: #fff8f4;
+      }
+
+      .scratch-platform-content {
+        max-width: 760px;
+      }
+
+      .scratch-platform-label {
+        margin: 0 0 8px;
+        color: var(--coral);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+      }
+
+      .scratch-platform-card h2 {
+        margin: 0 0 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 20px;
+        letter-spacing: -0.7px;
+      }
+
+      .scratch-platform-card p:not(.scratch-platform-label) {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+      }
+
+      .scratch-platform-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .scratch-editor-frame {
+        width: 100%;
+        height: 620px;
+        border: 1px solid #e8d8d0;
+        border-radius: 8px;
+        background: #f4f4f4;
+      }
+
+      .scratch-platform-actions .primary-button {
+        box-shadow: none;
+      }
+
+      .scratch-explore-link {
+        color: var(--coral);
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      @media (max-width: 760px) {
+        .scratch-platform-card {
+          padding: 21px;
+        }
+
+        .scratch-editor-frame {
+          height: 520px;
+        }
+
+        .scratch-platform-actions {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 13px;
+        }
+
+      }
+    </style>
+  </head>
+  <body data-course="scratch">
+    <header class="site-header">
+      <a class="brand" href="../../index.html" aria-label="Alprogmatics home"><img class="brand-logo" src="../../assets/images/Logo-header.png" alt="Alprogmatics" /></a>
+      <nav class="main-menu" aria-label="Main menu">
+        <a class="menu-link" href="../../home/index.html">Home</a>
+        <a class="menu-link active" href="../../course/index.html">Course</a>
+        <a class="menu-link" href="../../online-lesson/index.html">Online Lesson</a>
+        <a class="menu-link" href="../../community/index.html">Community</a>
+        <a class="menu-link" href="../../laboratory/index.html">Laboratory</a>
+        <a class="menu-link" href="../../archive/index.html">Archive</a>
+      </nav>
+      <div class="header-actions">
+        <button class="header-icon" aria-label="Search" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="header-icon has-alert" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></button>
+        <a class="login-button" href="../../login/index.html">Login</a>
+        <button class="mobile-menu" aria-label="Open menu" onclick="toggleMobileMenu()">&#9776;</button>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="search" placeholder="Search for courses or lessons..." aria-label="Search" />
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+      </div>
+    </header>
+    <main class="course-learning-page">
+      <a class="course-back" href="../index.html">
+        ← Back to course catalog
+      </a>
+      <div class="course-learning-layout">
+        <aside class="course-sidebar">
+          <div class="course-sidebar-title">
+            <span class="course-sidebar-icon" id="courseIcon"></span>
+            <div>
+              <strong id="courseName"></strong>
+              <small id="courseMeta"></small>
+            </div>
+          </div>
+          <div class="course-progress">
+            <div class="course-progress-row">
+              <span>Learning progress</span>
+              <strong>0%</strong>
+            </div>
+            <div class="course-progress-bar"><span></span></div>
+          </div>
+          <nav class="lesson-nav" id="lessonNav"></nav>
+        </aside>
+        <section class="course-main-panel">
+          <div class="selected-label">
+            <i></i>
+            SELECTED LEVEL
+          </div>
+          <h1 id="selectedLessonTitle"></h1>
+          <p class="course-description" id="selectedLessonBody"></p>
+          <article class="lesson-content-card">
+            <h2 id="selectedLessonHeading"></h2>
+            <p id="selectedLessonText"></p>
+            <pre id="selectedLessonCode"></pre>
+            <div class="lesson-footer">
+              <span id="lessonCount"></span>
+              <a href="../../laboratory/index.html">Try it in the Laboratory →</a>
+            </div>
+          </article>
+        </section>
+      </div>
+      <section
+        class="scratch-platform-card"
+        id="scratch-workspace"
+        aria-labelledby="scratch-platform-title"
+      >
+        <div class="scratch-platform-content">
+          <p class="scratch-platform-label">PRACTICE IN SCRATCH</p>
+          <h2 id="scratch-platform-title">Scratch Workspace</h2>
+          <p>
+            Work on your project in this Scratch space. The question panel will appear on the right when the workspace opens.
+          </p>
+        </div>
+        <iframe
+          class="scratch-editor-frame"
+          title="Scratch Project Player"
+          src="https://turbowarp.org/60917032/embed"
+          allow="fullscreen; autoplay"
+        ></iframe>
+        <div class="scratch-platform-actions">
+          <a
+            class="primary-button"
+            id="scratchWorkspaceLink"
+            href="http://localhost:8601/?lesson=0"
+          >
+            Open Scratch workspace <span>→</span>
+          </a>
+          <a
+            class="scratch-explore-link"
+            href="https://scratch.mit.edu/create"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open official Scratch in a new tab ↗
+          </a>
+          <a
+            class="scratch-explore-link"
+            href="https://scratch.mit.edu/explore/projects/all"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Explore projects
+          </a>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>© 2026 Alprogmatics</span>
+      <span>Learn. Create. Grow.</span>
+    </footer>
+    <script src="../../assets/js/course-lesson.js"></script>
+      <script src="../../assets/js/main.js?v=3"></script>
+  </body>
+</html>

@@ -6,6 +6,8 @@
 @source '../**/*.blade.php';
 @source '../**/*.vue';
 @source '../../Modules/**/*.vue';
+/* Prototipe klien di docs/ hanya referensi, jangan ikut dipindai. */
+@source not '../../docs';
 
 @theme {
     --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;

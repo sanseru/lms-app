@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courses | Alprogmatics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/main.css?v=4" />
+    <style>
+      .course-page {
+        max-width: 1240px;
+        margin: auto;
+        padding: 48px 24px 90px;
+      }
+      .course-catalog-layout {
+        display: grid;
+        grid-template-columns: 245px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+      .selected-course-panel {
+        position: sticky;
+        top: 100px;
+        padding: 20px 16px;
+        border: 1px solid #f3d7cb;
+        border-radius: 10px;
+        background: #fff8f4;
+      }
+      .selected-course-panel h2 {
+        margin: 8px 0 5px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 18px;
+        letter-spacing: -0.5px;
+      }
+      .selected-course-label {
+        color: var(--coral);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+      .selected-course-icon {
+        display: grid;
+        place-items: center;
+        width: 47px;
+        height: 47px;
+        margin: 17px 0 15px;
+        border-radius: 11px;
+        color: #37769d;
+        background: #f8d9c8;
+        font-family: "DM Mono", monospace;
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .selected-course-panel p {
+        color: #8a7770;
+        font-size: 10px;
+        line-height: 1.7;
+      }
+      .selected-course-status {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 14px;
+        border-top: 1px solid #f0dcd4;
+        color: #9a8982;
+        font-size: 9px;
+      }
+      .selected-course-status strong {
+        color: var(--coral);
+      }
+      .selected-course-button {
+        display: block;
+        margin-top: 17px;
+        padding: 11px;
+        border-radius: 5px;
+        color: #fff;
+        background: var(--coral);
+        text-align: center;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .course-page h1 {
+        margin: 0 0 11px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 42px;
+        letter-spacing: -2px;
+      }
+      .course-page-intro {
+        max-width: 500px;
+        margin: 0 0 32px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 17px;
+      }
+      .course-card {
+        min-width: 0;
+      }
+      @media (max-width: 850px) {
+        .course-catalog-layout {
+          grid-template-columns: 190px minmax(0, 1fr);
+          gap: 17px;
+        }
+        .course-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 620px) {
+        .course-page {
+          padding: 35px 18px 70px;
+        }
+        .course-catalog-layout {
+          grid-template-columns: 1fr;
+        }
+        .selected-course-panel {
+          position: static;
+        }
+        .course-grid {
+          grid-template-columns: 1fr;
+        }
+        .course-page h1 {
+          font-size: 35px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html" aria-label="Alprogmatics home"><img class="brand-logo" src="../assets/images/Logo-header.png" alt="Alprogmatics" /></a>
+      <nav class="main-menu" aria-label="Main menu">
+        <a class="menu-link" href="../home/index.html">Home</a>
+        <a class="menu-link active" href="../course/index.html">Course</a>
+        <a class="menu-link" href="../online-lesson/index.html">Online Lesson</a>
+        <a class="menu-link" href="../community/index.html">Community</a>
+        <a class="menu-link" href="../laboratory/index.html">Laboratory</a>
+        <a class="menu-link" href="../archive/index.html">Archive</a>
+      </nav>
+      <div class="header-actions">
+        <button class="header-icon" aria-label="Search" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="header-icon has-alert" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></button>
+        <a class="login-button" href="../login/index.html">Login</a>
+        <button class="mobile-menu" aria-label="Open menu" onclick="toggleMobileMenu()">&#9776;</button>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="search" placeholder="Search for courses or lessons..." aria-label="Search" />
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+      </div>
+    </header>
+    <main class="course-page">
+      <div class="course-catalog-layout">
+        <aside class="selected-course-panel">
+          <div class="selected-course-label">SELECTED COURSE</div>
+          <div class="selected-course-icon" id="selectedCourseIcon">Py</div>
+          <h2 id="selectedCourseName">Python</h2>
+          <p id="selectedCourseDescription">
+            Keep learning Python from the basics all the way to building your own programs.
+          </p>
+          <div class="selected-course-status">
+            <span>Progress</span>
+            <strong id="selectedCourseProgress">35%</strong>
+          </div>
+          <a
+            class="selected-course-button"
+            id="selectedCourseLink"
+            href="python/index.html"
+          >
+            Continue course →
+          </a>
+        </aside>
+        <section>
+          <p class="eyebrow">LEARNING CATALOG</p>
+          <h1>
+            Find courses
+            <br />
+            <em style="color: var(--coral); font-style: normal">
+              to help you grow.
+            </em>
+          </h1>
+          <p class="course-page-intro">
+            Pick the course you want to explore. Your selected course will appear in the panel on the left.
+          </p>
+          <div class="course-grid">
+            <a
+              class="course-card featured"
+              data-course-name="Data"
+              data-course-icon="∿"
+              data-course-description="Learn how to read, organize, and present data."
+              data-course-progress="0%"
+              href="data/data-explorer.html"
+            >
+              <div class="card-illustration data-art">
+                <span>∿</span>
+                <i>▥</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag green-tag">DATA</span>
+                <h3>Data</h3>
+                <p>Turn data into useful insights.</p>
+                <div class="card-meta">
+                  <span>10 Lessons</span>
+                  <span>•</span>
+                  <span>Intermediate</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Artificial Intelligence"
+              data-course-icon="AI"
+              data-course-description="Discover AI basics and how it works from the very beginning."
+              data-course-progress="0%"
+              href="ai/jr-ai.html"
+            >
+              <div class="card-illustration ai-art">
+                <span>AI</span>
+                <i>✦</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag purple-tag">TECHNOLOGY</span>
+                <h3>Artificial Intelligence</h3>
+                <p>Discover AI basics and how it works from the very beginning.</p>
+                <div class="card-meta">
+                  <span>14 Lessons</span>
+                  <span>•</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Python"
+              data-course-icon="Py"
+              data-course-description="Keep learning Python from the basics all the way to building your own programs."
+              data-course-progress="35%"
+              href="python/index.html"
+            >
+              <div class="card-illustration python-art">
+                <span>Py</span>
+                <i>{ }</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag">PROGRAMMING</span>
+                <h3>Python</h3>
+                <p>
+                  Start coding from scratch and build strong programming logic.
+                </p>
+                <div class="card-meta">
+                  <span>4 Levels • 128 Lessons</span>
+                  <span>•</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Scratch"
+              data-course-icon="★"
+              data-course-description="Learn coding with visual blocks and make fun games."
+              data-course-progress="0%"
+              href="scratch/scratch-creator.html"
+            >
+              <div class="card-illustration scratch-art">
+                <span>★</span>
+                <i>▣</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag orange-tag">CREATIVE</span>
+                <h3>Scratch</h3>
+                <p>Learn coding by stacking blocks and making games.</p>
+                <div class="card-meta">
+                  <span>8 Lessons</span>
+                  <span>•</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Computer &amp; Networks"
+              data-course-icon="⌁"
+              data-course-description="Understand computer devices and the basics of networks."
+              data-course-progress="0%"
+              href="komputer-jaringan/network-starter.html"
+            >
+              <div class="card-illustration network-art">
+                <span>⌁</span>
+                <i>◫</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag blue-tag">TECHNOLOGY</span>
+                <h3>Computer &amp; Networks</h3>
+                <p>Understand computer devices and the basics of networks.</p>
+                <div class="card-meta">
+                  <span>16 Lessons</span>
+                  <span>•</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Web Development"
+              data-course-icon="&lt;/&gt;"
+              data-course-description="Build neat and responsive desktop-friendly websites."
+              data-course-progress="0%"
+              href="web-desktop/web-builder.html"
+            >
+              <div class="card-illustration web-art">
+                <span>&lt;/&gt;</span>
+                <i>◌</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag blue-tag">WEB</span>
+                <h3>Web Development</h3>
+                <p>
+                  Build neat, interactive, and responsive desktop-friendly websites.
+                </p>
+                <div class="card-meta">
+                  <span>18 Lessons</span>
+                  <span>•</span>
+                  <span>Beginner</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Desktop Applications"
+              data-course-icon="▣"
+              data-course-description="Learn the basics of building desktop apps for computers."
+              data-course-progress="0%"
+              href="application-desktop/desktop-maker.html"
+            >
+              <div class="card-illustration desktop-art">
+                <span>▣</span>
+                <i>⌘</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag purple-tag">APPS</span>
+                <h3>Desktop Applications</h3>
+                <p>Learn the basics of building desktop apps for computers.</p>
+                <div class="card-meta">
+                  <span>15 Lessons</span>
+                  <span>•</span>
+                  <span>Intermediate</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Android"
+              data-course-icon="◆"
+              data-course-description="Create Android mobile apps from idea to prototype."
+              data-course-progress="0%"
+              href="android/android-starter.html"
+            >
+              <div class="card-illustration android-art">
+                <span>◆</span>
+                <i>◉</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag green-tag">MOBILE</span>
+                <h3>Android</h3>
+                <p>Create Android mobile apps from idea to prototype.</p>
+                <div class="card-meta">
+                  <span>20 Lessons</span>
+                  <span>•</span>
+                  <span>Intermediate</span>
+                </div>
+              </div>
+            </a>
+            <a
+              class="course-card"
+              data-course-name="Internet of Things"
+              data-course-icon="⌁"
+              data-course-description="Connect sensors, devices, and data in IoT projects."
+              data-course-progress="0%"
+              href="iot/iot-maker.html"
+            >
+              <div class="card-illustration iot-art">
+                <span>⌁</span>
+                <i>◉</i>
+              </div>
+              <div class="course-info">
+                <span class="course-tag orange-tag">HARDWARE</span>
+                <h3>Internet of Things</h3>
+                <p>Connect sensors, devices, and data in IoT projects.</p>
+                <div class="card-meta">
+                  <span>17 Lessons</span>
+                  <span>•</span>
+                  <span>Intermediate</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <span>© 2026 Alprogmatics</span>
+      <span>Learn. Create. Grow.</span>
+    </footer>
+    <script src="../assets/js/main.js?v=3"></script>
+    <script>
+      const selectedKey = "algonova-selected-course";
+      const cards = document.querySelectorAll(".course-card");
+      const panel = {
+        icon: document.getElementById("selectedCourseIcon"),
+        name: document.getElementById("selectedCourseName"),
+        description: document.getElementById("selectedCourseDescription"),
+        progress: document.getElementById("selectedCourseProgress"),
+        link: document.getElementById("selectedCourseLink"),
+      };
+      function selectCourse(card) {
+        const course = {
+          name: card.dataset.courseName,
+          icon: card.dataset.courseIcon,
+          description: card.dataset.courseDescription,
+          progress: card.dataset.courseProgress,
+          href: card.getAttribute("href"),
+        };
+        localStorage.setItem(selectedKey, JSON.stringify(course));
+        panel.icon.textContent = course.icon;
+        panel.name.textContent = course.name;
+        panel.description.textContent = course.description;
+        panel.progress.textContent = course.progress;
+        panel.link.href = course.href;
+      }
+      const saved = JSON.parse(localStorage.getItem(selectedKey) || "null");
+      if (saved) {
+        panel.icon.textContent = saved.icon;
+        panel.name.textContent = saved.name;
+        panel.description.textContent = saved.description;
+        panel.progress.textContent = saved.progress;
+        panel.link.href = saved.href;
+      }
+      cards.forEach((card) =>
+        card.addEventListener("click", () => selectCourse(card)),
+      );
+    </script>
+  </body>
+</html>

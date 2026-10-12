@@ -9,3 +9,6 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Contoh desain dari klien: referensi saja, bukan kode aplikasi.
+/docs/client-example/** linguist-documentation export-ignore

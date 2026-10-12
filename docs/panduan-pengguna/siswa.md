@@ -50,10 +50,11 @@ Buka **Course**. Kursus disusun seperti di sekolah musik: **program** (mis. Pyth
   - Setiap lingkaran bernomor adalah satu Lesson. Di sampingnya tertulis judul Lesson dan berapa task yang sudah selesai.
   - Lingkaran dengan centang hijau sudah selesai. Lingkaran yang menyala dengan label **Up next** (atau **Start here**) adalah yang harus kamu kerjakan sekarang.
   - Klik lingkaran Lesson untuk membuka daftar task-nya, lalu klik task atau tombol **Start lesson** / **Continue**.
+  - Lesson dibuka **berurutan**: lingkaran abu-abu bergembok baru terbuka setelah semua task di Lesson sebelumnya selesai. Gurumu bisa membuka Lesson lebih awal untuk seluruh kelas.
 
 ![Popup Lesson: daftar task dengan tanda selesai](img/siswa-lesson-tugas.png)
 
-**Naik level step by step.** Kastel di ujung peta menunjukkan level berikutnya (**Next: …**). Level itu terkunci (ikon gembok) sampai semua task di level sekarang selesai, lalu terbuka sendiri dan petanya muncul di bawah. Kamu tidak perlu pindah kelas. Level yang masih terkunci tampil sebagai kartu abu-abu **Locked**.
+**Naik level step by step.** Kastel di ujung peta menunjukkan level berikutnya (**Next: …**). Level itu terkunci (ikon gembok) sampai semua task di level sekarang selesai, lalu terbuka sendiri dan petanya muncul di bawah. Kamu tidak perlu pindah kelas. Level yang masih terkunci tampil sebagai kartu abu-abu **Locked**. Bila guru membuka Lesson tertentu di level berikutnya, level itu muncul dengan hanya Lesson tersebut yang bisa dibuka.
 
 Beberapa kursus lama belum dibagi menjadi Lesson; di sana setiap lingkaran adalah satu task.
 

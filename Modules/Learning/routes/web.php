@@ -5,6 +5,7 @@ use Modules\Learning\Http\Controllers\CourseCatalogController;
 use Modules\Learning\Http\Controllers\CourseController;
 use Modules\Learning\Http\Controllers\CourseUnitController;
 use Modules\Learning\Http\Controllers\GradingController;
+use Modules\Learning\Http\Controllers\LessonAccessController;
 use Modules\Learning\Http\Controllers\LessonController;
 use Modules\Learning\Http\Controllers\LessonReportController;
 use Modules\Learning\Http\Controllers\ProgramController;
@@ -21,6 +22,10 @@ Route::name('learning.')->group(function () {
         Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         Route::post('courses/{course}/classes', [CourseController::class, 'attachClass'])->name('courses.classes.store');
         Route::delete('courses/{course}/classes/{class}', [CourseController::class, 'detachClass'])->name('courses.classes.destroy');
+
+        Route::get('classes/{class}/lessons', [LessonAccessController::class, 'show'])->name('access.show');
+        Route::put('classes/{class}/lessons', [LessonAccessController::class, 'update'])->name('access.update');
+        Route::put('classes/{class}/lessons/all', [LessonAccessController::class, 'all'])->name('access.all');
 
         Route::get('programs', [ProgramController::class, 'index'])->name('programs.index');
         Route::post('programs', [ProgramController::class, 'store'])->name('programs.store');

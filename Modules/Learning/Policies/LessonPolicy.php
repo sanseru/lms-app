@@ -4,6 +4,7 @@ namespace Modules\Learning\Policies;
 
 use App\Models\User;
 use Modules\Learning\Models\Lesson;
+use Modules\Learning\Support\LessonGate;
 use Modules\Learning\Support\LevelAccess;
 
 class LessonPolicy
@@ -23,6 +24,7 @@ class LessonPolicy
         return $user->hasRole('student')
             && $lesson->is_published
             && $lesson->course->status === 'published'
-            && app(LevelAccess::class)->allows($user, $lesson->course_id);
+            && app(LevelAccess::class)->allows($user, $lesson->course_id)
+            && ! app(LessonGate::class)->isLocked($user, $lesson);
     }
 }

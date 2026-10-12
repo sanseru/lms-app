@@ -69,6 +69,7 @@ const copyZoom = async () => {
                 <a v-if="classRoom.zoom_url" :href="classRoom.zoom_url" target="_blank" rel="noopener" class="btn bg-white text-ink shadow-[0_4px_0_rgba(0,0,0,0.15)] hover:bg-white/90">
                     <Icon name="video" :size="18" /> Join Zoom
                 </a>
+                <Link v-if="can.lessonAccess && route().has('learning.access.show')" :href="route('learning.access.show', classRoom.id)" class="btn bg-white/20 text-white hover:bg-white/30"><Icon name="lock" :size="16" /> Lesson access</Link>
                 <Link v-if="can.manage" :href="route('classes.edit', classRoom.id)" class="btn bg-white/20 text-white hover:bg-white/30"><Icon name="pencil" :size="16" /> Edit</Link>
             </div>
         </div>

@@ -17,7 +17,9 @@ use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\LessonReport;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
+use Modules\Learning\Support\LessonGate;
 use Modules\Learning\Support\LessonTypes;
+use Modules\Learning\Support\LevelAccess;
 
 class LessonController extends Controller
 {
@@ -52,10 +54,17 @@ class LessonController extends Controller
         return to_route('learning.lessons.show', $lesson)->with('success', Lesson::types()[$lesson->type].' added.');
     }
 
-    public function show(Request $request, Lesson $lesson): Response
+    public function show(Request $request, Lesson $lesson, LevelAccess $levels, LessonGate $gate): Response|RedirectResponse
     {
         Gate::authorize('view', $lesson);
         $user = $request->user();
+
+        // Lessons open one after another; a locked one sends the student back to the map.
+        if ($user->hasRole('student') && $user->cannot('learning.manage') && $levels->allows($user, $lesson->course_id) && $gate->isLocked($user, $lesson)) {
+            return to_route('learning.courses.index', ['course' => $lesson->course_id])
+                ->with('error', 'Finish the lesson before this one first, or ask your teacher to open it for your class.');
+        }
+
         $manage = $user->can('learning.manage');
         $learn = $user->can('learn', $lesson);
         $course = $lesson->course;

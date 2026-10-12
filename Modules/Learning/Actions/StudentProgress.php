@@ -10,6 +10,7 @@ use Modules\Learning\Models\Lesson;
 use Modules\Learning\Models\LessonProgress;
 use Modules\Learning\Models\QuizAttempt;
 use Modules\Learning\Models\QuizQuestion;
+use Modules\Learning\Support\LessonGate;
 use Modules\Learning\Support\LessonTypes;
 use Modules\Learning\Support\LevelAccess;
 
@@ -20,7 +21,7 @@ use Modules\Learning\Support\LevelAccess;
  */
 class StudentProgress
 {
-    public function __construct(private LessonTypes $types, private LevelAccess $access) {}
+    public function __construct(private LessonTypes $types, private LevelAccess $access, private LessonGate $gate) {}
 
     /**
      * Warm-up Mission vs Final Mission: the first attempt score of each,
@@ -98,7 +99,9 @@ class StudentProgress
         }
 
         return $courses->map(function (Course $course) use ($done, $bestQuiz, $submissions, $extra, $student) {
+            $locked = array_flip($this->gate->lockedLessonIds($student, $course));
             $lessons = $course->lessons->map(fn ($lesson) => [
+                'locked' => isset($locked[$lesson->id]),
                 ...$lesson->toItem(),
                 'done' => $done->has($lesson->id),
                 'quiz_best' => $bestQuiz->get($lesson->id)?->best ?? $extra[$lesson->id]['best'] ?? null,
@@ -129,7 +132,7 @@ class StudentProgress
                 'percent' => $total ? (int) round($completed / $total * 100) : 0,
                 'quiz_avg' => $quizScores->isNotEmpty() ? (int) round($quizScores->avg()) : null,
                 'assignment_avg' => $graded->isNotEmpty() ? (int) round($graded->avg(fn ($l) => $l['submission_score'] / max(1, $l['max_score']) * 100)) : null,
-                'next' => $lessons->firstWhere('done', false),
+                'next' => $lessons->first(fn ($l) => ! $l['done'] && ! $l['locked']),
                 'pending_assignments' => $lessons->where('type', 'assignment')->filter(fn ($l) => in_array($l['submission_status'], [null, 'revision'], true))->count(),
                 'missions' => $this->missions($course, $student),
             ];

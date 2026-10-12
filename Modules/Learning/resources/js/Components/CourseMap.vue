@@ -43,10 +43,16 @@ const groups = computed(() => {
             list.push({ key: `l${lesson.id}`, unit: null, lessons: [lesson] });
         }
     }
-    return list.map((g) => ({ ...g, done: g.lessons.every((l) => l.done), doneCount: g.lessons.filter((l) => l.done).length }));
+    return list.map((g) => ({
+        ...g,
+        done: g.lessons.every((l) => l.done),
+        doneCount: g.lessons.filter((l) => l.done).length,
+        // Lessons open one after another (or when the teacher opens them early).
+        locked: g.lessons.every((l) => l.locked),
+    }));
 });
 
-const currentKey = computed(() => groups.value.find((g) => !g.done)?.key ?? null);
+const currentKey = computed(() => groups.value.find((g) => !g.done && !g.locked)?.key ?? null);
 
 const nodes = computed(() =>
     groups.value.map((group, i) => ({
@@ -54,7 +60,7 @@ const nodes = computed(() =>
         number: i + 1,
         x: 50 + 30 * Math.sin(i * 0.95),
         y: PAD + STEP * i,
-        state: group.done ? 'done' : group.key === currentKey.value ? 'current' : 'upcoming',
+        state: group.done ? 'done' : group.locked ? 'locked' : group.key === currentKey.value ? 'current' : 'upcoming',
         side: Math.sin(i * 0.95) >= 0 ? 'left' : 'right',
     })),
 );
@@ -116,8 +122,20 @@ const open = ref(null);
                         <span v-if="node.state === 'current'" class="pin absolute -top-9 rounded-full bg-accent-500 px-2.5 py-1 text-xs font-extrabold whitespace-nowrap text-ink shadow-[0_3px_0_var(--color-accent-700)]">
                             {{ node.number === 1 ? 'Start here' : 'Up next' }}
                         </span>
+                        <span
+                            v-if="node.state === 'locked'"
+                            :aria-label="`${nodeName(node)} (locked)`"
+                            title="Finish the lesson before this one first"
+                            class="relative grid size-20 place-items-center rounded-full bg-chip text-muted shadow-[0_6px_0_var(--color-line)] sm:size-[5.5rem]"
+                        >
+                            <span class="flex flex-col items-center leading-none">
+                                <Lock :size="18" aria-hidden="true" />
+                                <span class="mt-1 font-display text-xl font-extrabold">{{ node.number }}</span>
+                            </span>
+                        </span>
                         <component
                             :is="node.group.unit ? 'button' : Link"
+                            v-else
                             v-bind="node.group.unit ? { type: 'button' } : { href: route('learning.lessons.show', node.group.lessons[0].id) }"
                             :aria-label="`${nodeName(node)}${node.group.unit && node.group.unit.title ? `: ${node.group.unit.title}` : ''}${node.state === 'done' ? ' (completed)' : node.state === 'current' ? ' (up next)' : ''}`"
                             :aria-haspopup="node.group.unit ? 'dialog' : undefined"

@@ -108,6 +108,19 @@ Di halaman course, kartu **Lessons on the map** mengelompokkan isi course menjad
 
 Item yang tidak masuk Lesson tampil sebagai lingkaran sendiri di peta, sehingga course lama tetap berjalan. Task "Mixed" di prototipe (pilihan ganda dan coding dalam satu task) dibuat sebagai dua task berurutan dalam Lesson yang sama.
 
+### Membuka Lesson untuk kelas (Lesson access)
+
+![Lesson access: grid Lesson per level dengan tombol Open all dan Lock all](img/guru-akses-lesson.png)
+
+Siswa membuka Lesson **berurutan** (Lesson 2 terbuka setelah semua task Lesson 1 selesai) dan naik level setelah level sebelumnya selesai. Guru kelas bisa membuka Lesson lebih awal untuk seluruh kelas, seperti tombol Open/Locked di prototipe klien.
+
+1. Buka kelas di **Classes**, lalu klik **Lesson access** (hanya muncul untuk guru kelas itu dan admin, dan bila kelas sudah memakai course).
+2. Halaman menampilkan level kelas ini (**this class's course**) dan level lain di program yang sama.
+3. Klik kartu Lesson untuk membukanya (**Open**). Klik lagi untuk kembali ke aturan berurutan (**Step by step**).
+4. **Open all** membuka semua Lesson di level itu; **Lock all** mengembalikan semuanya ke aturan berurutan.
+
+Membuka Lesson di level berikutnya membuat level itu muncul di peta siswa dengan hanya Lesson tersebut yang bisa dibuka. Pengaturan ini berlaku per kelas, jadi kelas lain yang memakai level yang sama tidak terpengaruh.
+
 ### Siswa yang tertarik
 
 Siswa bisa membuka katalog kursus (`/courses/explore`) dan melihat kursus yang belum mereka ikuti dalam mode pratinjau (isi pelajaran tetap terkunci). Bila siswa menekan **I'm interested**, admin dan orang tuanya mendapat notifikasi, dan nama siswa muncul di kartu **Interested students** di halaman kursus. Gunakan daftar ini untuk menawarkan kelas atau kelas trial.

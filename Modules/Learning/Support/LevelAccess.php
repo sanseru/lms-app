@@ -15,6 +15,8 @@ use Modules\Learning\Models\Course;
  *   (a student placed straight into Python Start 2 can still revisit Start 1).
  * - Step by step after that: the next level opens once every published item
  *   of the level before it is done. No class change is needed.
+ * - A teacher can open lessons of a later level early for a class; that level then
+ *   opens with only those lessons available.
  *
  * Results are kept on the current request, so policies and pages can ask often.
  */
@@ -24,6 +26,12 @@ class LevelAccess
     public function courseIds(User $student): array
     {
         return $this->resolve($student)['ids'];
+    }
+
+    /** True when the student only reached this level because a teacher opened lessons in it. */
+    public function openedByTeacherOnly(User $student, int $courseId): bool
+    {
+        return in_array($courseId, $this->resolve($student)['teacher_only'], true);
     }
 
     public function allows(User $student, int $courseId): bool
@@ -64,8 +72,14 @@ class LevelAccess
         $programIds = $enrolled->pluck('program_id')->filter()->unique()->values();
 
         if ($programIds->isEmpty()) {
-            return ['ids' => $ids, 'programs' => []];
+            return ['ids' => $ids, 'programs' => [], 'teacher_only' => []];
         }
+
+        // Levels where a teacher opened at least one lesson for a class of this student.
+        $openedByTeacher = DB::table('class_lesson_opens')
+            ->whereIn('class_room_id', DB::table('class_students')->where('student_id', $student->id)->select('class_room_id'))
+            ->distinct()->pluck('course_id')->all();
+        $teacherOnly = [];
 
         $levels = Course::query()
             ->where('status', 'published')
@@ -103,7 +117,14 @@ class LevelAccess
                 $previous = $rows[$i - 1] ?? null;
 
                 // Up to the class's level everything is open; after it, each level needs the previous one done.
-                $unlocked = $i <= $highest || ($previous && $previous['unlocked'] && $previous['completed']);
+                $byProgress = $i <= $highest || ($previous && $previous['unlocked'] && $previous['completed']);
+                // A teacher can open lessons of a later level early (only those lessons, see LessonGate).
+                $byTeacher = in_array($course->id, $openedByTeacher, true);
+                $unlocked = $byProgress || $byTeacher;
+
+                if (! $byProgress && $byTeacher) {
+                    $teacherOnly[] = $course->id;
+                }
 
                 if ($unlocked) {
                     $ids[] = $course->id;
@@ -118,6 +139,6 @@ class LevelAccess
             $programs[] = ['program_id' => (int) $programId, 'levels' => $rows];
         }
 
-        return ['ids' => array_values(array_unique($ids)), 'programs' => $programs];
+        return ['ids' => array_values(array_unique($ids)), 'programs' => $programs, 'teacher_only' => $teacherOnly];
     }
 }

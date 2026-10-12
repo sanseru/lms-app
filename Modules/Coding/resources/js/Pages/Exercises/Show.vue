@@ -5,6 +5,8 @@ import { computed, onMounted, ref, watch } from 'vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import lessonLayout from '@/Layouts/lessonLayout';
+import { useFullscreen } from '@/lib/fullscreen';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import LessonReport from '@/Components/ui/LessonReport.vue';
 import CodeEditor from '../../Components/CodeEditor.vue';
@@ -12,6 +14,8 @@ import ParsonsBoard from '../../Components/ParsonsBoard.vue';
 import TestResultList from '../../Components/TestResultList.vue';
 import { buildSrcdoc, checkHtml } from '../../lib/htmlCheck';
 import { localResults, preparePython, runFree, runTests } from '../../lib/runner';
+
+defineOptions({ layout: lessonLayout });
 
 const props = defineProps({
     course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object, reports: Object,
@@ -30,7 +34,7 @@ const lines = ref(ex.mode === 'parsons'
 watch(code, (v) => { try { localStorage.setItem(storageKey, v); } catch {} });
 
 const busy = ref(null); // 'boot' | 'run' | 'submit'
-const pyReady = ref(ex.language !== 'python');
+const pyReady = ref(ex.language !== 'python' || ex.mode === 'parsons');
 const output = ref(null);
 const stdin = ref('');
 const results = ref(props.lastResult?.results ?? null);
@@ -142,12 +146,16 @@ const reset = () => {
 };
 const isDone = computed(() => props.done?.includes(props.lesson.id));
 const user = usePage().props.auth.user;
+
+// Fullscreen workspace: instructions + editor fill the screen while solving.
+const workspace = ref(null);
+const { active: fullscreen, native: nativeFullscreen, toggle: toggleFullscreen } = useFullscreen(workspace);
 </script>
 
 <template>
     <Head :title="lesson.title" />
 
-    <Link :href="route('learning.courses.show', course.id)" class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600">
+    <Link v-if="!can.learn" :href="route('learning.courses.show', course.id)" class="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-brand-600">
         <Icon name="arrow-left" :size="16" /> {{ course.title }}
     </Link>
 
@@ -182,9 +190,20 @@ const user = usePage().props.auth.user;
     </div>
 
     <!-- ================= Solve / try ================= -->
-    <div v-show="tab === 'solve' || tab === 'try'" class="grid gap-6 xl:grid-cols-5">
+    <div
+        v-show="tab === 'solve' || tab === 'try'"
+        ref="workspace"
+        :class="fullscreen ? ['bg-paper p-4 sm:p-6 lg:grid-cols-5 overflow-y-auto', !nativeFullscreen && 'fixed inset-0 z-[55]'] : 'xl:grid-cols-5'"
+        class="grid gap-6"
+    >
+        <!-- Title bar, only while fullscreen -->
+        <div v-if="fullscreen" class="flex items-center gap-3 lg:col-span-5">
+            <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-ink text-white"><Icon name="code" :size="18" /></span>
+            <p class="min-w-0 flex-1 truncate font-display text-lg font-extrabold text-ink">{{ lesson.title }}</p>
+            <button type="button" class="btn-ghost" @click="toggleFullscreen"><Icon name="minimize" :size="16" /> Exit fullscreen</button>
+        </div>
         <!-- Exercise -->
-        <div class="space-y-5 xl:col-span-2">
+        <div :class="fullscreen ? 'lg:col-span-2' : 'xl:col-span-2'" class="space-y-5">
             <article v-if="lesson.body_html" class="card lesson-prose p-6" v-html="lesson.body_html" />
 
             <div v-if="ex.mode === 'function'" class="card p-5 text-sm text-ink">
@@ -257,7 +276,7 @@ const user = usePage().props.auth.user;
         </div>
 
         <!-- Editor & hasil -->
-        <div class="space-y-4 xl:col-span-3">
+        <div :class="fullscreen ? 'lg:col-span-3 [&_.cm-editor]:min-h-[60vh]! [&_.cm-scroller]:min-h-[60vh]!' : 'xl:col-span-3'" class="space-y-4">
             <div v-if="scoreBanner && can.learn" :class="scoreBanner.status === 'passed' ? 'bg-emerald-700' : 'bg-amber-700'" role="status" class="flex items-center gap-4 rounded-3xl p-5 text-white">
                 <span class="grid size-16 place-items-center rounded-full bg-white/20 font-display text-2xl font-black ring-4 ring-white/40 tabular-nums">{{ scoreBanner.score }}</span>
                 <div>
@@ -277,8 +296,9 @@ const user = usePage().props.auth.user;
                     <Icon name="check" :size="16" /> {{ busy === 'submit' ? 'Grading…' : 'Submit' }}
                 </button>
                 <button class="btn-ghost ml-auto px-3" :disabled="!!busy" title="Back to starter code" aria-label="Back to starter code" @click="reset"><Icon name="rotate-ccw" :size="16" /></button>
+                <button class="btn-ghost px-3" :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'" :aria-label="fullscreen ? 'Exit fullscreen' : 'Fullscreen'" :aria-pressed="fullscreen" @click="toggleFullscreen"><Icon :name="fullscreen ? 'minimize' : 'maximize'" :size="16" /></button>
                 <span v-if="busy === 'boot'" class="flex w-full items-center gap-2 text-xs text-muted"><span class="size-3 animate-spin rounded-full border-2 border-brand-300 border-t-transparent" /> Getting Python ready in your browser (only slow the first time)…</span>
-                <span v-else-if="ex.mode !== 'parsons'" class="w-full text-xs text-muted">Tip: press Ctrl+Enter to run.</span>
+                <span v-else-if="ex.mode !== 'parsons'" class="w-full text-xs text-muted">Tip: press Ctrl+Enter to run.<template v-if="fullscreen"> Press Esc to leave fullscreen.</template></span>
             </div>
 
             <p v-if="errorMessage" class="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{{ errorMessage }}</p>

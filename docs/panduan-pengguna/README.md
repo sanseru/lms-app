@@ -46,10 +46,10 @@ Halaman **Notifications** (`/notifications`, juga bisa dibuka lewat **View all**
 
 | Peran | Contoh notifikasi |
 |---|---|
-| Admin | Bukti transfer baru dari orang tua, lead baru dari formulir trial, hasil kelas trial |
+| Admin | Bukti transfer baru dari orang tua, lead baru dari formulir trial, hasil kelas trial, siswa tertarik pada kursus lain |
 | Guru | Pertanyaan baru dari siswa, pengingat laporan sesi yang belum diisi, jadwal kelas trial, laporan masalah pada materi |
 | Siswa | PR dari sesi, tugas dinilai atau diminta revisi, jawaban atas pertanyaan |
-| Orang tua | Tagihan baru, hasil verifikasi pembayaran, ringkasan sesi anak, laporan bulanan siap dibaca |
+| Orang tua | Tagihan baru, hasil verifikasi pembayaran, ringkasan sesi anak, laporan bulanan siap dibaca, anak tertarik pada kursus lain |
 
 ![Halaman notifikasi](img/notifikasi.png)
 

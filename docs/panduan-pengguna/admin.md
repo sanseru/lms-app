@@ -153,6 +153,8 @@ Tindakan admin pada halaman sesi:
 
 Admin memiliki akses yang sama dengan guru untuk **Courses & lessons**, **Grading** (termasuk **Reported problems**, yaitu laporan siswa tentang materi yang keliru), **Projects**, **Q&A**, **Student achievements**, dan **Certificates**. Langkah-langkahnya ada di [panduan guru](guru.md).
 
+Siswa bisa menjelajahi semua kursus yang sudah terbit dan menekan **I'm interested** pada kursus yang belum mereka ikuti. Admin menerima notifikasi "… is interested in …", dan halaman kursus menampilkan kartu **Interested students**. Tindak lanjuti dengan menawarkan kelas atau kelas trial (lihat [Leads dan kelas trial](#leads-dan-kelas-trial)).
+
 ## Laporan bulanan
 
 Menu **Monthly reports** (grup Academic) berisi rapor bulanan setiap siswa: kehadiran, pelajaran yang diselesaikan, nilai kuis dan tugas, latihan coding dan proyek, XP dan prestasi, progres kursus, serta paket sesi dan tagihan yang belum lunas.

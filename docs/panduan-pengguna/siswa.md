@@ -13,7 +13,7 @@ Tampilan aplikasi memakai bahasa Inggris. Di panduan ini, nama menu dan tombol d
 | **Home** | Ringkasan belajarmu hari ini | `/dashboard` |
 | **Classes** | Kelas yang kamu ikuti | `/classes` |
 | **Schedule** | Jadwal kelas minggu ini | `/schedule` |
-| **Course** | Peta belajar kursusmu | `/courses` |
+| **Course** | Peta belajar kursusmu dan katalog kursus lain | `/courses`, `/courses/explore` |
 | **Community** | Proyek yang dibagikan siswa lain | `/community` |
 | **Laboratory** | Tempat bebas mencoba kode | `/lab` |
 | **My projects** | Papan proyek dari guru | `/projects` |
@@ -53,7 +53,7 @@ Buka **Course**. Halaman ini berisi peta belajar kursusmu.
   - Di sebelah lingkaran tertulis judul pelajaran, jenisnya, dan nilai terbaikmu (untuk kuis dan coding).
 - Klik lingkaran mana pun untuk membuka pelajarannya. Kalau semua pelajaran selesai, kastel berubah kuning dan tertulis **Course complete!**
 
-Klik **See the lesson list and scores** untuk melihat daftar pelajaran dalam bentuk tabel.
+Klik **See the lesson list and scores** untuk melihat daftar pelajaran dalam bentuk tabel. Kartu **Explore other courses** di bawahnya membuka katalog kursus.
 
 ### Daftar pelajaran dan nilai
 
@@ -61,9 +61,28 @@ Klik **See the lesson list and scores** untuk melihat daftar pelajaran dalam ben
 
 Halaman ini menampilkan **Your progress** (persentase dan rata-rata kuis), lalu **Course content**: semua pelajaran berurutan dengan jenis, durasi, dan **Best score**. Kartu **Continue learning** di kanan membawamu ke pelajaran berikutnya. Klik **My course** di kiri atas untuk kembali ke peta.
 
+### Jelajahi kursus lain
+
+![Katalog kursus: panel kursusmu di kiri dan semua kursus yang tersedia di kanan](img/siswa-katalog.png)
+
+Ingin tahu kursus apa lagi yang bisa kamu pelajari? Klik **Explore other courses** di halaman Course (alamatnya `/courses/explore`).
+
+- Panel **Your course** di kiri menampilkan kursusmu sekarang dan progresnya. **Continue course** membawamu kembali ke peta belajar.
+- Di kanan ada semua kursus yang sudah terbit. Pilih **All** atau satu mata pelajaran untuk menyaring. Kursus yang sudah kamu ikuti diberi label **Your course** lengkap dengan persentase selesai.
+- Klik kursus lain untuk melihat isinya: deskripsi, jumlah pelajaran, dan daftar **What you will learn**. Pelajarannya masih terkunci (ikon gembok) sampai kamu masuk kelas yang memakai kursus itu.
+
+![Pratinjau kursus lain dengan daftar pelajaran yang masih terkunci dan tombol I'm interested](img/siswa-pratinjau-kursus.png)
+
+Tertarik? Klik **I'm interested**. Guru, admin, dan orang tuamu akan diberi tahu, lalu mereka bisa membantumu masuk kelasnya. Setelah itu kartunya berubah menjadi **We got your message**, dan di katalog kursus itu diberi label **Interested**.
+
 ## Belajar materi, kuis, dan tugas
 
-Di halaman pelajaran, daftar isi kursus ada di samping. Gunakan **Previous** dan **Next** di bagian bawah untuk pindah pelajaran.
+Saat kamu membuka pelajaran, aplikasi masuk ke **mode fokus**: menu samping dan header disembunyikan supaya kamu bisa berkonsentrasi.
+
+- Bar gelap di atas berisi tombol panah kiri (**Back to the course map**) untuk kembali ke peta belajar, nama kursus, dan posisi pelajaran (mis. **Lesson 4 of 10**).
+- Di tengah bar ada satu lingkaran untuk setiap pelajaran. Lingkaran hijau bercentang sudah selesai, lingkaran putih adalah pelajaran yang sedang dibuka. Klik lingkaran mana pun untuk pindah pelajaran.
+- Tombol panah empat arah di kanan bar membuat halaman memenuhi layar (**Fullscreen**). Tekan lagi atau tombol Esc untuk keluar.
+- Gunakan **Previous** dan **Next** di bagian bawah untuk pindah ke pelajaran sebelum atau sesudahnya.
 
 ### Materi
 
@@ -121,6 +140,7 @@ Kode kamu dijalankan langsung di browser, jadi tidak perlu memasang apa pun.
 3. Kalau sudah yakin, klik **Submit**. Server menilai kodemu dengan tes contoh dan tes tersembunyi. Hasilnya muncul di bagian atas, mis. **All tests passed!** atau **So close! Try again**.
 4. Bingung? Klik **Show hint 1** di kotak **Hints**. Petunjuk terbuka satu per satu. Setelah beberapa kali mencoba, kotak **See solution** bisa muncul.
 5. **Your history** menyimpan kiriman sebelumnya. Tombol panah melingkar di samping **Submit** mengembalikan kode awal.
+6. Tombol panah empat arah di sebelahnya (**Fullscreen**) membuat soal dan editor memenuhi layar, dengan editor yang lebih tinggi. Klik **Exit fullscreen** atau tekan Esc untuk kembali.
 
 Saat pertama kali membuka soal Python, tunggu sebentar: browser sedang menyiapkan Python (hanya lama di awal).
 
@@ -147,6 +167,7 @@ Jenis soal lain:
 3. Tulis kode di editor. Klik **Run** (atau Ctrl+Enter) untuk menjalankannya. Hasilnya muncul di **Output**; untuk website, halamanmu tampil di **Preview**. Kalau programmu meminta input, klik **Input** dan tulis satu nilai per baris.
 4. Isi **What does it do?** supaya orang lain tahu proyekmu tentang apa.
 5. Klik **Save** (atau Ctrl+S). Tulisan **Unsaved changes** berarti ada perubahan yang belum tersimpan.
+6. Klik **Fullscreen** di atas editor supaya editor dan panel hasil memenuhi layar. Klik **Exit fullscreen** atau tekan Esc untuk kembali.
 
 ![Editor Laboratorium: nama proyek, editor kode, dan panel hasil](img/siswa-lab-editor.png)
 

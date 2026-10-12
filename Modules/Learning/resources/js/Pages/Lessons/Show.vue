@@ -5,11 +5,14 @@ import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Field from '@/Components/ui/Field.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import lessonLayout from '@/Layouts/lessonLayout';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import LessonReport from '@/Components/ui/LessonReport.vue';
 import GradeForm from '../../Components/GradeForm.vue';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 import SubmissionContent from '../../Components/SubmissionContent.vue';
+
+defineOptions({ layout: lessonLayout });
 
 const props = defineProps({
     course: Object, lesson: Object, outline: Array, done: Array, prev: Object, next: Object, can: Object, reports: Object,
@@ -111,9 +114,10 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
 <template>
     <Head :title="lesson.title" />
 
-    <div class="grid gap-6 lg:grid-cols-4">
+    <!-- Students work in focus mode (the lesson dots live in the top bar); others keep the outline. -->
+    <div :class="can.learn ? 'mx-auto max-w-3xl' : 'grid gap-6 lg:grid-cols-4'">
         <!-- Outline -->
-        <aside class="order-2 lg:order-1">
+        <aside v-if="!can.learn" class="order-2 lg:order-1">
             <div class="card overflow-hidden lg:sticky lg:top-24">
                 <Link :href="route('learning.courses.show', course.id)" class="flex items-center gap-2 border-b border-line px-4 py-3 text-sm font-bold text-ink hover:text-brand-600">
                     <Icon name="arrow-left" :size="15" /> <span class="truncate">{{ course.title }}</span>
@@ -133,7 +137,7 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
             </div>
         </aside>
 
-        <div class="order-1 space-y-6 lg:order-2 lg:col-span-3">
+        <div :class="!can.learn && 'order-1 lg:order-2 lg:col-span-3'" class="space-y-6">
             <!-- Header -->
             <div class="flex flex-wrap items-start gap-4">
                 <LessonTypeIcon :type="lesson.type" :done="isDone" />

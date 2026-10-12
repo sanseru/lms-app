@@ -111,6 +111,13 @@
     @apply mb-3 font-display text-base font-bold text-brand-700;
 }
 /* Highlight panel (dashboard greeting, level, class page header): one deep colour, not a gradient. */
+/* Horizontal scroll strips (lesson dots) without a visible scrollbar. */
+@utility no-scrollbar {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
 @utility panel-brand {
     @apply relative overflow-hidden rounded-3xl bg-brand-700 text-white;
     background-image: radial-gradient(color-mix(in oklab, white 14%, transparent) 1.2px, transparent 1.2px);

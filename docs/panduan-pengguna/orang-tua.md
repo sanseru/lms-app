@@ -140,4 +140,5 @@ Menu **Q&A** menampilkan pertanyaan anak Anda beserta jawabannya, termasuk perta
 - **Schedule** menampilkan sesi kelas anak minggu ini (WIB). Gunakan panah untuk pindah minggu dan **This week** untuk kembali ke minggu ini. Pasang ke kalender HP lewat **Create calendar link** agar mendapat pengingat dari kalender Anda (lihat [panduan umum](README.md#jadwal-di-kalender-hp)).
 - **Classes** menampilkan kelas yang diikuti anak beserta gurunya.
 - **Lonceng** memberi tahu tagihan baru, hasil verifikasi pembayaran, ringkasan setiap sesi anak, dan laporan bulanan yang sudah siap.
+- Bila anak menekan **I'm interested** pada kursus lain di katalog kursus, Anda mendapat notifikasi "… is interested in …". Hubungi admin bila ingin mendaftarkan anak ke kelas kursus itu.
 - Notifikasi saat ini hanya tampil di aplikasi. Pengiriman lewat WhatsApp belum tersedia.

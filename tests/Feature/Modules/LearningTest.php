@@ -65,10 +65,12 @@ test('students and parents only see published courses of their classes', functio
     $this->actingAs($student)->get('/courses')
         ->assertInertia(fn ($page) => $page->component('Learning::Courses/Mine')->has('courses', 1)->where('courses.0.id', $course->id));
     $this->actingAs($student)->get("/courses/{$course->id}")->assertOk();
-    $this->actingAs($student)->get("/courses/{$other->id}")->assertForbidden();
+    // Other published courses are a read-only catalog preview, not the course itself.
+    $this->actingAs($student)->get("/courses/{$other->id}")->assertInertia(fn ($page) => $page->component('Learning::Courses/Preview'));
     $this->actingAs($student)->get("/courses/{$draft->id}")->assertForbidden();
     $this->actingAs($guardian)->get("/courses/{$course->id}")->assertOk();
-    $this->actingAs(userWithRole('student'))->get("/courses/{$course->id}")->assertForbidden();
+    $this->actingAs(userWithRole('student'))->get("/courses/{$course->id}")->assertInertia(fn ($page) => $page->component('Learning::Courses/Preview'));
+    $this->actingAs($guardian)->get("/courses/{$other->id}")->assertForbidden();
     $this->actingAs($student)->get('/courses/create')->assertForbidden();
 });
 

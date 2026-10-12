@@ -77,6 +77,12 @@ Kursus adalah kurikulum yang bisa dipakai beberapa kelas sekaligus. Setiap kelas
 2. Isi **Course title**, **Subject**, **Level**, **Description**, **Cover color**, dan **Status** (**Draft** atau **Published**).
 3. **Save**, lalu di halaman kursus bagian **Used in classes**, pilih kelas (**Choose a class…**) dan klik tombol **+** untuk memasang. Kelas yang sudah memakai kursus lain ditandai **(switch course)**; memilihnya akan mengganti kursus kelas itu. Klik tombol **×** di samping kelas untuk melepasnya (**Detach**). Progres siswa tetap tersimpan.
 
+### Siswa yang tertarik
+
+Siswa bisa membuka katalog kursus (`/courses/explore`) dan melihat kursus yang belum mereka ikuti dalam mode pratinjau (isi pelajaran tetap terkunci). Bila siswa menekan **I'm interested**, admin dan orang tuanya mendapat notifikasi, dan nama siswa muncul di kartu **Interested students** di halaman kursus. Gunakan daftar ini untuk menawarkan kelas atau kelas trial.
+
+Saat siswa membuka pelajaran, mereka melihatnya dalam mode fokus tanpa menu samping (lihat [panduan siswa](siswa.md#belajar-materi-kuis-dan-tugas)). Guru dan admin tetap melihat tampilan biasa dengan daftar isi kursus di samping.
+
 ### Menambah isi kursus
 
 Di bagian **Course content** halaman kursus, gunakan tombol **Lesson**, **Quiz**, **Assignment**, atau **Coding**. Urutkan dengan tombol panah naik/turun (**Move up**/**Move down**). Setiap pelajaran punya pilihan **Show to students**; matikan untuk menyimpannya sebagai draf (**Draft**).

@@ -11,7 +11,7 @@ import { useConfirm } from '@/composables/useConfirm';
 import { classColors } from '@/lib/format';
 import LessonTypeIcon from '../../Components/LessonTypeIcon.vue';
 
-const props = defineProps({ course: Object, lessons: Array, progress: Object, classes: Array, availableClasses: Array, pendingTotal: Number, can: Object });
+const props = defineProps({ course: Object, lessons: Array, progress: Object, classes: Array, availableClasses: Array, pendingTotal: Number, interests: { type: Array, default: () => [] }, can: Object });
 
 const color = computed(() => classColors[props.course.color] ?? classColors.violet);
 const confirm = useConfirm();
@@ -142,6 +142,18 @@ const counts = computed(() => ({
                     </select>
                     <button class="btn-primary px-3 py-2 text-sm" aria-label="Attach to class" :disabled="attach.processing || !attach.class_room_id"><Icon name="plus" :size="16" /></button>
                 </form>
+            </div>
+
+            <!-- Students who tapped "I'm interested" in the course catalog -->
+            <div v-if="can.manage && interests.length" class="card p-5">
+                <h2 class="font-display font-bold text-ink">Interested students</h2>
+                <p class="mb-3 text-sm text-muted">They asked about this course in the catalog. Consider offering a class or a free trial.</p>
+                <ul class="space-y-2">
+                    <li v-for="i in interests" :key="i.id" class="flex items-center justify-between gap-3 rounded-xl bg-chip/60 px-3 py-2 text-sm">
+                        <span class="truncate font-semibold text-ink">{{ i.name }}</span>
+                        <span class="shrink-0 text-xs text-muted">{{ i.at }}</span>
+                    </li>
+                </ul>
             </div>
 
             <div v-if="!can.manage && !progress" class="card p-5 text-sm text-muted">This is a read-only view. You can see your child's progress under Learning progress.</div>

@@ -64,8 +64,14 @@ class CourseController extends Controller
 
     public function show(Request $request, Course $course, StudentProgress $progress): Response
     {
-        Gate::authorize('view', $course);
         $user = $request->user();
+
+        // A student browsing the catalog gets a read-only overview of courses they do not take.
+        if ($user->cannot('view', $course) && $user->can('preview', $course)) {
+            return CourseCatalogController::preview($course, $request);
+        }
+
+        Gate::authorize('view', $course);
         $manage = $user->can('learning.manage');
 
         if ($user->hasRole('student') && ! $manage) {
@@ -86,6 +92,9 @@ class CourseController extends Controller
             'classes' => $manage ? $course->classes()->with('teacher')->withCount('students')->get()->map->toCard() : [],
             'availableClasses' => $manage
                 ? ClassRoom::query()->where(fn ($q) => $q->whereNull('course_id')->orWhere('course_id', '!=', $course->id))->whereIn('status', ['active', 'upcoming'])->orderBy('name')->get(['id', 'name', 'code', 'course_id'])
+                : [],
+            'interests' => $manage
+                ? $course->interests()->with('student:id,name')->latest()->get()->map(fn ($i) => ['id' => $i->id, 'name' => $i->student->name, 'student_id' => $i->student_id, 'at' => $i->created_at->translatedFormat('j M Y')])
                 : [],
             'pendingTotal' => $manage ? AssignmentSubmission::query()->gradableBy($user)->where('status', 'submitted')->whereHas('lesson', fn ($q) => $q->where('course_id', $course->id))->count() : 0,
             'can' => ['manage' => $manage],

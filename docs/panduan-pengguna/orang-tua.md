@@ -12,7 +12,7 @@ Menu di sisi kiri untuk orang tua:
 | Main | **Monthly reports** | Laporan belajar bulanan yang bisa dicetak atau disimpan sebagai PDF |
 | Academic | **Classes**, **Schedule** | Kelas yang diikuti anak dan jadwal mingguan |
 | Learning | **Learning progress** | Rapor per kursus |
-| Learning | **Community** | Karya yang dibagikan siswa (hanya lihat) |
+| Learning | **Community** | Karya yang dibagikan siswa (lihat, like, dan komentar) |
 | Learning | **Child's projects** | Proyek dari guru beserta papan kerja anak |
 | Learning | **Q&A** | Pertanyaan anak dan jawabannya (hanya baca) |
 | Learning | **Child's achievements**, **Child's certificates** | Level, XP, lencana, dan sertifikat |
@@ -120,7 +120,7 @@ Menu **Child's projects** menampilkan proyek dari guru beserta progresnya: tengg
 
 ## Community
 
-Menu **Community** menampilkan karya (program) yang dibagikan siswa dari semua kelas. Anda bisa mengurutkan dengan **New**, **Popular**, atau **Most discussed**, menyaring per bahasa, mencari, membuka karya, menjalankannya dengan **Run**, serta membaca kodenya dan komentarnya. Anda juga bisa memberi like (ikon hati) dan menulis komentar yang ramah, seperti siswa dan guru. Guru bisa menghapus komentar yang tidak pantas.
+Menu **Community** menampilkan karya yang dibagikan siswa dari semua kelas: program Python/JavaScript, website, proyek **Scratch**, dan **presentasi**. Bagian **Trending** menampilkan karya yang paling disukai **Today**, **Week**, atau **Month**. Anda bisa mengurutkan dengan **New**, **Popular**, atau **Most discussed**, menyaring per jenis, mencari, membuka karya, menjalankannya (**Run**, bendera hijau untuk Scratch, **Back**/**Next** untuk presentasi), serta membaca kodenya dan komentarnya. Anda juga bisa memberi like (ikon hati) dan menulis komentar yang ramah, seperti siswa dan guru. Guru bisa menghapus komentar yang tidak pantas.
 
 ## Tanya Jawab
 

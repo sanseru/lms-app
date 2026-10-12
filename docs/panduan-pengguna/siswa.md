@@ -51,7 +51,7 @@ Di **Home** kamu melihat:
 Buka **Course**. Browser langsung masuk **layar penuh** supaya peta memenuhi layar; tekan Esc atau tombol layar penuh di kanan atas untuk keluar (aplikasi tidak memaksa layar penuh lagi sampai kamu memulai task). Kursus disusun seperti di sekolah musik: **program** (mis. Python) terdiri dari beberapa **level** (Python Start 1, Python Start 2, …), setiap level berisi **Lesson** bernomor, dan setiap Lesson berisi beberapa **task** (teori, kuis, tugas, coding).
 
 - Halaman peta memenuhi layar seperti dunia bergambar: langit biru, jalur titik-titik, lingkaran Lesson besar, dan kastel di akhir setiap level, tanpa menu samping. Kartu **Your class** di atas peta merangkum kelas, progres, guru, jadwal berikutnya, **Join Zoom**, dan tombol **Continue**.
-- Bar atas berisi **Home** (kembali ke Beranda), **Explore courses**, lonceng notifikasi, dan tombol layar penuh.
+- Bar atas sama dengan halaman lain (menu **Home**, **Course**, **Online Lesson**, …, pencarian, lonceng notifikasi), ditambah tombol layar penuh. **Explore other courses** di bawah peta membuka katalog.
 - Tombol di bawahnya memilih program (mis. **Python**, **Scratch**) lengkap dengan persentase selesai.
 - Kartu **Your class** juga menampilkan program dan level (mis. **Python · Level 1**) dan berapa task sudah selesai. Tombol oranye **Start** / **Continue** langsung membawamu ke task berikutnya, dan **Lesson list and scores** membuka daftar nilai.
 - Di bawahnya ada peta yang berkelok dari **START · nama level** di atas sampai kastel di bawah. Tulisan di bawah START menunjukkan berapa Lesson sudah selesai (mis. **3/4 lessons completed**).
@@ -80,9 +80,9 @@ Halaman ini menampilkan **Your progress** (persentase dan rata-rata kuis), lalu 
 
 Ingin tahu kursus apa lagi yang bisa kamu pelajari? Klik **Explore other courses** di halaman Course (alamatnya `/courses/explore`).
 
-- Kursus dikelompokkan per program (Python, Scratch, Web Development) dan diurutkan per level. Level berikutnya di programmu yang belum terbuka diberi label **Locked** dengan keterangan **Finish … to unlock**.
-- Panel **Your course** di kiri menampilkan kursusmu sekarang dan progresnya. **Continue course** membawamu kembali ke peta belajar.
-- Di kanan ada semua kursus yang sudah terbit. Pilih **All** atau satu program untuk menyaring. Kursus yang sudah kamu ikuti diberi label **Your course** lengkap dengan persentase selesai.
+- Panel **Selected course** di kiri menampilkan kursusmu sekarang dan progresnya. **Continue course** membawamu kembali ke peta belajar (langsung layar penuh).
+- Di kanan ada satu kartu per program (Data, Artificial Intelligence, Python, Scratch, Computer & Networks, Web Development, Desktop Applications, Android, Internet of Things) dengan kategori, jumlah level, dan jumlah lesson. Program yang sedang kamu ikuti diberi label **Your course**.
+- Klik kartu program untuk melihat levelnya secara berurutan. Level milikmu menampilkan persentase selesai; level berikutnya yang belum terbuka diberi label **Locked** dengan keterangan **Finish … to unlock**; level yang sudah kamu tandai diberi label **Interested**. **Course catalog** di atas kembali ke daftar program.
 - Klik kursus lain untuk melihat isinya: deskripsi, jumlah pelajaran, dan daftar **What you will learn**. Pelajarannya masih terkunci (ikon gembok) sampai kamu masuk kelas yang memakai kursus itu.
 
 ![Pratinjau kursus lain dengan daftar pelajaran yang masih terkunci dan tombol I'm interested](img/siswa-pratinjau-kursus.png)

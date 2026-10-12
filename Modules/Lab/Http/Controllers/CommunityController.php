@@ -22,12 +22,21 @@ class CommunityController extends Controller
 {
     private const SORTS = ['new', 'popular', 'discussed'];
 
+    /** Trending windows (client prototype: Today / Week / Month). */
+    private const PERIODS = ['today', 'week', 'month'];
+
     public function index(Request $request): Response
     {
         $user = $request->user();
         $sort = in_array($request->query('sort'), self::SORTS, true) ? $request->query('sort') : 'new';
         $language = array_key_exists($request->query('language'), LabProject::LANGUAGES) ? $request->query('language') : null;
         $search = trim((string) $request->query('q'));
+        $period = in_array($request->query('period'), self::PERIODS, true) ? $request->query('period') : 'week';
+        $since = match ($period) {
+            'today' => now()->startOfDay(),
+            'month' => now()->subDays(30),
+            default => now()->subDays(7),
+        };
 
         $base = fn () => LabProject::query()->inCommunity()
             ->with('owner:id,name')
@@ -43,9 +52,9 @@ class CommunityController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        // Trending: most likes received in the last 7 days.
+        // Trending: most likes received in the chosen window.
         $trending = $base()
-            ->whereHas('likers', $recent = fn (Builder $q) => $q->where('lab_project_likes.created_at', '>=', now()->subDays(7)))
+            ->whereHas('likers', $recent = fn (Builder $q) => $q->where('lab_project_likes.created_at', '>=', $since))
             ->withCount(['likers as recent_likes' => $recent])
             ->orderByDesc('recent_likes')
             ->orderByDesc('shared_at')
@@ -55,7 +64,7 @@ class CommunityController extends Controller
         return Inertia::render('Lab::Community/Index', [
             'projects' => $projects->through(fn (LabProject $p) => $p->toCard($user)),
             'trending' => $trending->map->toCard($user),
-            'filters' => ['sort' => $sort, 'language' => $language, 'q' => $search],
+            'filters' => ['sort' => $sort, 'language' => $language, 'q' => $search, 'period' => $period],
             'languages' => LabProject::LANGUAGES,
             'can' => ['create' => $user->can('lab.use')],
         ]);

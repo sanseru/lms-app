@@ -77,6 +77,13 @@ class GamificationServiceProvider extends ModuleServiceProvider
                     ->selectRaw('lesson_id as source_id, min(created_at) as at')),
                 new QueryRule('assignment_graded', 'Assignment graded', 25, fn (User $u) => DB::table('assignment_submissions')
                     ->where('student_id', $u->id)->where('status', 'graded')->select('id as source_id', 'graded_at as at')),
+                // Milestone only (0 XP, the lesson already gave XP): the client's "Python starter" badge.
+                new QueryRule('python_lesson', 'Finished a Python lesson', 0, fn (User $u) => DB::table('lesson_progress')
+                    ->join('lessons', 'lessons.id', '=', 'lesson_progress.lesson_id')
+                    ->join('courses', 'courses.id', '=', 'lessons.course_id')
+                    ->join('programs', 'programs.id', '=', 'courses.program_id')
+                    ->where('lesson_progress.student_id', $u->id)->where('programs.name', 'like', 'Python%')
+                    ->select('lesson_progress.lesson_id as source_id', 'lesson_progress.completed_at as at')),
             );
         }
 

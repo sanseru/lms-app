@@ -159,13 +159,14 @@ class DemoSeeder extends Seeder
             StudentPackage::where('invoice_id', $invoice->id)->first()->activate(now()->subWeeks(4));
         }
 
-        // Sessions of the last 4 weeks: most already have attendance filled in.
+        // Sessions of the last 4 weeks (most already have attendance filled in) and the next
+        // two weeks, as the daily sessions:generate job would have made them.
         $generator = app(GenerateSessions::class);
         $complete = app(CompleteSession::class);
         $topics = ['Introduction to variables', 'For loops', 'If-else conditions', 'Writing functions', 'Lists and loops', 'Mini project: quiz', 'Events and sprites', 'Making a catch-the-ball game', 'HTML basics', 'CSS flexbox'];
 
         foreach ($classes as $class) {
-            $generator->forClass($class, now()->subWeeks(4), now());
+            $generator->forClass($class, now()->subWeeks(4), now()->addWeeks(2));
 
             $class->sessions()->where('ends_at', '<', now()->subDays(2))->orderBy('starts_at')->get()
                 ->each(function ($session, $n) use ($class, $complete, $topics) {
@@ -181,6 +182,10 @@ class DemoSeeder extends Seeder
                         ])->all(),
                     ], $class->teacher);
                 });
+
+            // The latest class has its Zoom recording, for the Online Lesson "Recording" card.
+            $class->sessions()->where('status', 'completed')->latest('starts_at')->first()
+                ?->update(['recording_url' => 'https://zoom.us/rec/share/demo-'.$class->code]);
         }
 
         // Last month's tutor fees are already summarised and paid.

@@ -10,6 +10,11 @@ const props = defineProps({ projects: Object, trending: Array, filters: Object, 
 
 const search = ref(props.filters.q ?? '');
 const go = (params) => router.get(route('community.index'), { ...props.filters, ...params }, { preserveState: true, preserveScroll: true, replace: true });
+const periods = [
+    { key: 'today', label: 'Today', hint: 'Most liked today' },
+    { key: 'week', label: 'Week', hint: 'Most liked in the last 7 days' },
+    { key: 'month', label: 'Month', hint: 'Most liked in the last 30 days' },
+];
 const sorts = [
     { key: 'new', label: 'New' },
     { key: 'popular', label: 'Popular' },
@@ -29,16 +34,31 @@ const sorts = [
         <Link v-if="can.create" :href="route('lab.projects.index')" class="btn-accent shrink-0"><Icon name="plus" :size="16" /> Share a project</Link>
     </section>
 
-    <section v-if="trending.length" class="mb-10" aria-labelledby="trending-title">
-        <div class="mb-3 flex items-baseline justify-between">
-            <h2 id="trending-title" class="font-display text-xl font-extrabold text-ink">Trending this week</h2>
-            <span class="text-sm text-muted">Most liked in the last 7 days</span>
+    <section v-if="trending.length || projects.total" class="mb-10" aria-labelledby="trending-title">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h2 id="trending-title" class="font-display text-xl font-extrabold text-ink">Trending</h2>
+                <p class="text-sm text-muted">{{ periods.find((p) => p.key === filters.period)?.hint }}</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-chip p-1" role="tablist" aria-label="Trending period">
+                <button
+                    v-for="p in periods"
+                    :key="p.key"
+                    type="button"
+                    role="tab"
+                    :aria-selected="filters.period === p.key"
+                    :class="filters.period === p.key ? 'bg-white text-ink shadow-sm' : 'text-muted hover:text-ink'"
+                    class="rounded-lg px-4 py-1.5 text-sm font-bold transition"
+                    @click="go({ period: p.key })"
+                >{{ p.label }}</button>
+            </div>
         </div>
-        <div class="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2">
+        <div v-if="trending.length" class="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2">
             <div v-for="p in trending" :key="p.id" class="w-64 shrink-0 snap-start [&>a]:h-full">
                 <ProjectCard :project="p" :href="route('community.show', p.id)" />
             </div>
         </div>
+        <p v-else class="card px-5 py-6 text-center text-sm text-muted">No likes {{ filters.period === 'today' ? 'today' : `this ${filters.period}` }} yet. Like a project you enjoy and it will show up here.</p>
     </section>
 
     <section aria-labelledby="all-title">

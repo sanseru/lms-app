@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Log In | Alprogmatics</title>
+    <link rel="stylesheet" href="../assets/css/main.css?v=4" />
+  </head>
+  <body class="auth-body">
+    <main class="auth-card">
+      <a class="brand auth-brand" href="../home/index.html" aria-label="Alprogmatics Teacher home"><img class="brand-logo" src="../assets/images/Logo-header.png" alt="Alprogmatics" /></a>
+      <p class="eyebrow">TEACHER LMS</p>
+      <h1>Log in to manage your classes.</h1>
+      <p class="auth-intro">
+        Open and lock class meetings for your students.
+      </p>
+      <form onsubmit="return handleLogin(event);">
+        <label>
+          Username
+          <input
+            id="email"
+            type="text"
+            autocomplete="username"
+            placeholder="Enter username"
+            required
+          />
+        </label>
+        <label>
+          Password
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Enter password"
+            required
+          />
+        </label>
+        <button class="primary-button auth-submit" type="submit">
+          Log in
+          <span>→</span>
+        </button>
+      </form>
+      <p class="auth-message" id="authMessage"></p>
+      <p class="auth-intro">Demo account — username: <b>guru</b> &nbsp; password: <b>12345</b></p>
+    </main>
+    <script>
+      function handleLogin(event) {
+        event.preventDefault();
+        const user = document.getElementById("email").value.trim();
+        const pass = document.getElementById("password").value;
+        const msg = document.getElementById("authMessage");
+        if (user.toLowerCase() === "guru" && pass === "12345") {
+          localStorage.setItem("alprogmatics-teacher-user", JSON.stringify({ name: "Teacher" }));
+          msg.style.color = "var(--green)";
+          msg.textContent = "Welcome, Teacher! Redirecting...";
+          setTimeout(() => (location.href = "../home/index.html"), 600);
+        } else {
+          msg.style.color = "#d64545";
+          msg.textContent = "Wrong username or password.";
+        }
+        return false;
+      }
+      function showRegister(event) {
+        event.preventDefault();
+        document.getElementById("authMessage").textContent =
+          "The sign-up form is ready to be built.";
+      }
+    </script>
+  </body>
+</html>

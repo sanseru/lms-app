@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community | Alprogmatics</title>
+    <link rel="stylesheet" href="../assets/css/main.css?v=4" />
+      <link rel="stylesheet" href="community.css?v=2" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html" aria-label="Alprogmatics home"><img class="brand-logo" src="../assets/images/Logo-header.png" alt="Alprogmatics" /></a>
+      <nav class="main-menu" aria-label="Main menu">
+        <a class="menu-link" href="../home/index.html">Home</a>
+        <a class="menu-link" href="../course/index.html">Course</a>
+        <a class="menu-link" href="../online-lesson/index.html">Online Lesson</a>
+        <a class="menu-link active" href="../community/index.html">Community</a>
+        <a class="menu-link" href="../laboratory/index.html">Laboratory</a>
+        <a class="menu-link" href="../archive/index.html">Archive</a>
+      </nav>
+      <div class="header-actions">
+        <button class="header-icon" aria-label="Search" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="header-icon has-alert" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></button>
+        <a class="login-button" href="../login/index.html">Login</a>
+        <button class="mobile-menu" aria-label="Open menu" onclick="toggleMobileMenu()">&#9776;</button>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="search" placeholder="Search for courses or lessons..." aria-label="Search" />
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+      </div>
+    </header>
+    <main class="cm-page">
+      <section class="cm-hero">
+        <div>
+          <h1>Community</h1>
+          <p>Discover projects made by other kids. Run them, like them, and leave a comment!</p>
+        </div>
+        <a class="cm-create" href="../laboratory/index.html">+ Create project</a>
+      </section>
+
+      <section class="cm-block">
+        <div class="cm-head">
+          <h2>&#128293; Trending</h2>
+          <div class="cm-seg" id="trendTabs">
+            <button class="on" data-days="1" type="button">Today</button>
+            <button data-days="7" type="button">Week</button>
+            <button data-days="30" type="button">Month</button>
+          </div>
+        </div>
+        <div class="cm-trend" id="trendRow"></div>
+      </section>
+
+      <section class="cm-block">
+        <div class="cm-head">
+          <div class="cm-seg" id="sortTabs">
+            <button class="on" data-sort="new" type="button">New</button>
+            <button data-sort="popular" type="button">Popular</button>
+            <button data-sort="discussed" type="button">Discussed</button>
+          </div>
+          <input class="cm-search" id="cmSearch" type="search" placeholder="Search projects..." />
+        </div>
+        <div class="cm-chips" id="typeChips">
+          <button class="on" data-type="all" type="button">All</button>
+          <button data-type="scratch" type="button">Scratch</button>
+          <button data-type="python" type="button">Python</button>
+          <button data-type="presentation" type="button">Presentation</button>
+          <button data-type="website" type="button">Website</button>
+        </div>
+        <div class="cm-grid" id="cmGrid"></div>
+      </section>
+
+      <div class="cm-modal hidden" id="cmModal">
+        <div class="cm-dialog">
+          <button class="cm-x" id="cmClose" type="button" aria-label="Close">&times;</button>
+          <div class="cm-dhead">
+            <div class="cm-av" id="mAv"></div>
+            <div><h2 id="mTitle"></h2><small id="mMeta"></small></div>
+          </div>
+          <p id="mDesc" class="cm-desc"></p>
+          <div class="cm-stage">
+            <div class="cm-bar"><button class="cm-run" id="mRun" type="button">&#9654; Run</button><span id="mStatus"></span></div>
+            <pre class="cm-out hidden" id="mOut"></pre>
+            <iframe class="cm-frame hidden" id="mFrame" sandbox="allow-scripts" title="Project"></iframe>
+          </div>
+          <div class="cm-stats">
+            <button id="mLike" type="button"></button>
+            <span id="mViews"></span>
+            <span id="mCount"></span>
+          </div>
+          <form id="mForm"><input id="mInput" type="text" maxlength="300" placeholder="Write a comment..." autocomplete="off" /><button type="submit">Send</button></form>
+          <div id="mList"></div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <span>© 2026 Alprogmatics</span>
+      <span>Learn. Create. Grow.</span>
+    </footer>
+    <script src="../assets/js/main.js?v=3"></script>
+      <script src="../assets/js/projects.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+    <script src="community.js?v=5"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+﻿.teacher-pill { padding: 6px 14px; border-radius: 999px; background: var(--coral-soft); color: var(--coral); font: 800 12px "Plus Jakarta Sans", sans-serif; }
+.t-page { max-width: 1100px; margin: 0 auto; padding: 48px 24px 90px; }
+.t-page h1 { margin: 0 0 8px; font: 800 38px "Plus Jakarta Sans", sans-serif; letter-spacing: -1px; }
+.t-sub { margin: 0 0 28px; color: var(--muted); }
+.t-card { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+.t-empty { color: var(--muted); text-align: center; padding: 50px; }
+.t-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+.t-head h2 { margin: 0; font: 800 20px "Plus Jakarta Sans", sans-serif; }
+.t-head small { color: var(--muted); }
+.t-head a { color: var(--coral); font-weight: 700; }
+.t-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.t-actions button { padding: 8px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); font: 700 12px "DM Sans", sans-serif; cursor: pointer; }
+.t-actions button:hover { border-color: var(--coral); color: var(--coral); }
+.t-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 16px; }
+.t-lesson { display: flex; flex-direction: column; gap: 2px; padding: 12px; border: 2px solid var(--line); border-radius: 10px; background: #f1f3f4; color: var(--muted); text-align: left; cursor: pointer; font-family: "DM Sans", sans-serif; }
+.t-lesson b { color: var(--ink); }
+.t-lesson span { font-size: 12px; font-weight: 700; }
+.t-lesson.on { background: #e6f6ec; border-color: var(--green); }
+.t-lesson.on span { color: #2f8a52; }
+.t-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.t-stats div { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.t-stats b { display: block; font: 800 28px "Plus Jakarta Sans", sans-serif; }
+.t-stats span { color: var(--muted); font-size: 13px; }
+.t-row { display: grid; grid-template-columns: 160px 1fr 60px; gap: 12px; align-items: center; padding: 8px 0; }
+.t-bar { height: 10px; border-radius: 99px; background: #eceff0; overflow: hidden; }
+.t-bar i { display: block; height: 100%; background: var(--green); }

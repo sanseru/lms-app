@@ -1,0 +1,172 @@
+/* Lesson (question) page */
+:root { --lp-purple: #8a3ae0; --lp-green: #2bb94b; --lp-red: #e5484d; --lp-dark: #101c2c; --lp-ink: #131c2b; }
+* { box-sizing: border-box; }
+body.lesson-page { margin: 0; min-height: 100vh; font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--lp-ink); background: linear-gradient(180deg, #8a3ae0, #7a32d0); }
+
+/* ===== TOP BAR: dark bar with the back button and question circles (used by every question type)
+   HTML built in: engine.js (level folder) -> function topBar() ===== */
+.lp-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 72px; padding: 0 22px; background: var(--lp-dark); }
+.lp-back { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: #fff; color: var(--lp-dark); text-decoration: none; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); transition: transform 0.15s, background 0.15s, color 0.15s; }
+.lp-back:hover { background: #8a3ffc; color: #fff; transform: translateX(-2px); }
+.lp-back:active { transform: translateX(-2px) scale(0.95); }
+.lp-spacer { width: 46px; }
+.lp-circles { display: flex; gap: 10px; overflow-x: auto; padding: 6px; }
+.qc { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #000; color: #fff; font: 800 16px "Plus Jakarta Sans", sans-serif; cursor: pointer; }
+.qc.is-solved { background: var(--lp-green); color: var(--lp-dark); }
+.qc.is-wrong { background: var(--lp-red); color: #fff; }
+.qc.is-locked { background: #000; color: #3b4b6b; cursor: not-allowed; }
+.qc.is-current { box-shadow: 0 0 0 3px var(--lp-dark), 0 0 0 5px var(--lp-green); }
+.qc.is-current:not(.is-solved):not(.is-wrong) { box-shadow: 0 0 0 3px var(--lp-dark), 0 0 0 5px #fff; }
+.qc:focus-visible, .lp-back:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+.lp-main { padding: 22px 20px 48px; }
+/* ===== MULTIPLE-CHOICE QUESTION: white card, options, Check button
+   HTML built in: engine.js (level folder) -> function render() (the part after "if (q.code)") and submit()
+   Question text/options live in: course/python/<level>/lesson-N/task-K.js  (N = lesson number, K = task number) ===== */
+.lc-card { max-width: 980px; min-height: calc(100vh - 72px - 70px); margin: 0 auto; padding: 32px 40px 40px; border-radius: 24px; background: #fff; box-shadow: 0 16px 50px rgba(30, 10, 70, .35); }
+.lc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lc-head h1 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 20px; font-weight: 800; }
+.lc-head.is-solved h1 { color: var(--lp-green); }
+.lc-ok { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--lp-green); color: #fff; font: 700 15px sans-serif; font-style: normal; }
+.lc-attempts { font-weight: 700; color: #7b8494; }
+.lc-question { margin: 18px 0 6px; font-size: 18px; font-weight: 800; }
+.lc-hint { margin: 0 0 12px; color: #7b8494; font-size: 14px; }
+.lc-options { display: grid; gap: 14px; margin-top: 16px; }
+.lc-option { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+.lc-option input { position: absolute; opacity: 0; pointer-events: none; }
+.lc-box { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border: 2px solid #c9ced6; border-radius: 6px; background: #fff; color: #fff; font: 800 15px sans-serif; }
+.lc-text { flex: 0 1 auto; padding: 14px 20px; border: 2px solid #cfd4db; border-radius: 8px; font-size: 17px; }
+.lc-option:hover .lc-text { border-color: var(--lp-purple); }
+.lc-option input:focus-visible ~ .lc-text { outline: 3px solid var(--lp-ink); outline-offset: 2px; }
+.lc-option.is-on .lc-box { background: var(--lp-green); border-color: var(--lp-green); }
+.lc-option.is-on .lc-text { border-color: var(--lp-purple); }
+.lc-option.is-right .lc-text { border-color: var(--lp-green); background: #eafaee; }
+.lc-option.is-bad .lc-box { background: var(--lp-red); border-color: var(--lp-red); }
+.lc-option.is-bad .lc-text { border-color: var(--lp-red); background: #fdecec; }
+.lc-result { min-height: 1.5em; margin: 22px 0 8px; font-weight: 800; }
+.lc-result.good { color: #1f8a3a; }
+.lc-result.bad { color: #c0262b; }
+.lc-actions { display: flex; align-items: center; gap: 12px; }
+.lc-btn { padding: 14px 34px; border: 0; border-radius: 12px; background: var(--lp-green); color: #fff; font: 800 17px "Plus Jakarta Sans", sans-serif; box-shadow: 0 5px 0 #1f8a3a; cursor: pointer; }
+.lc-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #1f8a3a; }
+.lc-refresh { display: grid; place-items: center; width: 52px; height: 52px; border: 2px solid #d5d9e0; border-radius: 12px; background: #fff; color: #5b6575; cursor: pointer; }
+.lc-refresh:hover { color: var(--lp-purple); border-color: var(--lp-purple); }
+.lc-btn:focus-visible, .lc-refresh:focus-visible { outline: 3px solid var(--lp-ink); outline-offset: 3px; }
+
+@media (max-width: 600px) {
+  .lp-bar { padding: 0 10px; }
+  .qc { width: 38px; height: 38px; }
+  .lc-card { padding: 22px 18px 28px; }
+  .lc-text { padding: 12px 14px; font-size: 15px; }
+}
+
+/* ===== THEORY PAGE: lesson reading text
+   HTML built in: engine.js (level folder) -> function renderTheory()
+   Text lives in: course/python/<level>/lesson-N/theory.js ===== */
+.th-body { margin-top: 18px; font-size: 17px; line-height: 1.7; }
+.th-h { margin: 26px 0 8px; font-size: 22px; font-weight: 800; }
+.th-p { margin: 0 0 14px; }
+.th-list { margin: 0 0 14px; padding-left: 24px; }
+.th-code { margin: 0 0 16px; padding: 16px 18px; overflow-x: auto; border-radius: 12px; background: #101c2c; color: #e8eefc; font: 15px/1.6 ui-monospace, Consolas, monospace; }
+.th-body code { padding: 2px 6px; border-radius: 6px; background: #f1ecf9; color: #6d28d9; font-family: ui-monospace, Consolas, monospace; font-size: .92em; }
+.th-code code { padding: 0; background: none; color: inherit; font-size: inherit; }
+.th-tip { margin: 0 0 16px; padding: 14px 18px; border-radius: 12px; background: #fff7e0; }
+.th-img { max-width: 100%; border-radius: 12px; margin: 0 0 16px; }
+.qc.is-theory { background: var(--lp-purple); color: #fff; }
+
+/* ===== CODE PRACTICE (task type with the Python editor; layout modelled on Algonova)
+   HTML built in: engine.js (level folder) -> function renderCode()
+   Python runner: engine.js (level folder) -> function runPython()
+   Questions/starter code/expected output live in: course/python/<level>/lesson-N/task-K.js
+   (course/python/<level>/lesson-N/task-K.js) ===== */
+body.code-mode .lp-main { padding: 0; }
+.lc-card.is-code { max-width: none; min-height: 0; margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.cp { --cp-purple: #833ae0; position: relative; display: flex; height: calc(100vh - 72px); overflow: hidden; background: #fff; color: var(--lp-dark); }
+/* Main layout: .cp-left = editor, .cp-right = output pane, .cp-panel = sliding task panel */
+.cp-left { display: flex; flex: 1 1 0; flex-direction: column; min-width: 0; background: #f1f3f6; }
+.cp-right { display: flex; flex: 0 0 30%; flex-direction: column; min-width: 240px; background: #fff; }
+/* Purple toolbar buttons (new, reset, save, theme, run, check ...) */
+.cp-tools { display: flex; align-items: center; gap: 18px; height: 56px; padding: 0 20px; border-bottom: 1px solid #e3e6ec; }
+.cp-tools-left { justify-content: flex-end; background: #f1f3f6; }
+.cp-btn { display: grid; place-items: center; flex: none; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: var(--cp-purple); color: #fff; cursor: pointer; }
+.cp-btn:hover:not(:disabled) { background: #7329cc; }
+.cp-btn:disabled { background: rgba(15, 28, 44, .04); color: #85898e; cursor: default; }
+.cp-btn:focus-visible { outline: 3px solid var(--lp-dark); outline-offset: 2px; }
+/* Editor: line numbers (.cp-gutter), colored text (.cp-hl) and the real typing box (textarea) */
+.cp-editor { display: flex; flex: 1; min-height: 0; font: 14px/19px Consolas, "Courier New", monospace; }
+.cp-gutter { flex: none; width: 52px; margin: 0; padding: 8px 14px 8px 0; overflow: hidden; color: #237893; text-align: right; font: inherit; user-select: none; }
+.cp-code { position: relative; flex: 1; min-width: 0; }
+.cp-hl, .cp-code textarea { position: absolute; inset: 0; margin: 0; padding: 8px 12px; border: 0; font: inherit; letter-spacing: 0; white-space: pre; tab-size: 4; }
+.cp-cur { position: absolute; left: 0; right: 0; height: 19px; background: rgba(255, 213, 0, 0.35); pointer-events: none; }
+.cp-hl { overflow: hidden; color: #000; pointer-events: none; }
+.cp-code textarea { overflow: auto; resize: none; outline: 0; background: transparent; color: transparent; caret-color: #000; }
+.tk-c { color: #008000; } .tk-s { color: #a31515; } .tk-n { color: #098658; } .tk-f { color: #0000cd; } .tk-k { color: #0000ff; } .tk-b { color: #0451a5; }
+/* Console / output area that shows ">>>" and the program result */
+.cp-console { flex: 1; margin: 0; padding: 12px 16px; overflow: auto; background: #fff; font: 14px/19px Consolas, "Courier New", monospace; white-space: pre-wrap; word-break: break-word; }
+.cp-prompt { color: #6a6e73; }
+.cp-error { color: var(--lp-red); }
+/* Dark theme of the editor (moon button) */
+.cp.is-dark .cp-left, .cp.is-dark .cp-tools-left { background: #1e1e1e; }
+.cp.is-dark .cp-tools-left { border-color: #333; }
+.cp.is-dark .cp-gutter { color: #858585; }
+.cp.is-dark .cp-hl { color: #d4d4d4; }
+.cp.is-dark .cp-code textarea { caret-color: #fff; }
+.cp.is-dark .tk-c { color: #6a9955; } .cp.is-dark .tk-s { color: #ce9178; } .cp.is-dark .tk-n { color: #b5cea8; } .cp.is-dark .tk-f { color: #dcdcaa; } .cp.is-dark .tk-k { color: #569cd6; } .cp.is-dark .tk-b { color: #ffd700; }
+
+/* LAYOUT SIZES - edit here: --pw = task panel width, .cp-left flex = editor width (see also last lines of file) */
+.cp { --pw: max(30%, 400px); }
+.cp-left { flex: 0 0 46%; }
+.cp-right { flex: 1 1 0; min-width: 0; padding-right: 18px; border-left: 1px solid #e3e6ec; }
+.cp-tools-left { height: 60px; gap: 18px; border-bottom: 0; }
+.cp-tools .cp-push { margin-left: auto; }
+.cp-left { position: relative; }
+/* Console under the editor, only shown while the task panel is open */
+.cp-term { display: none; position: absolute; right: 0; bottom: 0; left: 0; height: 32%; border-top: 1px solid #e3e6ec; }
+.cp.is-open .cp-term { display: block; }
+.cp.is-dark .cp-term { background: #1e1e1e; color: #d4d4d4; border-color: #333; }
+/* Purple strip with white handle on the right edge: click to open/close the task panel */
+.cp-handle { position: absolute; top: 0; right: 0; bottom: 0; width: 18px; padding: 0; border: 0; background: var(--cp-purple); cursor: pointer; z-index: 4; transition: right .25s ease; }
+.cp-handle::after { content: ""; position: absolute; top: 50%; left: 5px; width: 8px; height: 56px; margin-top: -28px; border-radius: 4px; background: #fff; }
+.cp.is-open .cp-handle { right: var(--pw); }
+/* Sliding task panel (title, goal, expected output) */
+.cp-panel { position: absolute; top: 0; right: 0; bottom: 0; z-index: 3; display: flex; flex-direction: column; width: var(--pw); background: #f1f3f6; font-family: "Plus Jakarta Sans", system-ui, sans-serif; transform: translateX(100%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s; }
+.cp.is-open .cp-panel { transform: none; visibility: visible; transition: transform .25s ease; }
+/* Green "Well done!" header with Next button (shown after solving) */
+.cp-thanks { flex: none; padding: 22px 20px 20px; background: #2cbb45; color: #fff; }
+.cp-thanks h2 { margin: 0 0 8px; font-size: 24px; font-weight: 700; }
+.cp-thanks p { margin: 0 0 16px; font-size: 18px; }
+.cp-next { width: 100%; height: 36px; border: 0; border-radius: 10px; background: var(--cp-purple); color: #fff; font: 600 16px "Plus Jakarta Sans", sans-serif; cursor: pointer; }
+.cp-next:hover { background: #7329cc; }
+/* Panel content: title card, "Automatically checked task" label, goal card */
+.cp-scroll { flex: 1; padding: 16px 16px 24px; overflow-y: auto; }
+.cp-card { border-radius: 12px; background: #fff; box-shadow: 0 1px 2px rgba(15, 28, 44, .07); }
+.cp-title { padding: 6px 16px; }
+.cp-title h2 { margin: 0; padding: 8px 0; font-size: 24px; font-weight: 700; line-height: 30px; }
+.cp-label { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 8px; padding-top: 14px; border-top: 3px solid var(--lp-green); color: #6a6e73; font-size: 14px; text-transform: uppercase; }
+.cp-label > span { display: inline-flex; align-items: center; gap: 6px; }
+.cp-info { display: inline-flex; font-style: normal; }
+.cp-attempts { text-transform: none; }
+.cp-goal { padding: 8px 16px 16px; }
+.cp-goal-row { display: flex; align-items: center; gap: 14px; width: 100%; padding: 8px 0; border: 0; background: none; color: inherit; font: 700 16px "Plus Jakarta Sans", sans-serif; text-align: left; cursor: pointer; }
+.cp-goal-text { flex: 1; }
+.cp-chev { display: inline-flex; font-style: normal; color: #6a6e73; transition: transform .2s; }
+.cp-goal.is-collapsed .cp-chev { transform: rotate(180deg); }
+.cp-goal.is-collapsed .cp-goal-body { display: none; }
+.cp-tick { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 2px solid #c9ced6; border-radius: 50%; color: #2cbb45; font: 700 16px sans-serif; font-style: normal; }
+.cp-tick.is-done { border-color: transparent; font-size: 24px; }
+.cp-goal-text.is-done { color: #079644; text-decoration: line-through; }
+.cp-mini { margin: 8px 0 14px; overflow: hidden; border: 1px solid #d9dde4; border-radius: 10px; }
+.cp-mini-tools { pointer-events: none; display: flex; gap: 8px; padding: 8px; border-bottom: 1px solid #e3e6ec; }
+.cp-mini-tools .cp-btn { width: 32px; height: 32px; }
+.cp-mini-out { margin: 0; padding: 10px 12px; overflow-x: auto; font: 14px/19px Consolas, "Courier New", monospace; white-space: pre-wrap; }
+.cp-desc { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.4; }
+.cp-feedback { margin: 12px 0 0; font-weight: 700; }
+.cp-feedback.is-bad { color: #c0262b; }
+/* Small screens: stack editor and output vertically */
+@media (max-width: 800px) {
+  .cp { flex-direction: column; height: auto; min-height: calc(100vh - 72px); }
+  .cp-left { flex-basis: 300px; min-height: 300px; } .cp-right { flex-basis: 240px; }
+  .cp-panel { --pw: 92%; }
+}.cp.is-open .cp-right { display: none; }
+/* Editor width when the panel is closed (70% editor / 30% output) */
+.cp-left { flex: 0 0 70%; }

@@ -227,6 +227,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 - **Uploads** use the `local` disk directly in code; switching to S3/object storage needs code changes.
 - **Trusted proxies** are not configured; needed behind Cloudflare/a load balancer.
 - **Only SQLite is tested.** Check MySQL/PostgreSQL before production (JSON columns, date functions, case sensitivity).
+- **Client trial guide** (`docs/panduan-uji-coba/`): regenerate with the `/panduan-uji-coba` skill (`.claude/skills/panduan-uji-coba/SKILL.md`): `scripts/uji-coba/reset.sh` (wipes the local DB!), `walkthrough.mjs` (Playwright, fills real forms), `check.mjs`, `build-pdf.mjs`. The PDF in `dist/` is not committed.
 - **User guide screenshots** in `docs/panduan-pengguna/img/` come from the seeded demo data (`migrate:fresh --seed`) at 1366 px (desktop) and 390 px (phone), quantized to 256 colours. Retake them when a screen changes visibly.
 - `lang/id` still exists but is unused (`APP_LOCALE=en`).
 - Landing page data in `site.js` (WhatsApp number `6281234567890`, email, prices, testimonials marked as samples) is **fake** and must not go live.

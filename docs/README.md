@@ -2,6 +2,7 @@
 
 | Dokumen | Isi |
 |---|---|
+| [Panduan uji coba klien](panduan-uji-coba/README.md) | Skenario uji coba dari awal sampai akhir (trial → siswa → tagihan → mengajar → belajar → orang tua) dengan gambar dan daftar periksa; PDF dibuat dengan skill `/panduan-uji-coba` |
 | [Panduan pengguna](panduan-pengguna/README.md) | Cara memakai aplikasi: login, notifikasi, kalender, dan istilah |
 | [Panduan admin](panduan-pengguna/admin.md) | Pengguna, calon siswa dan kelas trial, kelas dan jadwal, sesi, tagihan, verifikasi pembayaran, paket kuota, honor tutor, laporan bulanan, audit log |
 | [Panduan guru](panduan-pengguna/guru.md) | Absensi dan catatan sesi, kursus, kuis, tugas (termasuk tugas Scratch), soal coding, penilaian, laporan soal, Q&A, proyek, Laboratory dan Community, laporan bulanan, kelas trial, sertifikat, honor |

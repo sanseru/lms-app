@@ -12,7 +12,8 @@ const props = defineProps({ students: Array, classes: Array });
 const now = new Date();
 const month = now.toISOString().slice(0, 7);
 const monthName = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-const due = new Date(now.getFullYear(), now.getMonth(), 10).toLocaleDateString('sv-SE');
+// Due on the 10th; once this month's 10th has passed, the next month's (a new invoice is never born overdue).
+const due = new Date(now.getFullYear(), now.getMonth() + (now.getDate() > 10 ? 1 : 0), 10).toLocaleDateString('sv-SE');
 
 const form = useForm({
     target: 'student',

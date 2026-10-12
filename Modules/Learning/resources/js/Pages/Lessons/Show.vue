@@ -5,6 +5,7 @@ import Avatar from '@/Components/ui/Avatar.vue';
 import Badge from '@/Components/ui/Badge.vue';
 import Field from '@/Components/ui/Field.vue';
 import Icon from '@/Components/ui/Icon.vue';
+import { useFullscreen } from '@/lib/fullscreen';
 import lessonLayout from '@/Layouts/lessonLayout';
 import LessonQuestions from '@/Components/ui/LessonQuestions.vue';
 import LessonReport from '@/Components/ui/LessonReport.vue';
@@ -110,6 +111,9 @@ const editing = ref(!props.submission || props.submission.status === 'revision')
 // Scratch assignments: the student builds in the editor on the page; Submit attaches the .sb3.
 const isScratchTask = computed(() => props.lesson.workspace === 'scratch');
 const scratchFrame = ref(null);
+// The Scratch editor can fill the screen; Submit then sits in its bar too.
+const scratchBox = ref(null);
+const { active: scratchFull, native: scratchNative, toggle: toggleScratchFull, exit: exitScratchFull } = useFullscreen(scratchBox);
 const submitWork = async () => {
     if (isScratchTask.value) {
         try {
@@ -341,12 +345,23 @@ const subTone = { submitted: 'amber', revision: 'red', graded: 'green' };
                     <b class="text-accent-700">Needs revision:</b> {{ submission.feedback }}
                 </div>
 
-                <section v-if="editing && isScratchTask" class="space-y-2" aria-labelledby="scratch-title">
-                    <div class="flex flex-wrap items-end justify-between gap-2">
+                <section
+                    v-if="editing && isScratchTask"
+                    ref="scratchBox"
+                    :class="scratchFull ? ['flex flex-col gap-2 bg-paper p-2 sm:p-3', !scratchNative && 'fixed inset-0 z-[55]'] : 'space-y-2'"
+                    aria-labelledby="scratch-title"
+                >
+                    <div class="flex flex-wrap items-center justify-between gap-2">
                         <h2 id="scratch-title" class="font-display font-bold text-ink">Build it in Scratch</h2>
-                        <p class="text-xs text-muted">Your project is handed in when you press Submit below. You can update it until it is graded.</p>
+                        <p class="hidden text-xs text-muted sm:block">Your project is handed in when you press Submit. You can update it until it is graded.</p>
+                        <div class="flex items-center gap-2">
+                            <button v-if="scratchFull" type="button" class="btn-accent px-3 py-1.5 text-xs" :disabled="subForm.processing" @click="exitScratchFull().then(submitWork)"><Icon name="upload" :size="15" /> Submit</button>
+                            <button type="button" class="btn-ghost px-2.5 py-1.5 text-xs" :aria-pressed="scratchFull" @click="toggleScratchFull">
+                                <Icon :name="scratchFull ? 'minimize' : 'maximize'" :size="15" /> {{ scratchFull ? 'Exit fullscreen' : 'Fullscreen' }}
+                            </button>
+                        </div>
                     </div>
-                    <ScratchFrame ref="scratchFrame" :src="submission?.is_scratch ? submission.file_url : null" :title="`Scratch editor: ${lesson.title}`" class="h-[calc(100vh-14rem)] min-h-[520px]" />
+                    <ScratchFrame ref="scratchFrame" :src="submission?.is_scratch ? submission.file_url : null" :title="`Scratch editor: ${lesson.title}`" :class="scratchFull ? 'min-h-0 flex-1' : 'h-[calc(100vh-14rem)] min-h-[520px]'" />
                 </section>
 
                 <form v-if="editing" class="card space-y-4 p-5" @submit.prevent="submitWork">

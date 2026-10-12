@@ -27,3 +27,6 @@ Homestead.yaml
 Thumbs.db
 /public/vendor/pyodide
 /public/vendor/scratch-gui
+
+# Panduan uji coba klien: PDF dibuat ulang oleh skill /panduan-uji-coba
+/docs/panduan-uji-coba/dist

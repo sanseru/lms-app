@@ -1,0 +1,37 @@
+.hm-page { max-width:1100px; margin:0 auto; padding:28px 24px 60px; }
+.hm-profile { display:flex; align-items:center; gap:22px; padding:26px 30px; border-radius:24px; background:linear-gradient(120deg,#5b4bff,#8b5cf6 55%,#ff7a59); color:#fff; margin-bottom:20px; }
+.hm-avatar { width:84px; height:84px; border-radius:50%; background:#fff; color:#5b4bff; display:grid; place-items:center; font-size:38px; font-weight:800; flex:none; border:4px solid rgba(255,255,255,.5); }
+.hm-who { flex:1; min-width:0; } .hm-who h1 { margin:0 0 4px; font-size:30px; } .hm-who p { margin:0 0 12px; opacity:.92; }
+.hm-level { display:flex; align-items:center; gap:10px; font-weight:700; font-size:14px; }
+.hm-level .hm-bar { flex:0 1 220px; background:rgba(255,255,255,.3); } .hm-level small { opacity:.9; }
+.hm-bar { height:9px; border-radius:6px; background:#e8ebf3; overflow:hidden; flex:1; }
+.hm-bar i { display:block; height:100%; background:linear-gradient(90deg,#34d399,#fbbf24); border-radius:6px; }
+.hm-cta { background:#fff; color:#5b4bff; font-weight:800; padding:12px 22px; border-radius:14px; text-decoration:none; white-space:nowrap; }
+.hm-stats { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px; }
+.hm-stats div { background:#fff; border:1px solid #e6e9f0; border-radius:16px; padding:16px; text-align:center; }
+.hm-stats b { display:block; font-size:28px; color:#5b4bff; } .hm-stats span { font-size:13px; color:#6b7280; }
+.hm-cols { display:grid; grid-template-columns:1.5fr 1fr; gap:20px; margin-bottom:20px; }
+.hm-card { background:#fff; border:1px solid #e6e9f0; border-radius:20px; padding:20px 22px; margin-bottom:20px; }
+.hm-cols .hm-card { margin-bottom:0; }
+.hm-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.hm-head h2 { margin:0; font-size:19px; } .hm-head a { color:#5b4bff; font-weight:700; font-size:14px; text-decoration:none; }
+.hm-course { display:flex; align-items:center; gap:12px; padding:10px 0; text-decoration:none; color:inherit; border-top:1px solid #f0f2f7; }
+.hm-course:first-child { border-top:0; }
+.hm-ci { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#3b82f6,#6d28d9); color:#fff; display:grid; place-items:center; font-weight:800; flex:none; }
+.hm-cb { flex:1; } .hm-cb b { display:block; margin-bottom:6px; } .hm-course > span { font-weight:700; color:#6b7280; font-size:14px; }
+.hm-badges { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.hm-badge { text-align:center; font-size:12px; font-weight:700; color:#9ca3af; padding:12px 6px; border-radius:14px; background:#f4f5f9; filter:grayscale(1); opacity:.7; }
+.hm-badge span { display:block; font-size:28px; margin-bottom:4px; }
+.hm-badge.on { filter:none; opacity:1; background:#fff7e0; color:#92400e; }
+.hm-projects { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; }
+.hm-pcard { display:flex; flex-direction:column; gap:3px; text-decoration:none; color:inherit; border:1px solid #e6e9f0; border-radius:14px; overflow:hidden; padding-bottom:12px; transition:transform .15s; }
+.hm-pcard:hover { transform:translateY(-3px); }
+.hm-pcard b, .hm-pcard small, .hm-nums { padding:0 12px; } .hm-pcard small { color:#7b8794; } .hm-nums { display:flex; gap:12px; font-size:13px; color:#7b8794; margin-top:4px; }
+.hm-pthumb { height:84px; display:grid; place-items:center; color:#fff; font-size:30px; font-weight:800; margin-bottom:8px; line-height:1; }
+.hm-pthumb.python { background:linear-gradient(135deg,#3b82f6,#6d28d9); }
+.hm-pthumb.scratch { background:linear-gradient(135deg,#f59e0b,#ef4444); }
+.hm-pthumb.presentation { background:linear-gradient(135deg,#10b981,#0ea5e9); }
+.hm-pthumb.website { background:linear-gradient(135deg,#f97316,#ec4899); }
+.hm-empty { color:#7b8794; grid-column:1/-1; } .hm-empty a { color:#5b4bff; font-weight:700; }
+@media (max-width:900px){ .hm-stats { grid-template-columns:repeat(3,1fr); } .hm-cols { grid-template-columns:1fr; } }
+@media (max-width:600px){ .hm-profile { flex-direction:column; text-align:center; } .hm-stats { grid-template-columns:repeat(2,1fr); } }

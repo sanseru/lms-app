@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Alprogmatics</title>
+    <link rel="stylesheet" href="../assets/css/main.css?v=4" />
+      <link rel="stylesheet" href="home.css?v=1" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../index.html" aria-label="Alprogmatics home"><img class="brand-logo" src="../assets/images/Logo-header.png" alt="Alprogmatics" /></a>
+      <nav class="main-menu" aria-label="Main menu">
+        <a class="menu-link active" href="../home/index.html">Home</a>
+        <a class="menu-link" href="../course/index.html">Course</a>
+        <a class="menu-link" href="../online-lesson/index.html">Online Lesson</a>
+        <a class="menu-link" href="../community/index.html">Community</a>
+        <a class="menu-link" href="../laboratory/index.html">Laboratory</a>
+        <a class="menu-link" href="../archive/index.html">Archive</a>
+      </nav>
+      <div class="header-actions">
+        <button class="header-icon" aria-label="Search" onclick="toggleSearch()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="header-icon has-alert" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a1.9 1.9 0 0 0 3.4 0"/></svg><i></i></button>
+        <a class="login-button" href="../login/index.html">Login</a>
+        <button class="mobile-menu" aria-label="Open menu" onclick="toggleMobileMenu()">&#9776;</button>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="search" placeholder="Search for courses or lessons..." aria-label="Search" />
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+      </div>
+    </header>
+    <main class="hm-page">
+      <section class="hm-profile">
+        <div class="hm-avatar" id="hmAvatar">?</div>
+        <div class="hm-who">
+          <h1 id="hmName">Welcome!</h1>
+          <p id="hmSub">Log in to save your progress and projects.</p>
+          <div class="hm-level"><span id="hmLevelText">Level 1</span><div class="hm-bar"><i id="hmXp"></i></div><small id="hmXpText"></small></div>
+        </div>
+        <a class="hm-cta" id="hmLogin" href="../login/index.html">Log in</a>
+      </section>
+
+      <section class="hm-stats">
+        <div><b id="sProjects">0</b><span>Projects</span></div>
+        <div><b id="sLikes">0</b><span>Likes received</span></div>
+        <div><b id="sViews">0</b><span>Views</span></div>
+        <div><b id="sComments">0</b><span>Comments</span></div>
+        <div><b id="sLessons">0</b><span>Lessons done</span></div>
+        <div><b id="sSolved">0</b><span>Questions solved</span></div>
+      </section>
+
+      <div class="hm-cols">
+        <section class="hm-card">
+          <div class="hm-head"><h2>&#128214; Continue learning</h2><a href="../course/python/index.html">Open course &rarr;</a></div>
+          <div id="hmCourses"></div>
+        </section>
+        <section class="hm-card">
+          <div class="hm-head"><h2>&#127942; Achievements</h2></div>
+          <div class="hm-badges" id="hmBadges"></div>
+        </section>
+      </div>
+
+      <section class="hm-card">
+        <div class="hm-head"><h2>&#128640; My projects</h2><a href="../laboratory/index.html">Open Laboratory &rarr;</a></div>
+        <div class="hm-projects" id="hmProjects"></div>
+      </section>
+
+      <section class="hm-card">
+        <div class="hm-head"><h2>&#128293; Popular in Community</h2><a href="../community/index.html">See all &rarr;</a></div>
+        <div class="hm-projects" id="hmPopular"></div>
+      </section>
+    </main>
+    <footer>
+      <span>&copy; 2026 Algonova</span>
+      <span>Learn. Create. Grow.</span>
+    </footer>
+    <script src="../assets/js/main.js?v=3"></script>
+    <script src="../assets/js/projects.js?v=2"></script>
+    <script src="home.js?v=1"></script>
+  </body>
+</html>

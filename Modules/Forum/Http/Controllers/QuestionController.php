@@ -37,7 +37,7 @@ class QuestionController extends Controller
             ->when($classId, fn (Builder $q) => $q->where('class_room_id', $classId))
             ->when($lesson, fn (Builder $q) => $q->where('lesson_id', $lesson->id))
             ->when($search !== '', fn (Builder $q) => $q->where(fn (Builder $q) => $q
-                ->where('title', 'like', "%{$search}%")->orWhere('body', 'like', "%{$search}%")));
+                ->whereLike('title', "%{$search}%")->orWhereLike('body', "%{$search}%")));
 
         $filtered = fn () => $tab === 'mine'
             ? (clone $base)->where('author_id', $user->id)

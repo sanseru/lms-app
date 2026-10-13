@@ -86,6 +86,7 @@ const open = (s) => router.visit(route('reports.show', [s.id, props.month.key]))
                             <span v-else-if="s.classes.length" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-800 ring-1 ring-emerald-200"><Icon name="check" :size="13" /> Complete</span>
                         </td>
                         <td class="px-5 py-3 text-right">
+                            <Link :href="route('learning.progress.show', s.id)" class="mr-3 text-xs font-semibold text-brand-600 hover:underline" :aria-label="`Learning progress of ${s.name}`" @click.stop>Progress</Link>
                             <Link :href="route('reports.show', [s.id, month.key])" class="text-xs font-semibold text-brand-600 hover:underline" @click.stop>Open</Link>
                         </td>
                     </tr>

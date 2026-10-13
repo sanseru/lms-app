@@ -111,6 +111,9 @@ const copyZoom = async () => {
                             <p class="font-mono text-xs text-muted">{{ student.code }}<template v-if="student.grade"> · {{ gradeLabel(student.grade) }}</template></p>
                         </div>
                         <p v-if="student.joined_at" class="hidden text-xs text-muted sm:block">Since {{ student.joined_at }}</p>
+                        <Link v-if="can.progress" :href="route('learning.progress.show', student.id)" class="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-brand-600 hover:bg-brand-50" :aria-label="`Learning progress of ${student.name}`">
+                            <Icon name="target" :size="14" /> Progress
+                        </Link>
                         <button
                             v-if="can.manage"
                             class="rounded-lg p-2 text-muted hover:bg-rose-50 hover:text-rose-600"

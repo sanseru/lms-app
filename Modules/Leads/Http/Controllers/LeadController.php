@@ -22,7 +22,7 @@ class LeadController extends Controller
     {
         $search = $request->query('search');
         $filter = fn ($q) => $q->when($search, fn ($q, $s) => $q->where(fn ($q) => $q
-            ->where('parent_name', 'like', "%{$s}%")->orWhere('child_name', 'like', "%{$s}%")->orWhere('phone', 'like', "%{$s}%")));
+            ->whereLike('parent_name', "%{$s}%")->orWhereLike('child_name', "%{$s}%")->orWhereLike('phone', "%{$s}%")));
 
         $open = Lead::whereIn('status', Lead::OPEN)->tap($filter)->with('trialTeacher:id,name')
             ->orderByRaw('trial_at is null, trial_at')->oldest()->get()->groupBy('status');

@@ -28,7 +28,7 @@ class SearchController extends Controller
 
         if (mb_strlen($q) >= 2) {
             $courses = Course::query()->where('status', 'published')
-                ->where(fn ($w) => $w->where('title', 'like', $like)->orWhere('subject', 'like', $like)->orWhere('description', 'like', $like))
+                ->where(fn ($w) => $w->whereLike('title', $like)->orWhereLike('subject', $like)->orWhereLike('description', $like))
                 ->with('program:id,name')
                 ->orderBy('title')->limit(12)->get()
                 ->map(fn (Course $c) => [
@@ -41,7 +41,7 @@ class SearchController extends Controller
                 ]);
 
             $lessons = Lesson::query()->whereIn('course_id', $mine)->where('is_published', true)
-                ->where(fn ($w) => $w->where('title', 'like', $like)->orWhereHas('unit', fn ($u) => $u->where('title', 'like', $like)))
+                ->where(fn ($w) => $w->whereLike('title', $like)->orWhereHas('unit', fn ($u) => $u->whereLike('title', $like)))
                 ->with(['course:id,title', 'unit:id,title'])
                 ->orderBy('course_id')->orderBy('position')->limit(20)->get()
                 ->map(fn (Lesson $l) => [

@@ -33,7 +33,7 @@ class AuditController extends Controller
             ->when($filters['user'] ?? null, fn ($q, $v) => $q->where('causer_id', $v))
             ->when($filters['from'] ?? null, fn ($q, $v) => $q->where('created_at', '>=', $v.' 00:00:00'))
             ->when($filters['to'] ?? null, fn ($q, $v) => $q->where('created_at', '<=', $v.' 23:59:59'))
-            ->when($filters['search'] ?? null, fn ($q, $v) => $q->where('subject_label', 'like', "%{$v}%"))
+            ->when($filters['search'] ?? null, fn ($q, $v) => $q->whereLike('subject_label', "%{$v}%"))
             ->latest('id')
             ->paginate(30)
             ->withQueryString()

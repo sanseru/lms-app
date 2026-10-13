@@ -226,7 +226,7 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 - **Audit logging pauses** during `db:seed`/`migrate:fresh`; `activity_log` rows cannot be updated or deleted (by design).
 - **Uploads** use the `local` disk directly in code; switching to S3/object storage needs code changes.
 - **Trusted proxies** are not configured; needed behind Cloudflare/a load balancer.
-- **Only SQLite is tested.** Check MySQL/PostgreSQL before production (JSON columns, date functions, case sensitivity).
+- **Three databases are tested.** CI runs the suite on SQLite, MySQL 8 and PostgreSQL 16. Use `whereLike()` for user searches (PostgreSQL `LIKE` is case-sensitive), avoid `max()`/`min()` on boolean columns, and don't query `notifications.data` with JSON paths (it is a text column).
 - **Client trial guide** (`docs/panduan-uji-coba/`): regenerate with the `/panduan-uji-coba` skill (`.claude/skills/panduan-uji-coba/SKILL.md`): `scripts/uji-coba/reset.sh` (wipes the local DB!), `walkthrough.mjs` (Playwright, fills real forms), `check.mjs`, `build-pdf.mjs`. The PDF in `dist/` is not committed.
 - **User guide screenshots** in `docs/panduan-pengguna/img/` come from the seeded demo data (`migrate:fresh --seed`) at 1366 px (desktop) and 390 px (phone), quantized to 256 colours. Retake them when a screen changes visibly.
 - `lang/id` still exists but is unused (`APP_LOCALE=en`).
@@ -252,10 +252,8 @@ Each task is one PR on its own branch, with tests and docs updated. "Done when" 
 
 1. ~~**Sync stale docs.**~~ Done on branch `claude/elegant-mccarthy-yxr746`: `PRODUCT.md`, README, `docs/production.md`, `docs/audit-kelengkapan.md` and the user guides now describe the English UI with fresh screenshots.
 2. ~~**Add CI.**~~ Done: `.github/workflows/ci.yml` (Pint job + build-and-test job, PHP 8.3, Node 22, SQLite).
-3. **Teacher link to student progress.** Teachers can only reach a student's learning progress (`route('learning.progress.show', $student)`) by typing the URL (monthly reports already have a menu item). Add links from the class detail page and the monthly reports list, respecting permissions.
-   *Done when* a teacher reaches a student's progress report in two clicks from their class, with a Pest test for access rules (own class allowed, other classes forbidden).
-4. **MySQL/PostgreSQL compatibility.** Run the full suite against MySQL 8 and PostgreSQL 16 (CI matrix or locally), fix any failing queries/migrations.
-   *Done when* `php artisan test` passes on SQLite, MySQL and PostgreSQL.
+3. ~~**Teacher link to student progress.**~~ Done: **Progress** links on the class roster (class teacher, admin) and the monthly reports list.
+4. ~~**MySQL/PostgreSQL compatibility.**~~ Done: suite and demo seeding pass on SQLite, MySQL 8 and PostgreSQL 16; CI job `databases` runs both.
 5. **Production hardening.** Configure trusted proxies via env, make the upload disk configurable (env-driven, works with S3-compatible storage), confirm cron/queue setup in `docs/production.md`, add a health check route.
    *Done when* the app runs behind a proxy with correct HTTPS URLs, uploads work on both `local` and `s3` disks (tested with `Storage::fake`), and docs describe it.
 6. **Daily streak + PWA.** Streak derived from activity (same derive-and-recompute approach as XP) shown on the student dashboard and achievements page; web app manifest, icons and a minimal service worker for "add to home screen".

@@ -31,9 +31,9 @@ class InvoiceController extends Controller
             ->with(['student:id,name', 'student.studentProfile:id,user_id,student_code'])
             ->withCount(['payments as pending_payments_count' => fn ($q) => $q->where('status', 'pending')])
             ->when($filters['search'] ?? null, fn ($q, $search) => $q->where(fn ($q) => $q
-                ->where('number', 'like', "%{$search}%")
-                ->orWhere('title', 'like', "%{$search}%")
-                ->orWhereHas('student', fn ($q) => $q->where('name', 'like', "%{$search}%"))))
+                ->whereLike('number', "%{$search}%")
+                ->orWhereLike('title', "%{$search}%")
+                ->orWhereHas('student', fn ($q) => $q->whereLike('name', "%{$search}%"))))
             ->when($filters['status'] ?? null, function ($q, $status) {
                 return match ($status) {
                     'overdue' => $q->outstanding()->whereDate('due_date', '<', today()),

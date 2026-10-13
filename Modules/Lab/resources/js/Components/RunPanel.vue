@@ -51,7 +51,8 @@ defineExpose({ run });
 
 <template>
     <SlideShow v-if="language === 'presentation'" ref="slideshow" :source="code" :tall="tall" />
-    <div v-else class="flex h-full flex-col overflow-hidden rounded-2xl bg-[#1a252d] text-[#d9e7e8]">
+    <!-- Full height only beside the editor (tall); elsewhere a stretched grid column would make it huge. -->
+    <div v-else :class="tall && 'h-full'" class="flex flex-col overflow-hidden rounded-2xl bg-[#1a252d] text-[#d9e7e8]">
         <div class="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
             <span class="font-mono text-xs font-bold tracking-wider text-white/60 uppercase">{{ language === 'html' ? 'Preview' : 'Output' }}</span>
             <div class="flex items-center gap-1.5">

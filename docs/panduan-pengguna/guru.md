@@ -210,7 +210,7 @@ Di setiap materi, kuis, tugas, dan soal coding, siswa punya tombol **Report a pr
 
 Rapor siswa menampilkan progres setiap kursus: persentase selesai (**Progress**), **Quiz average**, **Assignment average**, dan **Skill growth** dari **Warm-up Mission** ke **Final Mission**. Kenaikan (**Gain**) dihitung sebagai (akhir − awal) ÷ (100 − awal) dan diberi label **High** (≥ 70%), **Medium** (≥ 30%), atau **Low**.
 
-Saat ini rapor belum punya tautan di menu guru. Buka lewat alamat `/progress/<ID siswa>` (ID terlihat di alamat halaman prestasi siswa, `/achievements/student/<ID>`). Guru hanya bisa membuka rapor siswa di kelas yang ia ajar. Hasil kuis per pelajaran juga terlihat di bagian **Student results** pada halaman kuis.
+Buka rapor lewat tombol **Progress** di samping nama siswa, di halaman kelas (**Classes** → pilih kelas) atau di daftar **Monthly reports**. Guru hanya bisa membuka rapor siswa di kelas yang ia ajar. Hasil kuis per pelajaran juga terlihat di bagian **Student results** pada halaman kuis.
 
 Siswa sendiri melihat kursusnya sebagai peta perjalanan (*course map*) di menu **Course**: satu lingkaran per pelajaran dari **START** sampai **Finish**, dengan pelajaran yang sudah selesai, pelajaran yang sedang dikerjakan, dan yang berikutnya. Urutan peta mengikuti urutan pelajaran di **Course content**, dan pelajaran draf tidak tampil.
 

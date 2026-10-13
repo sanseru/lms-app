@@ -45,7 +45,7 @@ class CommunityController extends Controller
 
         $projects = $base()
             ->when($language, fn ($q) => $q->where('language', $language))
-            ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%")))
+            ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q->whereLike('title', "%{$search}%")->orWhereLike('description', "%{$search}%")))
             ->when($sort === 'popular', fn ($q) => $q->orderByDesc('likers_count')->orderByDesc('viewers_count'))
             ->when($sort === 'discussed', fn ($q) => $q->orderByDesc('comments_count'))
             ->orderByDesc('shared_at')

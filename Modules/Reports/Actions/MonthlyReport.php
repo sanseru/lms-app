@@ -140,7 +140,7 @@ class MonthlyReport
             ->whereBetween('q.created_at', [$from, $to])
             ->groupBy('q.lesson_id', 'l.title')
             ->orderBy('l.title')
-            ->selectRaw('l.title, max(q.score) as score, count(*) as tries, max(q.passed) as passed')
+            ->selectRaw('l.title, max(q.score) as score, count(*) as tries, max(case when q.passed then 1 else 0 end) as passed')  // max(boolean) does not exist in PostgreSQL
             ->get()
             ->map(fn ($r) => ['title' => $r->title, 'score' => (int) $r->score, 'tries' => (int) $r->tries, 'passed' => (bool) $r->passed])
             ->all();

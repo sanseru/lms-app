@@ -82,7 +82,7 @@ class GamificationServiceProvider extends ModuleServiceProvider
                     ->join('lessons', 'lessons.id', '=', 'lesson_progress.lesson_id')
                     ->join('courses', 'courses.id', '=', 'lessons.course_id')
                     ->join('programs', 'programs.id', '=', 'courses.program_id')
-                    ->where('lesson_progress.student_id', $u->id)->where('programs.name', 'like', 'Python%')
+                    ->where('lesson_progress.student_id', $u->id)->whereLike('programs.name', 'Python%')
                     ->select('lesson_progress.lesson_id as source_id', 'lesson_progress.completed_at as at')),
             );
         }

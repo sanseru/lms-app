@@ -43,7 +43,7 @@ class CourseController extends Controller
 
         $courses = Course::query()
             ->withCount(['lessons', 'classes'])
-            ->when($request->string('search')->toString(), fn ($q, $s) => $q->where(fn ($q) => $q->where('title', 'like', "%$s%")->orWhere('subject', 'like', "%$s%")))
+            ->when($request->string('search')->toString(), fn ($q, $s) => $q->where(fn ($q) => $q->whereLike('title', "%$s%")->orWhereLike('subject', "%$s%")))
             ->when($request->string('status')->toString(), fn ($q, $s) => $q->where('status', $s))
             ->orderByDesc('status')
             ->orderBy('title')

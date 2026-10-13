@@ -30,7 +30,7 @@ class MonthlyReportController extends Controller
         $students = $this->access->students($user)
             ->where('status', 'active')
             ->with('studentProfile:id,user_id,student_code,grade')
-            ->when($filters['search'] ?? null, fn ($q, $s) => $q->where('name', 'like', "%{$s}%"))
+            ->when($filters['search'] ?? null, fn ($q, $s) => $q->whereLike('name', "%{$s}%"))
             ->when($filters['class'] ?? null, fn ($q, $c) => $q->whereIn('id', DB::table('class_students')->where('class_room_id', $c)->select('student_id')))
             ->orderBy('name')
             ->paginate(20)

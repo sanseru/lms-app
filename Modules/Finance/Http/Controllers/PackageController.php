@@ -25,7 +25,7 @@ class PackageController extends Controller
         $studentPackages = StudentPackage::query()
             ->with(['student:id,name', 'classRoom:id,name'])
             ->withCount('usages')
-            ->when($filters['search'] ?? null, fn ($q, $s) => $q->whereHas('student', fn ($q) => $q->where('name', 'like', "%{$s}%")))
+            ->when($filters['search'] ?? null, fn ($q, $s) => $q->whereHas('student', fn ($q) => $q->whereLike('name', "%{$s}%")))
             ->when($filters['status'] ?? null, fn ($q, $s) => $s === 'low'
                 ? $q->where('status', 'active')->whereRaw('sessions_total - (select count(*) from session_attendances where student_package_id = student_packages.id) <= 2')
                 : $q->where('status', $s))

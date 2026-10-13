@@ -120,7 +120,8 @@ test('users read their notifications and the bell shows the unread count', funct
             ->has('items.data', 2)
             ->where('notifications.unread', 2));
 
-    $first = $this->student->notifications()->where('data->title', 'One')->first();
+    // `data` is a text column (Laravel default), so filter in PHP rather than with a JSON path that PostgreSQL rejects.
+    $first = $this->student->notifications()->get()->firstWhere(fn ($n) => $n->data['title'] === 'One');
     $this->actingAs($this->student)->get("/notifications/{$first->id}")->assertRedirect('/dashboard');
     expect($first->fresh()->read_at)->not->toBeNull();
 

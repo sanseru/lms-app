@@ -150,7 +150,7 @@ Setelah mengubah `.env` di server yang sudah dioptimasi, jalankan `php artisan o
 
 ### Pilihan database
 
-- **MySQL 8 / MariaDB atau PostgreSQL**: disarankan untuk production (backup lebih mudah, aman untuk akses bersamaan).
+- **MySQL 8 / MariaDB atau PostgreSQL**: disarankan untuk production (backup lebih mudah, aman untuk akses bersamaan). Seluruh test dan data demo diuji di CI pada MySQL 8 dan PostgreSQL 16.
 - **SQLite**: cukup untuk kursus kecil di satu server. Pastikan file database dan foldernya bisa ditulis `www-data`, dan ikutkan file itu di backup.
 
 Aplikasi ini dikembangkan dan seluruh test Pest-nya dijalankan dengan SQLite. Query memakai query builder Laravel dan SQL standar, tetapi **uji dulu di staging** dengan database yang sama dengan production sebelum go-live.

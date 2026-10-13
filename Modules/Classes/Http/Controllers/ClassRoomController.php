@@ -27,8 +27,8 @@ class ClassRoomController extends Controller
             ->with('teacher:id,name')
             ->withCount('students')
             ->when($filters['search'] ?? null, fn ($q, $search) => $q->where(fn ($q) => $q
-                ->where('name', 'like', "%{$search}%")
-                ->orWhere('code', 'like', "%{$search}%")))
+                ->whereLike('name', "%{$search}%")
+                ->orWhereLike('code', "%{$search}%")))
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when($filters['subject'] ?? null, fn ($q, $subject) => $q->where('subject', $subject))
             ->orderByRaw("case status when 'active' then 0 when 'upcoming' then 1 else 2 end")
@@ -95,6 +95,8 @@ class ClassRoomController extends Controller
                 'roster' => $canRoster,
                 // Open lessons early for this class (Learning module): its teacher or an admin.
                 'lessonAccess' => $class->course_id && ($user->hasRole('admin') || $class->teacher_id === $user->id),
+                // Learning progress report per student: the class teacher or an admin (same rule as ProgressController).
+                'progress' => $user->can('learning.manage') && ($user->hasRole('admin') || $class->teacher_id === $user->id),
             ],
         ]);
     }

@@ -22,9 +22,9 @@ class TeacherController extends Controller
             ->with('teacherProfile')
             ->withCount('teachingClasses')
             ->when($filters['search'] ?? null, fn ($q, $search) => $q->where(fn ($q) => $q
-                ->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhereHas('teacherProfile', fn ($q) => $q->where('expertise', 'like', "%{$search}%"))))
+                ->whereLike('name', "%{$search}%")
+                ->orWhereLike('email', "%{$search}%")
+                ->orWhereHas('teacherProfile', fn ($q) => $q->whereLike('expertise', "%{$search}%"))))
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->orderBy('name')
             ->paginate(12)

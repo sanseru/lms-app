@@ -1,6 +1,6 @@
 ---
 name: panduan-uji-coba
-description: Buat ulang panduan uji coba klien (docs/panduan-uji-coba) dari awal sampai akhir: reset data demo, jalankan walkthrough Playwright yang benar-benar mengisi form di aplikasi, ambil ulang semua screenshot, perbarui teks panduan bila tampilan berubah, cetak PDF A4, lalu commit dan buat PR. Pakai saat pengguna minta "update panduan uji coba", "buat ulang PDF panduan klien", atau setelah ada perubahan UI yang terlihat klien.
+description: Buat ulang panduan uji coba klien (docs/panduan-uji-coba) dari awal sampai akhir: reset data demo, jalankan walkthrough Playwright yang benar-benar mengisi form di aplikasi, ambil ulang semua screenshot, perbarui teks panduan bila tampilan berubah, cetak PDF A4, lalu commit dan buat PR. Pakai hanya saat pengguna minta, mis. "update panduan uji coba" atau "buat ulang PDF panduan klien". Jangan dijalankan otomatis setelah perubahan UI.
 ---
 
 # Panduan uji coba klien

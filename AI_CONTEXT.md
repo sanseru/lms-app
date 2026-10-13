@@ -248,6 +248,8 @@ Design rules (from `CLAUDE.md`, `PRODUCT.md`, `docs/design/`):
 
 ## 9. Next tasks, in order
 
+The owner-facing version of this list (Indonesian, with priority and size) is `docs/roadmap-fitur.md`; keep both in sync.
+
 Each task is one PR on its own branch, with tests and docs updated. "Done when" is the acceptance criterion.
 
 1. ~~**Sync stale docs.**~~ Done on branch `claude/elegant-mccarthy-yxr746`: `PRODUCT.md`, README, `docs/production.md`, `docs/audit-kelengkapan.md` and the user guides now describe the English UI with fresh screenshots.

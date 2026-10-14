@@ -55,7 +55,9 @@ onMounted(async () => {
             await preparePython(opts.indexURL);
             pyReady.value = true;
         } catch (e) {
-            errorMessage.value = 'Python could not load in this browser. Try reloading the page.';
+            // The reason helps the teacher or admin find a server problem (missing files, wrong MIME type).
+            console.error('Pyodide failed to load', e);
+            errorMessage.value = `Python could not load in this browser. Try reloading the page. If it keeps happening, tell your teacher. (Details: ${e.message})`;
         } finally {
             busy.value = null;
         }

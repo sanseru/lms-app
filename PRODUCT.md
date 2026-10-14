@@ -55,7 +55,7 @@ Keinginan klien yang sudah disampaikan langsung (WhatsApp, prototipe, review). I
 - **Panel sorotan berwarna logo dan ceria.** Banner sapaan, kartu level, dan panel highlight lain memakai gradasi warna logo: biru → ungu → sentuhan coral (`panel-brand` di `resources/css/app.css`). Jangan kembali ke ungu tua polos, dan jangan membuat gradien lain di luar `panel-brand`. Teks diletakkan di sisi kiri (biru/ungu); tombol di atas panel berwarna putih.
 - **Ikuti prototipe klien** (`docs/client-example/LMS-Alprogmatics/`) untuk nama menu, urutan, dan alur siswa. Menu siswa di bar atas: **Home, Course, Online Lesson, Community, Laboratory, Archive**, sisanya di **More**. Tidak ada menu **Classes** untuk siswa (kelas tampil di halaman Course).
 - **Logo besar** di header (setara prototipe, tinggi ±62 px di desktop).
-- **Course sebagai dunia penuh layar**: peta langit dengan START, lingkaran Lesson, dan kastel; membuka Course dan mengerjakan task masuk layar penuh browser.
+- **Course sebagai dunia penuh layar**: peta langit dengan START, lingkaran Lesson, dan kastel; layar penuh browser hanya lewat tombol fullscreen, tidak otomatis (klien: tab browser dan taskbar harus tetap terlihat saat membuka Course).
 - **Struktur Program → Level → Lesson → Task**, naik level step by step tanpa pindah kelas; task "mixed" dipecah.
 - **Laboratory**: Python, Scratch (editor Scratch asli, di-host sendiri), Presentation, Website, JavaScript. Karya bisa dibagikan ke Community; siswa, guru, dan orang tua bisa like dan komentar.
 - **Badge dan statistik ala prototipe** di beranda siswa (6 statistik, Popular in Community, badge First project, First like, dsb.).

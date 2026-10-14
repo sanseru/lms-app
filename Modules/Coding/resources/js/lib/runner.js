@@ -13,18 +13,29 @@ const makePyWorker = () => new Worker(new URL('./python.worker.js', import.meta.
 function call(worker, message, timeoutMs, onTimeout) {
     return new Promise((resolve, reject) => {
         const id = ++seq;
-        const timer = setTimeout(() => {
+        const done = () => {
+            clearTimeout(timer);
             worker.removeEventListener('message', handler);
+            worker.removeEventListener('error', onError);
+        };
+        const timer = setTimeout(() => {
+            done();
             onTimeout?.();
             reject(new Error('timeout'));
         }, timeoutMs);
         const handler = ({ data }) => {
             if (data.id !== id) return;
-            clearTimeout(timer);
-            worker.removeEventListener('message', handler);
+            done();
             data.ok ? resolve(data) : reject(new Error(data.error));
         };
+        // The worker script itself failed (404, wrong MIME type, blocked): fail now, not at the timeout.
+        const onError = (e) => {
+            done();
+            onTimeout?.();
+            reject(new Error(e.message || 'The Python worker could not start'));
+        };
         worker.addEventListener('message', handler);
+        worker.addEventListener('error', onError);
         worker.postMessage({ ...message, id });
     });
 }
@@ -34,7 +45,7 @@ export function preparePython(indexURL) {
     if (!pyWorker) pyWorker = makePyWorker();
     if (!pyReady) {
         pyReady = call(pyWorker, { type: 'boot', indexURL }, 120000).catch((e) => {
-            pyReady = null;
+            resetPython(); // a fresh worker on the next try
             throw e;
         });
     }

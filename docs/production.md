@@ -299,7 +299,7 @@ sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d lms.domainanda.id
 ```
 
-Pastikan `/etc/nginx/mime.types` memetakan `application/wasm wasm;` dan `.mjs` sebagai JavaScript (`application/javascript js mjs;`). Tanpa itu, Python di browser gagal dimuat. Nginx versi baru sudah menyertakannya; tambahkan manual bila belum.
+Pastikan `/etc/nginx/mime.types` memetakan `application/wasm wasm;` dan `.mjs` sebagai JavaScript (`application/javascript js mjs;`). Tanpa itu, Python di browser gagal dimuat. Nginx versi baru sudah menyertakannya; tambahkan manual bila belum. Untuk Apache/LiteSpeed (mis. hosting cPanel) pemetaan ini sudah ada di `public/.htaccess`.
 
 ### PHP
 
@@ -533,7 +533,7 @@ Nama brand, logo, dan warna ada di `resources/css/app.css` dan `public/`. Rekeni
 | Lupa kata sandi tidak mengirim email | `MAIL_MAILER=log` atau SMTP salah; user tanpa email | Isi `MAIL_*`; cek log; untuk user tanpa email, admin mengganti sandi |
 | Unggah bukti/tugas gagal ("413" atau "gagal diunggah") | Batas Nginx/PHP | `client_max_body_size 22M`, `upload_max_filesize=20M`, `post_max_size=22M`, restart php-fpm |
 | Halaman Scratch menampilkan "The Scratch editor is not installed" | `public/vendor/scratch-gui` tidak ada (build dengan `SCRATCH_GUI_SKIP=1` atau unduhan gagal) | Jalankan `node scripts/fetch-scratch-gui.mjs` lalu cek `curl -I https://domain/vendor/scratch-gui/scratch-gui-standalone.js` |
-| Soal Python macet di "Menyiapkan Python…" | `public/vendor/pyodide` tidak ada, MIME `.wasm`/`.mjs` salah, atau diblokir CSP | Jalankan `npm run build`; cek `curl -I https://domain/vendor/pyodide/pyodide.asm.wasm` harus `application/wasm` |
+| Soal Python menampilkan "Python could not load in this browser" (atau macet saat memuat) | `public/vendor/pyodide` tidak ada (folder ini tidak masuk git), MIME `.mjs`/`.wasm` salah, atau diblokir CSP. Alasan teknisnya tampil di pesan ("Details: …") dan di Console browser | Jalankan `npm run build` di server (atau unggah `public/vendor/pyodide`); cek `curl -I https://domain/vendor/pyodide/pyodide.mjs` harus `200` dengan `text/javascript`/`application/javascript`, dan `pyodide.asm.wasm` harus `application/wasm`. Apache/LiteSpeed: `public/.htaccess` sudah memetakan keduanya; Nginx: lihat catatan `mime.types` di atas |
 | Sesi kelas tidak muncul untuk minggu depan | Cron scheduler tidak jalan | Pasang cron; jalankan `php artisan sessions:generate` manual |
 | XP/lencana tidak bertambah | `xp:sync` belum jalan | Halaman Prestasiku juga menyinkronkan saat dibuka; cek cron |
 | Jam sesi bergeser 7 jam | Zona waktu | `APP_TIMEZONE=Asia/Jakarta`, lalu `php artisan optimize` |

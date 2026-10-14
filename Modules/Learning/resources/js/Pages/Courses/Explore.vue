@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
-import { enterPageFullscreen } from '@/lib/fullscreen';
 import CourseCover from '../../Components/CourseCover.vue';
 
 /**
@@ -73,7 +72,7 @@ const hours = (m) => (m >= 60 ? `${Math.round(m / 60)} h` : `${m} min`);
                 <div class="mt-2 h-2 overflow-hidden rounded-full bg-white" role="progressbar" :aria-valuenow="current.percent" aria-valuemin="0" aria-valuemax="100" aria-label="Course progress">
                     <div class="h-full rounded-full bg-accent-500" :style="{ width: `${current.percent}%` }" />
                 </div>
-                <Link :href="route('learning.courses.index', { course: current.id })" class="btn-accent mt-5 w-full" @click.capture="enterPageFullscreen">Continue course <Icon name="arrow-right" :size="16" /></Link>
+                <Link :href="route('learning.courses.index', { course: current.id })" class="btn-accent mt-5 w-full">Continue course <Icon name="arrow-right" :size="16" /></Link>
             </section>
             <section v-else class="card p-5 text-sm text-muted">
                 <p class="font-bold text-ink">No course yet</p>

@@ -282,7 +282,7 @@ Selain lewat lead, admin bisa menambah data langsung.
 
 ### Peta Course
 
-2. Klik **Course**. Browser masuk **layar penuh** dan peta tampil seperti dunia bergambar: **START**, lingkaran Lesson bernomor, dan kastel di akhir level. Lesson yang sudah selesai bercentang hijau; yang menyala adalah yang harus dikerjakan sekarang (**Up next**).
+2. Klik **Course**. Peta tampil seperti dunia bergambar: **START**, lingkaran Lesson bernomor, dan kastel di akhir level. Lesson yang sudah selesai bercentang hijau; yang menyala adalah yang harus dikerjakan sekarang (**Up next**).
 
 ![Peta course](img/44-siswa-peta-course.jpg)
 
@@ -470,7 +470,7 @@ Centang setiap butir yang sudah dicoba dan berjalan sesuai harapan.
 | 8 | Guru: buka lesson untuk kelas | ☐ | |
 | 9 | Guru: isi absensi dan catatan sesi | ☐ | |
 | 10 | Guru: nilai tugas | ☐ | |
-| 11 | Siswa: peta Course layar penuh, kerjakan materi, kuis, coding | ☐ | |
+| 11 | Siswa: peta Course, kerjakan materi, kuis, coding | ☐ | |
 | 12 | Siswa: kerjakan dan kumpulkan tugas Scratch | ☐ | |
 | 13 | Siswa: Laboratory (Python, Scratch, Presentation) dan bagikan | ☐ | |
 | 14 | Like dan komentar di Community | ☐ | |
@@ -487,7 +487,8 @@ Centang setiap butir yang sudah dicoba dan berjalan sesuai harapan.
 |---|---|
 | Lupa kata sandi akun demo | Semua akun demo memakai `password` |
 | Data berbeda dengan gambar | Data demo sudah berubah karena uji coba sebelumnya; minta tim mengulang data demo |
-| Peta Course tidak layar penuh | Browser mengizinkan layar penuh hanya setelah klik; klik menu **Course** atau tombol layar penuh di kanan atas. Esc untuk keluar |
+| Ingin peta Course memenuhi layar | Klik tombol layar penuh di kanan atas. Esc untuk keluar |
+| Soal Python menampilkan "Python could not load in this browser" | Berkas Python belum ada di server atau tipe berkasnya salah. Teruskan teks "Details: …" ke tim teknis (lihat `docs/production.md`, bagian masalah umum) |
 | Video materi tidak muncul | Video YouTube butuh internet |
 | Editor Scratch lambat terbuka | Pertama kali dibuka, browser mengunduh editor (sekitar 17 MB); berikutnya lebih cepat |
 | Soal Python lama di "Preparing Python…" | Pertama kali, browser memuat Python (sekitar 10 MB); tunggu sebentar |

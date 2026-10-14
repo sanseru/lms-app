@@ -5,7 +5,6 @@ import EmptyState from '@/Components/ui/EmptyState.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import Avatar from '@/Components/ui/Avatar.vue';
 import WorldLayout from '@/Layouts/WorldLayout.vue';
-import { enterPageFullscreen } from '@/lib/fullscreen';
 import CastleArt from '../../Components/CastleArt.vue';
 import CourseMap from '../../Components/CourseMap.vue';
 
@@ -104,7 +103,7 @@ const sessionLabel = (iso) =>
                     <a v-if="nextSession?.zoom_url || klass?.zoom_url" :href="nextSession?.zoom_url || klass.zoom_url" target="_blank" rel="noopener" class="btn-ghost flex-1 sm:flex-none">
                         <Icon name="video" :size="16" /> Join Zoom
                     </a>
-                    <Link v-if="course.next" :href="route('learning.lessons.show', course.next.id)" class="btn-accent flex-1 sm:flex-none" @click.capture="enterPageFullscreen">
+                    <Link v-if="course.next" :href="route('learning.lessons.show', course.next.id)" class="btn-accent flex-1 sm:flex-none">
                         {{ course.completed ? 'Continue' : 'Start' }} <Icon name="arrow-right" :size="16" />
                     </Link>
                     <span v-else class="inline-flex items-center gap-2 rounded-xl bg-success-soft px-3 py-2 text-sm font-bold text-success-ink"><Icon name="trophy" :size="16" /> Level done!</span>

@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, Check, Code, FilePen, Flag, ListChecks, Lock, Target } from 'lucide-vue-next';
 import Modal from '@/Components/Modal.vue';
-import { enterPageFullscreen } from '@/lib/fullscreen';
 import CastleArt from './CastleArt.vue';
 
 /**
@@ -146,7 +145,7 @@ const open = ref(null);
                             'bg-brand-500 shadow-[0_8px_0_var(--color-brand-700)]': node.state === 'upcoming',
                         }"
                         class="relative mx-auto grid size-[4.5rem] place-items-center rounded-full text-white transition hover:-translate-y-1 focus-visible:ring-4 focus-visible:ring-ink focus-visible:ring-offset-4 focus-visible:outline-none sm:size-24"
-                        @click.capture="node.group.unit ? (open = node) : enterPageFullscreen()"
+                        @click.capture="node.group.unit && (open = node)"
                     >
                         <span class="flex flex-col items-center leading-none">
                             <component :is="typeIcon(node.group.lessons[0])" v-if="!node.group.unit" :size="18" class="mb-1" aria-hidden="true" />
@@ -194,7 +193,7 @@ const open = ref(null);
                 </div>
                 <ol class="flex flex-wrap justify-center gap-5 px-6 py-7 sm:justify-start sm:px-7">
                     <li v-for="(task, i) in open.group.lessons" :key="task.id" class="w-32">
-                        <Link :href="route('learning.lessons.show', task.id)" class="group flex flex-col items-center gap-2 text-center" @click.capture="enterPageFullscreen">
+                        <Link :href="route('learning.lessons.show', task.id)" class="group flex flex-col items-center gap-2 text-center">
                             <span
                                 :class="task.done ? 'border-success bg-success-soft text-success-ink' : task.id === firstOpen(open.group).id ? 'border-brand-600 bg-brand-50 text-brand-600 ring-4 ring-brand-100' : 'border-brand-400 bg-chip text-brand-600'"
                                 class="relative grid size-28 place-items-center rounded-full border-2 transition group-hover:-translate-y-1 group-focus-visible:ring-4 group-focus-visible:ring-ink"
@@ -213,7 +212,7 @@ const open = ref(null);
                     </li>
                 </ol>
                 <div class="border-t border-line px-6 py-4 sm:px-7">
-                    <Link :href="route('learning.lessons.show', firstOpen(open.group).id)" class="btn-accent w-full" @click.capture="enterPageFullscreen">
+                    <Link :href="route('learning.lessons.show', firstOpen(open.group).id)" class="btn-accent w-full">
                         {{ open.group.done ? 'Review this lesson' : open.group.doneCount ? 'Continue' : 'Start lesson' }}
                     </Link>
                 </div>

@@ -5,7 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import Icon from '@/Components/ui/Icon.vue';
 import NotificationBell from '@/Components/ui/NotificationBell.vue';
 import UserMenu from '@/Components/ui/UserMenu.vue';
-import { enterPageFullscreen, useFullscreen } from '@/lib/fullscreen';
+import { useFullscreen } from '@/lib/fullscreen';
 
 /**
  * Student header, as in the client prototype: big logo, the six main menus in the
@@ -22,8 +22,6 @@ const primary = computed(() => PRIMARY.map((r) => items.value.find((i) => i.rout
 const more = computed(() => items.value.filter((i) => !PRIMARY.includes(i.route)));
 const isActive = (item) => item.active.split('|').some((p) => route().current(p));
 const moreActive = computed(() => more.value.some(isActive));
-// Opening the course (client: the course is a full-screen world) goes fullscreen too.
-const onItemClick = (item) => item.route === 'learning.courses.index' && enterPageFullscreen();
 
 const drawer = ref(false);
 router.on('navigate', () => {
@@ -65,7 +63,6 @@ onMounted(() => {
                     :key="item.route"
                     :href="item.href"
                     :aria-current="isActive(item) ? 'page' : undefined"
-                    @click.capture="onItemClick(item)"
                     :class="isActive(item) ? 'font-extrabold text-brand-600' : 'font-medium text-ink hover:bg-brand-50 hover:text-brand-600'"
                     class="rounded-[10px] px-3.5 py-2 text-base whitespace-nowrap transition"
                 >
@@ -150,7 +147,6 @@ onMounted(() => {
                     :key="item.route + item.label"
                     :href="item.href"
                     :class="isActive(item) ? 'bg-brand-600 text-white' : 'text-ink hover:bg-brand-50'"
-                    @click.capture="onItemClick(item)"
                     class="flex items-center gap-3 rounded-xl px-3 py-3 font-semibold"
                 >
                     <Icon :name="item.icon" :size="18" /> {{ item.label }}

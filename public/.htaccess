@@ -1,3 +1,9 @@
+# Python in the browser (Pyodide) needs these types; many Apache/LiteSpeed hosts don't map them.
+<IfModule mod_mime.c>
+    AddType text/javascript .mjs
+    AddType application/wasm .wasm
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
